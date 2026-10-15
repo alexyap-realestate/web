@@ -1,0 +1,468 @@
+---
+// src/pages/index.astro
+import '../data/properties.xlsx?raw';
+import '../data/communities.xlsx?raw';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PropertyCard from '../components/PropertyCard.astro';
+import CommunityCard from '../components/CommunityCard.astro';
+import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
+import * as XLSX from 'xlsx';
+import path from 'node:path';
+import fs from 'node:fs';
+
+// Helper functions for raw MLS number formatting
+function formatPrice(val: any): string {
+  if (val === undefined || val === null || val === '') return '';
+  const cleaned = String(val).replace(/[^0-9.]/g, '');
+  const num = Number(cleaned);
+  if (!isNaN(num) && cleaned.length > 0) {
+    return '$' + num.toLocaleString('en-US');
+  }
+  return String(val).trim();
+}
+
+function formatSqft(val: any): string {
+  if (val === undefined || val === null || val === '') return '—';
+  const cleaned = String(val).replace(/[^0-9.]/g, '');
+  const num = Number(cleaned);
+  if (!isNaN(num) && cleaned.length > 0) {
+    return num.toLocaleString('en-US');
+  }
+  return String(val).trim();
+}
+
+// 1. Read properties.xlsx directly from src/data/
+const propFilePath = path.resolve(process.cwd(), 'src', 'data', 'properties.xlsx');
+const propFileBuffer = fs.readFileSync(propFilePath);
+const propWorkbook = XLSX.read(propFileBuffer, { type: 'buffer' });
+const propSheet = propWorkbook.Sheets[propWorkbook.SheetNames[0]];
+const propRawRows: any[] = XLSX.utils.sheet_to_json(propSheet);
+
+const properties = propRawRows
+  .filter((row) => String(row.featured || '').trim().toUpperCase() === 'YES')
+  .slice(0, 6)
+  .map((row) => ({
+    title: `${row.address || ''}, ${row.city || ''}`.trim(),
+    price: formatPrice(row.price),
+    address: String(row.address || '').trim(),
+    location: `${row.city || ''}, ${row.state || 'California'}`.trim(),
+    beds: Number(row.bedroom) || 0,
+    baths: Number(row.bathroom) || 0,
+    sqft: formatSqft(row.square),
+    badge: String(row.status || 'Active').trim(),
+    image: String(row.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80').trim()
+  }));
+
+// 2. Read communities.xlsx directly from src/data/
+const commFilePath = path.resolve(process.cwd(), 'src', 'data', 'communities.xlsx');
+const commFileBuffer = fs.readFileSync(commFilePath);
+const commWorkbook = XLSX.read(commFileBuffer, { type: 'buffer' });
+const commSheet = commWorkbook.Sheets[commWorkbook.SheetNames[0]];
+const commRawRows: any[] = XLSX.utils.sheet_to_json(commSheet);
+
+const fallbackCommunityImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
+
+const communities = commRawRows
+  .filter((row) => {
+    const feat = String(row.featured || '').trim().toUpperCase();
+    return feat === 'YES' || feat === 'TRUE';
+  })
+  .slice(0, 4)
+  .map((row) => {
+    const rawImg = String(row.image || '').trim();
+    const name = String(row.name || '').trim();
+    const fallbackSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    return {
+      name,
+      city: String(row.city || row.City || row.county || row.County || '').trim(),
+      tagline: String(row.tagline || '').trim(),
+      description: String(row.description || '').trim(),
+      image: rawImg.length > 0 ? rawImg : fallbackCommunityImage,
+      slug: String(row.slug || fallbackSlug).trim()
+    };
+  });
+
+const blueprintPillars = [
+  {
+    num: "01",
+    tagline: "Smart Preparation",
+    title: "Invest Only Where You Get Real Dollars Back",
+    description: "You shouldn't spend a single dollar fixing up your home unless it puts money back in your pocket at closing. We look at your property through the eyes of active local buyers, pointing out the simple repairs and staging choices that actually boost offer prices—and telling you which costly projects to skip."
+  },
+  {
+    num: "02",
+    tagline: "First Impressions",
+    title: "Every Extra Week on Market Costs You Money",
+    description: "A home gets the highest buyer attention in its first ten days. When a listing sits, buyers start asking what's wrong and look for discounts. We make sure disclosure packets and presentation are completely ready in advance to build serious interest right out of the gate."
+  },
+  {
+    num: "03",
+    tagline: "Pricing Strategy",
+    title: "Price to Spark Competition, Not to Test the Waters",
+    description: "Overpricing to 'see what happens' backfires almost every time. It chases away serious buyers and forces price cuts later. We study active neighborhood demand to price your home where buyers feel urgency, compete, and bid with conviction."
+  },
+  {
+    num: "04",
+    tagline: "Active Marketing",
+    title: "We Hunt for Real Buyers, Not Just Post to the MLS",
+    description: "Uploading a listing and sitting by the phone doesn't work. We work every inquiry directly. We follow up with every agent who unlocks the door, answer buyer questions promptly before they become objections, and keep interested parties actively engaged."
+  },
+  {
+    num: "05",
+    tagline: "Contract Defense",
+    title: "Never Let a Buyer Renegotiate After You Agree",
+    description: "Accepting an offer is only half the battle. Many buyers try to use home inspections or repair requests to chip away at your agreed price weeks later. We enforce contract timelines, push back on unreasonable demands, and make sure the agreed price is what you take home."
+  },
+  {
+    num: "06",
+    tagline: "Personal Attention",
+    title: "You Work Directly With Alex. No Hand-Offs.",
+    description: "Many teams have a senior agent sign the agreement, only to pass you off to assistants you've never met. With this practice, Alex handles your sale personally from the initial walkthrough to the day keys are handed over, giving you direct guidance at every step."
+  }
+];
+---
+
+<BaseLayout title="Alex Yap Real Estate Advisor | South Bay Residential & Listing Specialist">
+  
+  <!-- ======================================================== -->
+  <!-- 1. STICKY HERO VIEWPORT                                  -->
+  <!-- ======================================================== -->
+  <div class="sticky top-0 h-[100dvh] w-full overflow-hidden z-0 bg-black">
+    <video
+      id="hero-video"
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="auto"
+      poster="https://res.cloudinary.com/qogrq7ve/video/upload/so_0/v1790747968/my-web-bg-4.jpg"
+      class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+    >
+      <source src="https://res.cloudinary.com/qogrq7ve/video/upload/q_auto,vc_h264/v1790747968/my-web-bg-4.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Warm Cinematic Vignette Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col items-center justify-between h-full text-center px-5 max-w-4xl mx-auto text-white pt-28 pb-12">
+      
+      <div></div>
+
+      <!-- Main Central Typography -->
+      <div class="flex flex-col items-center">
+        <img 
+          src="/images/alex-yap-logo.png" 
+          alt="Alex Yap Real Estate Advisor" 
+          class="h-16 md:h-24 w-auto max-w-[260px] object-contain mb-6 select-none drop-shadow-[0_4px_20px_rgba(0,0,0,0.65)]" 
+          loading="eager"
+        />
+
+        <p class="font-body text-xs md:text-sm uppercase tracking-[3px] text-[#d6be96] mb-4 font-light drop-shadow">
+          The Result You Seek. The Service You Deserve.
+        </p>
+
+        <h1 class="font-heading text-4xl sm:text-6xl md:text-7xl font-normal uppercase tracking-[3px] leading-tight mb-4 drop-shadow-md">
+          Alex Yap
+        </h1>
+
+        <div class="flex items-center gap-3 mb-8">
+          <span class="w-8 h-[1px] bg-white/40"></span>
+          <p class="font-body text-xs md:text-sm uppercase tracking-[2.5px] text-white/90 font-light">
+            Trusted Real Estate Advisor for Over 20 Years
+          </p>
+          <span class="w-8 h-[1px] bg-white/40"></span>
+        </div>
+
+        <a 
+          href="#properties" 
+          class="hero-scroll-trigger font-heading text-xs uppercase tracking-[2.5px] bg-white text-[#1a1a1a] px-10 py-4 hover:bg-[#8C7149] hover:text-white transition-all duration-300 shadow-xl"
+        >
+          Explore Properties
+        </a>
+      </div>
+
+      <!-- Architectural Vertical Scroll Cue -->
+      <a 
+        href="#properties" 
+        aria-label="Scroll to properties" 
+        class="hero-scroll-trigger flex flex-col items-center gap-2.5 text-white/70 hover:text-white transition-colors group cursor-pointer"
+      >
+        <span class="font-body text-[10px] uppercase tracking-[3px]">Scroll</span>
+        <div class="w-[1px] h-8 bg-white/30 relative overflow-hidden">
+          <span class="absolute inset-x-0 top-0 h-1/2 bg-[#8C7149] animate-[scrollLine_2s_cubic-bezier(0.65,0,0.35,1)_infinite]"></span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 2. THE SLIDING CURTAIN CONTAINER                         -->
+  <!-- ======================================================== -->
+  <main id="curtain-container" class="relative z-20 w-full bg-[var(--color-luxury-chalk,#F4F2EE)] shadow-[0_-25px_60px_rgba(0,0,0,0.7)]">
+    
+    <!-- PROPERTIES CAROUSEL -->
+    <section id="properties" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-16 md:py-24 px-[5vw] overflow-hidden">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Architectural Split Header with Live Counter & Stepper -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-5 border-b border-black/10">
+          <div>
+            <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
+              Curated Portfolio
+            </p>
+            <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+              Featured Properties
+            </h2>
+          </div>
+
+          <!-- Top-Right Controls with Bold < and > Stepper -->
+          <div class="flex items-center gap-4 self-start sm:self-auto">
+            <span id="prop-counter" class="font-mono text-xs tracking-[2px] text-neutral-500 select-none">
+              <strong class="text-[#1a1a1a] font-semibold">01</strong> / {String(properties.length + 1).padStart(2, '0')}
+            </span>
+
+            <div class="flex items-center gap-2">
+              <button 
+                type="button" 
+                id="prop-step-prev" 
+                aria-label="Previous property"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
+              >
+                &lt;
+              </button>
+
+              <button 
+                type="button" 
+                id="prop-step-next" 
+                aria-label="Next property"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
+              >
+                &gt;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAROUSEL VIEWPORT -->
+        <div class="relative w-full overflow-hidden">
+          <div 
+            id="properties-carousel-track" 
+            class="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] w-full"
+          >
+            {properties.map((listing, index) => (
+              <div 
+                class="carousel-item w-full md:w-1/2 lg:w-1/3 shrink-0 px-0 sm:px-3 flex flex-col"
+                data-property-index={index}
+              >
+                <PropertyCard {...listing} />
+              </div>
+            ))}
+
+            <!-- End-Cap Card: View More -->
+            <div 
+              class="carousel-item w-full md:w-1/2 lg:w-1/3 shrink-0 px-0 sm:px-3 flex flex-col"
+              data-property-index={properties.length}
+            >
+              <div class="group relative h-full min-h-[420px] bg-gradient-to-b from-white to-[#F9F8F5] border border-black/10 p-8 sm:p-12 flex flex-col items-center justify-center text-center shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] hover:border-black/25 transition-all duration-500 overflow-hidden">
+                <div class="absolute inset-3 border border-black/[0.04] group-hover:border-[#8C7149]/30 transition-colors duration-500 pointer-events-none"></div>
+                <div class="w-8 h-[2px] bg-[#8C7149] mb-8 opacity-60 group-hover:w-12 transition-all duration-500"></div>
+
+                <div class="relative z-10 px-4 py-2 transition-transform duration-500 group-hover:-translate-y-1">
+                  <img 
+                    src="/icons/alex-yap-logo.jpg" 
+                    alt="Alex Yap Real Estate Advisor" 
+                    class="h-16 md:h-18 w-auto max-w-[200px] object-contain select-none"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div class="relative z-10 my-7 flex items-center justify-center gap-2">
+                  <span class="w-5 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/50 transition-colors duration-300"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                  <span class="w-5 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/50 transition-colors duration-300"></span>
+                </div>
+
+                <a 
+                  href="/properties" 
+                  class="relative z-10 font-heading text-[12px] sm:text-[13px] uppercase tracking-[2.5px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm hover:shadow-md whitespace-nowrap active:scale-[0.98]"
+                >
+                  <span>Explore All Properties</span>
+                  <span class="font-mono font-bold text-sm transition-transform duration-300 group-hover:translate-x-1">&gt;</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COMMUNITIES SECTION -->
+    <section id="communities" class="scroll-mt-0 lg:scroll-mt-[80px] w-full pt-16 md:pt-24 pb-0 bg-white border-y border-black/10 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-[5vw] mb-10">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
+              Silicon Valley &amp; Beyond
+            </p>
+            <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+              Featured Communities
+            </h2>
+          </div>
+          <a 
+            href="/communities" 
+            class="font-heading text-xs uppercase tracking-[2px] text-[#1a1a1a] hover:text-[#8C7149] inline-flex items-center gap-2 transition group self-start sm:self-auto"
+          >
+            <span>All Neighborhoods</span>
+            <span class="font-mono font-bold text-sm group-hover:translate-x-1 transition-transform">&gt;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Flush 4-column edge-to-edge container -->
+      <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-black/10">
+        {communities.map((comm) => (
+          <CommunityCard {...comm} />
+        ))}
+      </div>
+    </section>
+
+    <!-- THE BLUEPRINT SECTION -->
+    <section id="why-choose" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-16 md:py-24 px-[5vw] overflow-hidden">
+      <div class="max-w-7xl mx-auto">
+        <div class="mb-12">
+          <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
+            Listing Advisory &amp; Strategy
+          </p>
+          <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+            The Blueprint to Selling
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blueprintPillars.map((item) => (
+            <article class="group relative bg-white border border-black/10 hover:border-black/30 p-8 sm:p-10 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden">
+              <span class="absolute top-5 right-8 font-heading text-6xl text-black/[0.04] group-hover:text-[#8C7149]/15 select-none transition-colors duration-500 pointer-events-none">
+                {item.num}
+              </span>
+              <div>
+                <div class="flex items-center gap-2 mb-6 pb-4 border-b border-black/10">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                  <span class="font-body text-[11px] uppercase tracking-[2px] text-[#8C7149] font-medium">
+                    {item.tagline}
+                  </span>
+                </div>
+                <h3 class="font-heading text-xl uppercase tracking-[1px] font-normal text-[#1a1a1a] mb-4 leading-snug group-hover:text-[#8C7149] transition-colors duration-300">
+                  {item.title}
+                </h3>
+                <p class="font-body text-[#3d3d3d] text-sm font-light leading-[1.8]">
+                  {item.description}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="mt-12 flex justify-end">
+          <a 
+            href="/seller" 
+            class="font-heading text-[13px] uppercase tracking-[2px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition-all duration-300 inline-flex items-center gap-3 shadow-sm group"
+          >
+            <span>Explore Complete 10-Step Roadmap</span>
+            <span class="font-mono font-bold text-sm group-hover:translate-x-1 transition-transform">&gt;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK WITH ALEX CTA -->
+    <WorkWithAlexCTA />
+
+  </main>
+</BaseLayout>
+
+<style>
+  @keyframes scrollLine {
+    0% { transform: translateY(-100%); }
+    50% { transform: translateY(100%); }
+    100% { transform: translateY(100%); }
+  }
+</style>
+
+<script>
+  function setupPageScripts() {
+    // 1. Smooth scroll down to curtain container
+    const triggers = document.querySelectorAll('.hero-scroll-trigger');
+    const curtain = document.getElementById('curtain-container');
+
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (curtain) {
+          const targetY = curtain.getBoundingClientRect().top + window.pageYOffset;
+          const offset = window.innerWidth >= 1024 ? 80 : 0;
+          window.scrollTo({
+            top: targetY - offset,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 2. Carousel Stepper Logic
+    const track = document.getElementById('properties-carousel-track') as HTMLElement | null;
+    const prevBtn = document.getElementById('prop-step-prev') as HTMLButtonElement | null;
+    const nextBtn = document.getElementById('prop-step-next') as HTMLButtonElement | null;
+    const counter = document.getElementById('prop-counter') as HTMLElement | null;
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.carousel-item'));
+
+    if (!track || items.length === 0) return;
+    if (track.dataset.initialized === 'true') return;
+    track.dataset.initialized = 'true';
+
+    const totalItems = items.length;
+    let currentIndex = 0;
+
+    function getVisibleCount(): number {
+      if (window.innerWidth >= 1024) return 3;
+      if (window.innerWidth >= 768) return 2;
+      return 1;
+    }
+
+    function getMaxIndex(): number {
+      return Math.max(0, totalItems - getVisibleCount());
+    }
+
+    function updateCarousel(newIndex: number) {
+      const maxIndex = getMaxIndex();
+      currentIndex = Math.max(0, Math.min(newIndex, maxIndex));
+
+      const itemWidth = items[0].getBoundingClientRect().width;
+      if (track) {
+        track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      }
+
+      if (counter) {
+        counter.innerHTML = `<strong class="text-[#1a1a1a] font-semibold">${String(currentIndex + 1).padStart(2, '0')}</strong> / ${String(totalItems).padStart(2, '0')}`;
+      }
+
+      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
+    }
+
+    prevBtn?.addEventListener('click', () => updateCarousel(currentIndex - 1));
+    nextBtn?.addEventListener('click', () => updateCarousel(currentIndex + 1));
+
+    window.addEventListener('resize', () => {
+      updateCarousel(currentIndex);
+    });
+
+    updateCarousel(0);
+  }
+
+  setupPageScripts();
+  document.addEventListener('astro:page-load', setupPageScripts);
+</script>

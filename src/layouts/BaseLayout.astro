@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import ContactModal from '../components/ContactModal.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Alex Yap Real Estate Advisor | South Bay Residential & Listing Specialist",
+  description = "Alex Yap delivers discreet advisory and bespoke representation for luxury coastal and architectural estates throughout the South Bay, Silicon Valley, and Peninsula enclaves."
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth bg-black">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" />
+  <meta property="og:url" content="https://alexyaphomes.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+  <link rel="icon" type="image/png" href="/icons/favicon.png">
+
+  <!-- 1. Preconnect early to third-party origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+
+  <link rel="preload" as="image" href="https://res.cloudinary.com/qogrq7ve/video/upload/so_0/v1790747968/my-web-bg-4.jpg">
+
+  <!-- 2. Consolidated Google Fonts -->
+  <link 
+    rel="stylesheet" 
+    href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..600;1,100..600&family=Tenor+Sans&display=block"
+  />
+
+  <!-- 3. Client-side Navigation Router: removes hard reload flashes -->
+  <ClientRouter />
+
+  <!-- Global Palette & Typography Definitions -->
+  <style is:global>
+    :root {
+      --color-luxury-stone: #ECE8E1;
+      --color-luxury-chalk: #F4F2EE;
+      --font-body: 'Libre Franklin', system-ui, -apple-system, sans-serif;
+      --font-heading: 'Tenor Sans', Didot, 'Bodoni MT', Georgia, serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .font-heading {
+      font-family: var(--font-heading);
+    }
+
+    .bg-luxury-stone {
+      background-color: var(--color-luxury-stone) !important;
+    }
+
+    .bg-luxury-chalk {
+      background-color: var(--color-luxury-chalk) !important;
+    }
+
+    .border-luxury-stone {
+      border-color: var(--color-luxury-stone) !important;
+    }
+
+    .border-luxury-chalk {
+      border-color: var(--color-luxury-chalk) !important;
+    }
+  </style>
+</head>
+<body class="bg-black text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">
+  <Navbar />
+  
+  <slot />
+
+  <div class="relative z-30">
+    <Footer />
+  </div>
+
+  <ContactModal />
+</body>
+</html>

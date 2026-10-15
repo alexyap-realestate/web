@@ -1,0 +1,147 @@
+---
+// src/pages/communities/[...page].astro
+import '../../data/communities.xlsx?raw';
+import type { Page } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CommunityCard from '../../components/CommunityCard.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import * as XLSX from 'xlsx';
+import path from 'node:path';
+import fs from 'node:fs';
+
+export async function getStaticPaths({ paginate }: any) {
+  const filePath = path.resolve(process.cwd(), 'src', 'data', 'communities.xlsx');
+  const fileBuffer = fs.readFileSync(filePath);
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+  const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+
+  const allCommunities = rawRows
+    .map((row) => {
+      const name = String(row.name || row.Name || '').trim();
+      if (!name) return null;
+
+      const fallbackSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+
+      // Dynamically collect image-1 through image-5 for this specific community row
+      const imageEntries: { index: number; url: string }[] = [];
+      Object.keys(row).forEach((key) => {
+        const cleanKey = key.trim().toLowerCase();
+        const match = cleanKey.match(/^image[-_\s]?(\d+)$/);
+        if (match) {
+          const index = parseInt(match[1], 10);
+          const rawVal = row[key];
+          if (rawVal !== undefined && rawVal !== null) {
+            const val = String(rawVal).trim();
+            if (val.length > 10 && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))) {
+              imageEntries.push({ index, url: val });
+            }
+          }
+        }
+      });
+
+      imageEntries.sort((a, b) => a.index - b.index);
+      const gallery = imageEntries.map((e) => e.url);
+
+      if (gallery.length === 0) {
+        const singleImage = String(row.image || row.Image || '').trim();
+        gallery.push(singleImage.length > 0 ? singleImage : fallbackImage);
+      }
+
+      return {
+        name,
+        city: String(row.city || row.City || row.county || row.County || '').trim(),
+        tagline: String(row.tagline || row.Tagline || '').trim(),
+        description: String(row.description || row.Description || '').trim(),
+        image: gallery[0], // Cover image for the card
+        slug,
+        featured: String(row.featured || row.Featured || 'NO').trim().toUpperCase()
+      };
+    })
+    .filter((comm): comm is NonNullable<typeof comm> => comm !== null && comm.name.length > 0 && comm.slug.length > 0);
+
+  return paginate(allCommunities, { pageSize: 6 });
+}
+
+interface Props {
+  page: Page<any>;
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title="Featured Communities | Alex Yap Real Estate Advisor">
+  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-28 md:pt-36 pb-12 md:pb-16 px-[5vw]">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Auto-scroll anchor target -->
+      <div id="communities-grid" class="scroll-mt-24 md:scroll-mt-32"></div>
+
+      <!-- Page Header -->
+      <div class="mb-10">
+        <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
+          Bay Area Neighborhoods
+        </p>
+        <h1 class="font-heading text-[32px] md:text-[44px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight">
+          Communities
+        </h1>
+      </div>
+
+      <!-- Communities Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        {page.data.map((comm: any) => (
+          <CommunityCard {...comm} />
+        ))}
+      </div>
+
+      <!-- Minimal Right-Aligned Pagination Controls (< >) -->
+      {page.lastPage > 1 && (
+        <div class="mt-12 flex items-center justify-end">
+          <nav aria-label="Communities pagination" class="flex items-center gap-2">
+            <!-- Previous Button -->
+            {page.url.prev ? (
+              <a 
+                href={`${page.url.prev}#communities-grid`}
+                aria-label="Previous Page"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+              >
+                &lt;
+              </a>
+            ) : (
+              <span 
+                aria-disabled="true"
+                class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none"
+              >
+                &lt;
+              </span>
+            )}
+
+            <!-- Next Button -->
+            {page.url.next ? (
+              <a 
+                href={`${page.url.next}#communities-grid`}
+                aria-label="Next Page"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+              >
+                &gt;
+              </a>
+            ) : (
+              <span 
+                aria-disabled="true"
+                class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none"
+              >
+                &gt;
+              </span>
+            )}
+          </nav>
+        </div>
+      )}
+
+    </div>
+  </main>
+
+  <WorkWithAlexCTA />
+</BaseLayout>

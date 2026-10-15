@@ -1,0 +1,168 @@
+---
+// src/pages/properties/[...page].astro
+import '../../data/properties.xlsx?raw';
+import type { Page } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import * as XLSX from 'xlsx';
+import path from 'node:path';
+import fs from 'node:fs';
+
+export async function getStaticPaths({ paginate }: any) {
+  const filePath = path.resolve(process.cwd(), 'src', 'data', 'properties.xlsx');
+  const fileBuffer = fs.readFileSync(filePath);
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+  function formatPrice(val: any): string {
+    if (val === undefined || val === null || val === '') return '';
+    const cleaned = String(val).replace(/[^0-9.]/g, '');
+    const num = Number(cleaned);
+    if (!isNaN(num) && cleaned.length > 0) {
+      return '$' + num.toLocaleString('en-US');
+    }
+    return String(val).trim();
+  }
+
+  function formatSqft(val: any): string {
+    if (val === undefined || val === null || val === '') return '—';
+    const cleaned = String(val).replace(/[^0-9.]/g, '');
+    const num = Number(cleaned);
+    if (!isNaN(num) && cleaned.length > 0) {
+      return num.toLocaleString('en-US');
+    }
+    return String(val).trim();
+  }
+
+  const fallbackHero = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
+
+  const allProperties = rawRows.map((row) => {
+    const address = String(row.address || row.Address || '').trim();
+    const city = String(row.city || row.City || '').trim();
+    const state = String(row.state || row.State || 'California').trim();
+    const zip = String(row.zip || row.Zip || '').trim();
+    const status = String(row.status || row.Status || 'Active').trim();
+    
+    const priceVal = row.price !== undefined ? row.price : row.Price;
+    const bedVal = row.bedroom !== undefined ? row.bedroom : (row.Bedrooms || row.beds);
+    const bathVal = row.bathroom !== undefined ? row.bathroom : (row.Bathrooms || row.baths);
+    const sqftVal = row.square !== undefined ? row.square : (row.sqft || row.Square);
+
+    const fallbackSlug = address
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+
+    // Dynamically look for the first valid image column from the excel row
+    let firstImage = '';
+    Object.keys(row).forEach((key) => {
+      const cleanKey = key.trim().toLowerCase();
+      const match = cleanKey.match(/^image[-_\s]?(\d+)$/);
+      if (match && !firstImage) {
+        const rawVal = row[key];
+        if (rawVal !== undefined && rawVal !== null) {
+          const val = String(rawVal).trim();
+          if (
+            val.length > 10 && 
+            (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))
+          ) {
+            firstImage = val;
+          }
+        }
+      }
+    });
+
+    const singleImage = String(row.image || row.Image || '').trim();
+
+    return {
+      title: `${address}, ${city}`.trim(),
+      price: formatPrice(priceVal),
+      address,
+      location: `${city}, ${state}`.trim(),
+      beds: Number(bedVal) || 0,
+      baths: Number(bathVal) || 0,
+      sqft: formatSqft(sqftVal),
+      badge: status,
+      image: firstImage || singleImage || fallbackHero,
+      featured: String(row.featured || row.Featured || 'NO').trim().toUpperCase(),
+      href: `/properties/${slug}`
+    };
+  }).filter(prop => prop.address.length > 0);
+
+  return paginate(allProperties, { pageSize: 6 });
+}
+
+interface Props {
+  page: Page<any>;
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title="Properties | Alex Yap Real Estate Advisor">
+  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-28 md:pt-36 pb-12 md:pb-16 px-[5vw]">
+    <div class="max-w-7xl mx-auto">
+      
+      <div id="listings" class="scroll-mt-24 md:scroll-mt-32"></div>
+
+      <!-- Page Header -->
+      <div class="mb-10">
+        <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-2">
+          Featured listings and past transactions
+        </p>
+        <h1 class="font-heading text-[32px] md:text-[44px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight">
+          Properties
+        </h1>
+      </div>
+
+      <!-- Properties Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {page.data.map((listing: any) => (
+          <PropertyCard {...listing} />
+        ))}
+      </div>
+
+      <!-- Pagination Controls with Bold < and > -->
+      {page.lastPage > 1 && (
+        <div class="mt-12 flex items-center justify-end">
+          <nav aria-label="Properties pagination" class="flex items-center gap-2">
+            {page.url.prev ? (
+              <a 
+                href={`${page.url.prev}#listings`}
+                aria-label="Previous Page"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+              >
+                &lt;
+              </a>
+            ) : (
+              <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                &lt;
+              </span>
+            )}
+
+            {page.url.next ? (
+              <a 
+                href={`${page.url.next}#listings`}
+                aria-label="Next Page"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+              >
+                &gt;
+              </a>
+            ) : (
+              <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                &gt;
+              </span>
+            )}
+          </nav>
+        </div>
+      )}
+
+    </div>
+  </main>
+
+  <WorkWithAlexCTA />
+</BaseLayout>

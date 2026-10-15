@@ -1,0 +1,108 @@
+---
+// src/components/PropertyCard.astro
+interface Props {
+  title?: string;
+  price?: string;
+  address?: string;
+  location?: string;
+  beds?: number | string;
+  baths?: number | string;
+  sqft?: string | number;
+  image?: string;
+  badge?: string;
+  href?: string;
+  class?: string;
+}
+
+const { 
+  title = "Exclusive Residence", 
+  price = "", 
+  address = "", 
+  location = "Silicon Valley, California", 
+  beds = 0, 
+  baths = 0, 
+  sqft = "—", 
+  image = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", 
+  badge = "Active", 
+  href = "/properties",
+  class: className = "" 
+} = Astro.props;
+
+const isSold = String(badge || '').toLowerCase() === 'sold';
+---
+
+<a 
+  href={href}
+  class={`w-full h-full shrink-0 bg-white ring-1 ring-inset ring-white/80 border border-black/10 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_18px_36px_rgba(0,0,0,0.08)] transition-all duration-500 group overflow-hidden select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8C7149] ${className}`}
+  aria-label={`View details for ${address || title}`}
+>
+  <div class="flex flex-col flex-1">
+    <!-- Locked Landscape Aspect Ratio (16:10) -->
+    <div class="relative w-full aspect-[16/10] overflow-hidden bg-neutral-900 shrink-0">
+      <img 
+        src={image} 
+        alt={title || address} 
+        loading="lazy" 
+        class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]" 
+      />
+      
+      <!-- Top Left Status Badge -->
+      {badge && (
+        <div class="absolute top-4 left-4 z-10 bg-[#161514]/90 backdrop-blur-sm text-white px-3 py-1 font-heading text-[10px] uppercase tracking-[2px] border border-white/10">
+          {badge}
+        </div>
+      )}
+
+      <!-- Top Right Circular Northeast Arrow Indicator -->
+      <span 
+        class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full border border-white/20 bg-black/35 backdrop-blur-sm flex items-center justify-center text-white/80 group-hover:text-white group-hover:border-[#8C7149] group-hover:bg-[#8C7149] transition-all duration-500 shadow-sm"
+        aria-hidden="true"
+      >
+        <svg 
+          class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="1.5" 
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+        </svg>
+      </span>
+
+      <!-- Price overlay only for active/featured listings -->
+      {!isSold && price && (
+        <div class="absolute inset-x-0 bottom-0 z-10 pt-10 pb-3.5 px-4 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end items-start">
+          <div class="w-6 group-hover:w-10 h-[2px] bg-[#8C7149] mb-1.5 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"></div>
+          
+          <span class="font-heading text-lg sm:text-xl text-white font-normal tracking-[0.5px] drop-shadow-sm leading-none">
+            {price}
+          </span>
+        </div>
+      )}
+    </div>
+
+    <!-- Content Box -->
+    <div class="bg-white p-6 sm:p-7 flex flex-col justify-between flex-1">
+      <div>
+        <p class="font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] font-medium mb-1.5">
+          {location}
+        </p>
+        <h3 
+          title={address}
+          class="font-heading text-lg sm:text-xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug group-hover:text-[#8C7149] transition-colors duration-300 line-clamp-2 h-14 flex items-start"
+        >
+          {address}
+        </h3>
+      </div>
+
+      <!-- Specs Row -->
+      <div class="pt-4 mt-4 border-t border-black/10 flex items-center justify-between text-neutral-600 font-body text-xs font-light">
+        <span><strong class="font-normal text-[#1a1a1a]">{beds}</strong> Beds</span>
+        <span class="text-black/20">&bull;</span>
+        <span><strong class="font-normal text-[#1a1a1a]">{baths}</strong> Baths</span>
+        <span class="text-black/20">&bull;</span>
+        <span><strong class="font-normal text-[#1a1a1a]">{sqft}</strong> Sq.Ft.</span>
+      </div>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Tenor Sans", sans-serif;
+  --font-body: "Libre Franklin", sans-serif;
+  --color-gold-light: #d3bc97;
+  --color-gold: #cbb592;
+  --color-gold-dark: #8C7149;
+  --color-warm-bg: #EFE8DE;
+  --color-warm-cream: #FBF8F4;
+  --color-dark-surface: #161514;
+}
+
+html, body {
+  background-color: #000000;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+  font-weight: 400;
+  font-family: var(--font-heading);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+.carousel-card {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .carousel-card {
+    flex: 0 0 calc((100% - 4rem) / 3);
+  }
+}

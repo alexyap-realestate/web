@@ -1,0 +1,67 @@
+---
+// src/components/WorkWithAlexCTA.astro
+interface Props {
+  eyebrow?: string;
+  headlineFirstLine?: string;
+  headlineHighlight?: string;
+  bodyFirstLine?: string;
+  bodySecondLine?: string;
+  buttonText?: string;
+  backgroundImage?: string;
+}
+
+const {
+  eyebrow = "Get in Touch",
+  headlineFirstLine = "Ready to talk about your",
+  headlineHighlight = "next move?",
+  bodyFirstLine = "Whether you have a concrete timeline or just questions about the market, let’s talk.",
+  bodySecondLine = "No sales pitch—just straightforward guidance and perspective.",
+  buttonText = "Let's Connect",
+  backgroundImage = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80"
+} = Astro.props;
+---
+
+<section class="relative min-h-[560px] md:min-h-[660px] flex items-center justify-center px-6 py-20 md:py-32 overflow-hidden [clip-path:inset(0)]">
+  <!-- Background with layer isolation -->
+  <div 
+    class="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none -z-10"
+    style={`background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${backgroundImage}');`}
+  ></div>
+  
+  <!-- Container widened to max-w-3xl for optimal line lengths -->
+  <div class="relative z-10 max-w-3xl w-full p-6 sm:p-10 md:p-14 text-center shadow-[0_30px_70px_rgba(0,0,0,0.22)] bg-[#eeede9]/60 backdrop-blur-md border border-white/50">
+    
+    <!-- Eyebrow: Regular weight (font-normal), larger text -->
+    <p class="font-body text-[12px] sm:text-[20px] uppercase tracking-[2.5px] italic mb-3 font-semibold text-[#8C7149]">
+      {eyebrow}
+    </p>
+
+    <!-- Headline: Uses Tenor Sans (font-heading), single line first phrase, next move? on second line -->
+    <h2 class="font-heading text-[22px] sm:text-[32px] md:text-[42px] font-normal text-[#1a1a1a] mb-6 leading-tight after:content-[''] after:block after:w-[120px] after:h-[1px] after:bg-current after:mx-auto after:mt-6">
+      <span class="block sm:whitespace-nowrap">
+        {headlineFirstLine}
+      </span>
+      <span class="block italic mt-1">
+        {headlineHighlight}
+      </span>
+    </h2>
+
+    <!-- Body: Sized to 15px with max-w-[620px] to sit on exactly two balanced lines -->
+    <p class="font-body text-[14px] sm:text-[15px] leading-[1.7] md:leading-[1.8] mb-10 max-w-[620px] mx-auto font-light text-[#404040]">
+      {bodyFirstLine}
+      <br class="hidden sm:inline" />
+      {bodySecondLine}
+    </p>
+
+    <!-- Button -->
+    <div class="flex justify-center">
+      <button 
+        type="button" 
+        onclick="window.openContactModal && window.openContactModal()" 
+        class="w-full sm:w-auto font-heading text-[13px] sm:text-[14px] uppercase tracking-[2px] inline-flex items-center justify-center bg-[#1a1a1a] text-white px-8 sm:px-10 py-4 hover:bg-[#333333] transition-all duration-300 cursor-pointer shadow-sm whitespace-nowrap shrink-0"
+      >
+        <span>{buttonText}</span>
+      </button>
+    </div>
+  </div>
+</section>

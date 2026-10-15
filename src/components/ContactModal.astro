@@ -1,0 +1,226 @@
+---
+// src/components/ContactModal.astro
+---
+<div 
+  id="contact-modal" 
+  style="display: none;" 
+  class="fixed inset-0 bg-black/95 z-50 flex items-start md:items-center justify-center p-3 sm:p-6 md:p-12 overflow-y-auto overscroll-contain" 
+  role="dialog" 
+  aria-modal="true" 
+  aria-labelledby="modal-title"
+>
+  <!-- Modal Card -->
+  <div 
+    class="relative w-full max-w-5xl my-auto bg-neutral-900 text-white shadow-2xl overflow-hidden flex flex-col lg:flex-row bg-cover bg-center border border-white/10"
+    style="background-image: linear-gradient(rgba(2, 5, 7, 0.94), rgba(2, 5, 7, 0.94)), url('/images/contact-bg.jpg');"
+  >
+    <!-- Always-Visible Close Button -->
+    <button 
+      type="button" 
+      id="modal-close-btn" 
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 flex items-center justify-center text-white bg-black/40 md:bg-transparent rounded-full hover:opacity-75 z-30 cursor-pointer touch-manipulation" 
+      aria-label="Close dialog window"
+    >
+      <span class="relative block w-5 h-[1.5px] bg-white rotate-45 after:content-[''] after:absolute after:inset-0 after:bg-white after:-rotate-90 pointer-events-none"></span>
+    </button>
+
+    <div class="w-full flex flex-col lg:flex-row p-6 sm:p-10 md:p-14 gap-8 lg:gap-14">
+      
+      <!-- Left: Contact Details (Compact on Mobile) -->
+      <div class="w-full lg:w-5/12 flex flex-col justify-between pt-2">
+        <div>
+          <h2 id="modal-title" class="font-heading text-xl sm:text-2xl md:text-3xl font-normal mb-4 sm:mb-6 uppercase tracking-[1px]">
+            Contact Details
+          </h2>
+          
+          <div class="space-y-4 sm:space-y-6">
+            <div>
+              <p class="font-heading text-sm uppercase tracking-wider mb-3 text-[#d3bc97]">
+                Alex Yap | Real Estate Advisor
+              </p>
+              
+              <div class="flex items-center gap-3 mb-3">
+                <svg class="w-4 h-4 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+                <div class="font-body font-light text-xs sm:text-sm">
+                  <a href="tel:4088170383" class="hover:underline">408.817.0383</a>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 mb-3">
+                <svg class="w-4 h-4 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <div class="font-body font-light text-xs sm:text-sm">
+                  <a href="mailto:ayap26@gmail.com" class="hover:underline">ayap26@gmail.com</a>
+                </div>
+              </div>
+
+              <!-- Office Address Hidden on small phone screens to save critical vertical height -->
+              <div class="hidden sm:flex items-start gap-3 pt-2">
+                <svg class="w-4 h-4 mt-1 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <div class="font-body font-light text-xs text-neutral-400">
+                  <p>55 E Hamilton Ave, Campbell, CA 95008</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Inquiry Form -->
+      <div class="w-full lg:w-7/12 lg:border-l lg:border-white/15 lg:pl-12 flex flex-col justify-center">
+        <h3 class="font-heading text-lg sm:text-2xl font-normal mb-4 sm:mb-6 uppercase tracking-[1px]">
+          Submit an Inquiry
+        </h3>
+        
+        <form id="modal-contact-form" class="font-body font-light">
+          <input type="hidden" name="access_key" value="6b57a488-ac7a-4fe7-b840-5d18ca3cdebc" />
+          <input type="hidden" name="subject" value="New Inquiry from Alex Yap Website Modal" />
+          <input type="hidden" name="from_name" value="Alex Yap Website (Contact Modal)" />
+          <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+
+          <div class="mb-4 sm:mb-5">
+            <label for="m-name" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Name</label>
+            <input required id="m-name" name="name" type="text" autocomplete="name" placeholder="Full Name" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
+          </div>
+
+          <div class="mb-4 sm:mb-5">
+            <label for="m-email" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Email</label>
+            <input required id="m-email" name="email" type="email" autocomplete="email" placeholder="Email Address" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
+          </div>
+
+          <div class="mb-4 sm:mb-5">
+            <label for="m-phone" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Phone</label>
+            <input id="m-phone" name="phone" type="tel" autocomplete="tel" placeholder="Phone Number" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
+          </div>
+
+          <div class="mb-6">
+            <label for="m-message" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Message</label>
+            <textarea required id="m-message" name="message" rows="2" placeholder="Type your message" class="w-full bg-transparent border border-white/30 p-2.5 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition resize-none font-light"></textarea>
+          </div>
+
+          <button type="submit" id="modal-submit-btn" class="w-full sm:w-auto bg-[#1a1a1a] border border-white/20 text-white px-8 py-3.5 hover:bg-[#333333] transition duration-300 cursor-pointer font-heading text-[13px] uppercase tracking-[2px] touch-manipulation">
+            Submit
+          </button>
+        </form>
+
+        <div id="modal-success" class="hidden text-center py-8">
+          <span class="block font-body text-xs uppercase tracking-[2px] text-[#d3bc97] font-normal mb-2">Thank You</span>
+          <h4 class="font-heading text-lg sm:text-xl font-normal uppercase tracking-wider mb-2">Message Sent Successfully</h4>
+          <p class="font-body text-neutral-300 text-xs sm:text-sm max-w-md mx-auto font-light">
+            We have received your message and will get back to you shortly.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupModal() {
+    const contactModal = document.getElementById('contact-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalForm = document.getElementById('modal-contact-form') as HTMLFormElement | null;
+    const modalSuccess = document.getElementById('modal-success');
+    const modalSubmitBtn = document.getElementById('modal-submit-btn') as HTMLButtonElement | null;
+
+    if (!contactModal || !modalForm) return;
+
+    // Guard against attaching duplicate listeners
+    if (modalForm.dataset.listenerAttached === 'true') return;
+    modalForm.dataset.listenerAttached = 'true';
+
+    function openContactModal() {
+      if (contactModal) {
+        contactModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        const isDesktopWithMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 1024;
+        if (isDesktopWithMouse) {
+          const firstInput = document.getElementById('m-name');
+          if (firstInput) firstInput.focus();
+        }
+      }
+    }
+
+    function closeContactModal() {
+      if (contactModal) {
+        contactModal.style.display = 'none';
+        document.body.style.overflow = '';
+
+        if (modalForm) {
+          modalForm.reset();
+          modalForm.style.display = 'block';
+        }
+        if (modalSuccess) {
+          modalSuccess.classList.add('hidden');
+        }
+        if (modalSubmitBtn) {
+          modalSubmitBtn.textContent = 'Submit';
+          modalSubmitBtn.disabled = false;
+        }
+      }
+    }
+
+    (window as any).openContactModal = openContactModal;
+
+    document.querySelectorAll('[data-open-contact-modal]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openContactModal();
+      });
+    });
+
+    modalCloseBtn?.addEventListener('click', closeContactModal);
+    
+    contactModal?.addEventListener('click', (e) => {
+      if (e.target === contactModal) closeContactModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && contactModal && contactModal.style.display !== 'none') {
+        closeContactModal();
+      }
+    });
+
+    modalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!modalSubmitBtn) return;
+
+      modalSubmitBtn.textContent = 'Submitting...';
+      modalSubmitBtn.disabled = true;
+
+      const formData = new FormData(modalForm);
+      const json = JSON.stringify(Object.fromEntries(formData));
+
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: json,
+        });
+
+        if (response.ok) {
+          modalForm.style.display = 'none';
+          modalSuccess?.classList.remove('hidden');
+        } else {
+          alert('Submission error. Please try again.');
+          modalSubmitBtn.textContent = 'Submit';
+          modalSubmitBtn.disabled = false;
+        }
+      } catch {
+        alert('Network error. Please try again later.');
+        modalSubmitBtn.textContent = 'Submit';
+        modalSubmitBtn.disabled = false;
+      }
+    });
+  }
+
+  // Runs once on each page transition without duplicate calls
+  document.addEventListener('astro:page-load', setupModal);
+</script>

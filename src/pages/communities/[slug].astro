@@ -1,0 +1,257 @@
+---
+// src/pages/communities/[slug].astro
+import '../../data/communities.xlsx?raw';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import * as XLSX from 'xlsx';
+import path from 'node:path';
+import fs from 'node:fs';
+
+export async function getStaticPaths() {
+  const filePath = path.resolve(process.cwd(), 'src', 'data', 'communities.xlsx');
+  const fileBuffer = fs.readFileSync(filePath);
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+  const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+
+  const allCommunities = rawRows
+    .map((row) => {
+      const name = String(row.name || row.Name || '').trim();
+      if (!name) return null;
+
+      const fallbackSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+
+      // Dynamically collect image-1 through image-5 for this specific community row
+      const imageEntries: { index: number; url: string }[] = [];
+      Object.keys(row).forEach((key) => {
+        const cleanKey = key.trim().toLowerCase();
+        const match = cleanKey.match(/^image[-_\s]?(\d+)$/);
+        if (match) {
+          const index = parseInt(match[1], 10);
+          const rawVal = row[key];
+          if (rawVal !== undefined && rawVal !== null) {
+            const val = String(rawVal).trim();
+            if (val.length > 10 && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))) {
+              imageEntries.push({ index, url: val });
+            }
+          }
+        }
+      });
+
+      imageEntries.sort((a, b) => a.index - b.index);
+      const gallery = imageEntries.map((e) => e.url);
+
+      if (gallery.length === 0) {
+        const singleImage = String(row.image || row.Image || '').trim();
+        gallery.push(singleImage.length > 0 ? singleImage : fallbackImage);
+      }
+
+      return {
+        name,
+        city: String(row.city || row.City || row.county || row.County || '').trim(),
+        tagline: String(row.tagline || row.Tagline || '').trim(),
+        description: String(row.description || row.Description || '').trim(),
+        gallery,
+        slug,
+        featured: String(row.featured || row.Featured || 'NO').trim().toUpperCase(),
+      };
+    })
+    .filter((comm): comm is NonNullable<typeof comm> => comm !== null && comm.name.length > 0 && comm.slug.length > 0);
+
+  return allCommunities.map((comm, index, array) => {
+    const prevIndex = index === 0 ? array.length - 1 : index - 1;
+    const nextIndex = index === array.length - 1 ? 0 : index + 1;
+
+    const prevCommunity = {
+      name: array[prevIndex].name,
+      slug: array[prevIndex].slug,
+    };
+
+    const nextCommunity = {
+      name: array[nextIndex].name,
+      slug: array[nextIndex].slug,
+    };
+
+    return {
+      params: { slug: comm.slug },
+      props: {
+        ...comm,
+        prevCommunity,
+        nextCommunity,
+      },
+    };
+  });
+}
+
+const { name, city, tagline, description, gallery, prevCommunity, nextCommunity } = Astro.props;
+
+// Determine hero layout dynamically based on exact photo count rules:
+// 5+ photos -> mosaic-5 (1 left + 2 top, 2 bottom)
+// 3 or 4 photos -> mosaic-3 (1 left + 2 stacked right)
+// 1 or 2 photos -> single (1 full width)
+const galleryCount = gallery.length;
+const heroLayout = 
+  galleryCount >= 5 ? 'mosaic-5' : 
+  galleryCount >= 3 ? 'mosaic-3' : 'single';
+---
+
+<BaseLayout title={`${name} | Alex Yap Real Estate Advisor`}>
+  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-0 pb-16 md:pb-24">
+    
+    {/* Full-Bleed Dynamic Responsive Hero Section with Content Overlaid */}
+    <div class="relative w-full h-[68vh] sm:h-[75vh] md:h-[82vh] max-h-[880px] min-h-[520px] bg-black mt-20 md:mt-20 mb-16 border-b border-black/10 overflow-hidden select-none">
+      
+      {/* Background Image Grid Layer (Full Bleed Edge-to-Edge with Locked Grid Rows) */}
+      <div class={`w-full h-full bg-black ${heroLayout === 'single' ? 'block' : 'grid grid-cols-1 lg:grid-cols-12 gap-1 md:gap-1.5'}`}>
+        
+        {/* 5+ Photos: 1 on left (7 cols), 4 on right in a locked 2x2 grid (5 cols) */}
+        {heroLayout === 'mosaic-5' && (
+          <>
+            <div class="h-full lg:col-span-7 relative overflow-hidden">
+              <img src={gallery[0]} alt={`${name} primary view`} class="absolute inset-0 w-full h-full object-cover object-center block" loading="eager" />
+            </div>
+            <div class="hidden lg:grid lg:col-span-5 grid-cols-2 grid-rows-2 gap-1.5 h-full min-h-0">
+              {gallery.slice(1, 5).map((imgUrl, index) => (
+                <div class="w-full h-full min-h-0 relative overflow-hidden">
+                  <img src={imgUrl} alt={`${name} gallery photo ${index + 2}`} class="absolute inset-0 w-full h-full object-cover object-center block" loading="eager" />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* 3 or 4 Photos: 1 on left (7 cols), 2 on right (stacked top & bottom) */}
+        {heroLayout === 'mosaic-3' && (
+          <>
+            <div class="h-full lg:col-span-7 relative overflow-hidden">
+              <img src={gallery[0]} alt={`${name} primary view`} class="absolute inset-0 w-full h-full object-cover object-center block" loading="eager" />
+            </div>
+            <div class="hidden lg:grid lg:col-span-5 grid-rows-2 gap-1.5 h-full min-h-0">
+              {gallery.slice(1, 3).map((imgUrl, index) => (
+                <div class="w-full h-full min-h-0 relative overflow-hidden">
+                  <img src={imgUrl} alt={`${name} gallery photo ${index + 2}`} class="absolute inset-0 w-full h-full object-cover object-center block" loading="eager" />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* 1 or 2 Photos: Single Full-Width Hero */}
+        {heroLayout === 'single' && (
+          <div class="w-full h-full relative overflow-hidden">
+            <img src={gallery[0]} alt={`${name} primary view`} class="absolute inset-0 w-full h-full object-cover object-center block" loading="eager" />
+          </div>
+        )}
+
+      </div>
+
+      {/* Dark Gradient Overlay for Readability */}
+      <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/10 pointer-events-none z-10"></div>
+
+      {/* Floating Content Overlaid on Top of the Hero Photos */}
+      <div class="absolute inset-0 z-20 w-full pt-4 md:pt-6 px-[5vw] pointer-events-none flex flex-col justify-between">
+        
+        {/* Top Bar: Left-Aligned Navigation Items */}
+        <div class="max-w-7xl mx-auto w-full pointer-events-auto">
+          <div class="flex flex-wrap items-center justify-start gap-3 pb-3 mb-3">
+            {prevCommunity && (
+              <a 
+                href={`/communities/${prevCommunity.slug}`} 
+                class="inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-[2px] text-white/90 hover:text-white transition-colors bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-md"
+                title={prevCommunity.name}
+              >
+                &lt; Prev
+              </a>
+            )}
+
+            <a 
+              href="/communities" 
+              class="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[2px] text-white/90 hover:text-white transition-colors font-medium bg-black/55 backdrop-blur-md px-4 py-1.5 border border-white/20 shadow-md whitespace-nowrap"
+            >
+              All Communities
+            </a>
+
+            {nextCommunity && (
+              <a 
+                href={`/communities/${nextCommunity.slug}`} 
+                class="inline-flex items-center gap-1.5 font-heading text-xs uppercase tracking-[2px] text-white/90 hover:text-white transition-colors bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-md"
+                title={nextCommunity.name}
+              >
+                Next &gt;
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Area: City, Title, and Tagline Overlaid */}
+        <div class="max-w-7xl mx-auto w-full pointer-events-auto pb-6">
+          <div class="max-w-3xl">
+            {city && (
+              <p class="font-body text-[11px] uppercase tracking-[3px] text-[#D4AF37] font-semibold mb-2 drop-shadow-md">
+                {city}
+              </p>
+            )}
+            <h1 class="font-heading text-2xl sm:text-4xl md:text-5xl uppercase tracking-[1.5px] font-normal leading-[1.1] text-white mb-2 drop-shadow-lg">
+              {name}
+            </h1>
+            {tagline && (
+              <p class="font-body text-white/95 text-xs sm:text-sm tracking-[1px] font-light leading-relaxed drop-shadow-md">
+                {tagline}
+              </p>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {/* Content Container (Constrained width for description and footer nav) */}
+    <div class="max-w-5xl mx-auto px-[5vw]">
+
+      {/* Description Section */}
+      <div class="bg-white p-8 md:p-12 shadow-sm border border-black/5 mb-16">
+        <h2 class="font-heading text-2xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">
+          About {name}
+        </h2>
+        <div class="font-body text-neutral-700 text-base md:text-lg leading-relaxed whitespace-pre-line">
+          {description || `Explore luxury real estate, neighborhood highlights, and lifestyle opportunities in ${name}.`}
+        </div>
+      </div>
+
+      {/* Bottom Footer Navigation Bar with Circle < / > and Text Outside */}
+      <div class="flex items-center justify-between border-t border-black/10 pt-8">
+        {prevCommunity ? (
+          <a 
+            href={`/communities/${prevCommunity.slug}`} 
+            class="group inline-flex items-center gap-3 font-heading text-xs uppercase tracking-[2px] text-[#1a1a1a]"
+            title={prevCommunity.name}
+          >
+            <span class="w-10 h-10 rounded-full border border-black/20 bg-white flex items-center justify-center group-hover:text-white group-hover:border-[#8C7149] group-hover:bg-[#8C7149] transition-all duration-300 shadow-sm font-mono font-bold text-base">
+              &lt;
+            </span>
+            <span class="group-hover:text-[#8C7149] transition-colors">Prev</span>
+          </a>
+        ) : <div />}
+
+        {nextCommunity ? (
+          <a 
+            href={`/communities/${nextCommunity.slug}`} 
+            class="group inline-flex items-center gap-3 font-heading text-xs uppercase tracking-[2px] text-[#1a1a1a] ml-auto"
+            title={nextCommunity.name}
+          >
+            <span class="group-hover:text-[#8C7149] transition-colors">Next</span>
+            <span class="w-10 h-10 rounded-full border border-black/20 bg-white flex items-center justify-center group-hover:text-white group-hover:border-[#8C7149] group-hover:bg-[#8C7149] transition-all duration-300 shadow-sm font-mono font-bold text-base">
+              &gt;
+            </span>
+          </a>
+        ) : <div />}
+      </div>
+
+    </div>
+  </main>
+
+  <WorkWithAlexCTA />
+</BaseLayout>

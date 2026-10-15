@@ -1,0 +1,336 @@
+---
+// src/pages/testimonials/[...page].astro
+import '../../data/testimonials.xlsx?raw';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import * as XLSX from 'xlsx';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export async function getStaticPaths() {
+  return [
+    { params: { page: undefined } }
+  ];
+}
+
+// Read the Excel file buffer using Node's fs module
+const filePath = path.resolve(process.cwd(), 'src', 'data', 'testimonials.xlsx');
+const fileBuffer = fs.readFileSync(filePath);
+
+// Parse workbook buffer
+const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+const sheetName = workbook.SheetNames[0];
+const allReviews: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+---
+
+<BaseLayout title="Testimonials | Alex Yap Real Estate Advisor">
+  <!-- Note: pt-0 and px-0 allow the hero to touch the navbar and the browser's left/right edges -->
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
+
+    <!-- Full-Bleed Modern Hero Section (Matching Ilona's ~600px height) -->
+    <section class="relative w-full h-[520px] md:h-[620px] flex items-center justify-center text-center overflow-hidden">
+      <!-- Full-bleed bright architectural background image -->
+      <img 
+        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
+        alt="Luxury Residence" 
+        class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.98]"
+        loading="eager"
+      />
+
+      <!-- Dark Luxury Tint for Contrast -->
+      <div class="absolute inset-0 bg-black/40"></div>
+
+      <!-- Hero Header Content -->
+      <div class="relative z-10 px-6 max-w-4xl mx-auto pt-20 md:pt-24">
+        <span class="font-body text-[11px] uppercase tracking-[4px] text-[#F3E5D0] font-semibold block mb-3 drop-shadow-sm">
+          Client Perspectives
+        </span>
+        <h1 class="font-heading text-[36px] sm:text-[48px] md:text-[64px] font-light uppercase tracking-[4px] md:tracking-[8px] text-white leading-tight mb-4 drop-shadow-md">
+          Testimonials
+        </h1>
+        <p class="font-body text-neutral-200 text-sm md:text-base font-light leading-relaxed max-w-xl mx-auto drop-shadow-sm">
+          Fiduciary representation, absolute discretion, and high-impact negotiation delivered across every transaction.
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Stage (Contained to match properties.astro margins) -->
+    <div class="max-w-7xl mx-auto px-[5vw] py-16 md:py-24">
+
+      <!-- 3D Carousel Stage with Side-Flanking Arrows -->
+      <div class="relative w-full max-w-6xl mx-auto py-2">
+        
+        <!-- Flanking Previous Button -->
+        <button 
+          type="button" 
+          id="testimonial-prev" 
+          aria-label="Previous testimonial"
+          class="absolute -left-2 sm:-left-5 lg:-left-7 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95"
+        >
+          <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- Flanking Next Button -->
+        <button 
+          type="button" 
+          id="testimonial-next" 
+          aria-label="Next testimonial"
+          class="absolute -right-2 sm:-right-5 lg:-right-7 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95"
+        >
+          <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <!-- Stage Track -->
+        <div 
+          id="testimonial-stage" 
+          class="relative h-[480px] sm:h-[420px] md:h-[370px] w-full flex items-center justify-center px-4"
+          tabindex="0"
+          aria-roledescription="carousel"
+        >
+          {allReviews.map((item, index) => (
+            <article 
+              class="testimonial-slide absolute top-0 w-[94%] sm:w-[82%] md:w-[68%] lg:w-[60%] h-full bg-white border border-black/10 p-8 sm:p-10 flex flex-col justify-between select-none"
+              data-index={index}
+            >
+              <div>
+                <!-- Top Category Header -->
+                <div class="flex items-center justify-between mb-5 border-b border-black/10 pb-4">
+                  <span class="font-body text-[11px] uppercase tracking-[2px] text-[#8C7149] font-medium">
+                    {item.role || 'Client'} &bull; {item.community || 'Silicon Valley'}
+                  </span>
+                  <span class="font-heading text-xl text-[#B18463]/50 select-none">
+                    &ldquo;
+                  </span>
+                </div>
+
+                <!-- Headline Pull-Quote -->
+                <h3 class="font-heading text-lg sm:text-xl uppercase tracking-[1px] text-[#1a1a1a] mb-4 font-normal leading-snug">
+                  "{item.headline}"
+                </h3>
+
+                <!-- Body Quote -->
+                <p class="font-body text-[#3d3d3d] text-sm sm:text-[15px] font-light leading-[1.8] italic line-clamp-5 sm:line-clamp-4">
+                  "{item.quote}"
+                </p>
+              </div>
+
+              <!-- Sign-off Footer -->
+              <div class="pt-5 border-t border-black/10 flex items-center justify-between">
+                <div>
+                  <p class="font-heading text-sm uppercase tracking-[1px] text-[#1a1a1a] font-medium">
+                    {item.client}
+                  </p>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="font-body text-[10px] text-[#8C7149] uppercase tracking-[1.5px] font-light">
+                      5-Star Review
+                    </span>
+                    <span class="text-neutral-300 text-xs">&bull;</span>
+                    <span class="text-[#8C7149] text-xs tracking-wider">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-[#d3bc97] opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <!-- Truncated Numeric Pagination Window -->
+        <div id="testimonial-pagination" class="flex justify-center items-center gap-1.5 mt-6 select-none"></div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer CTA -->
+  <WorkWithAlexCTA />
+</BaseLayout>
+
+<style>
+  /* Card Transitions */
+  .testimonial-slide {
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, opacity;
+  }
+
+  /* Active Center Card */
+  .testimonial-slide.is-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    z-index: 20;
+    pointer-events: auto;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Left Peeking Card */
+  .testimonial-slide.is-prev {
+    opacity: 0.45;
+    transform: translateX(-42%) scale(0.88);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* Right Peeking Card */
+  .testimonial-slide.is-next {
+    opacity: 0.45;
+    transform: translateX(42%) scale(0.88);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* Hidden Background Cards */
+  .testimonial-slide.is-hidden {
+    opacity: 0;
+    transform: translateX(0) scale(0.75);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 640px) {
+    .testimonial-slide.is-prev {
+      transform: translateX(-16%) scale(0.9);
+      opacity: 0.25;
+    }
+    .testimonial-slide.is-next {
+      transform: translateX(16%) scale(0.9);
+      opacity: 0.25;
+    }
+  }
+</style>
+
+<script>
+  function setupTestimonialsCarousel() {
+    const slides = Array.from(document.querySelectorAll<HTMLElement>('.testimonial-slide'));
+    const prevBtn = document.getElementById('testimonial-prev');
+    const nextBtn = document.getElementById('testimonial-next');
+    const paginationContainer = document.getElementById('testimonial-pagination') as HTMLElement | null;
+    
+    if (slides.length === 0 || !paginationContainer) return;
+
+    let currentIndex = 0;
+    const total = slides.length;
+
+    function renderPagination() {
+      if (!paginationContainer) return;
+
+      paginationContainer.innerHTML = '';
+      const pagesToShow: (number | string)[] = [];
+
+      if (total <= 5) {
+        for (let i = 0; i < total; i++) pagesToShow.push(i);
+      } else {
+        pagesToShow.push(0);
+
+        const start = Math.max(1, currentIndex - 1);
+        const end = Math.min(total - 2, currentIndex + 1);
+
+        if (start > 1) pagesToShow.push('...');
+        for (let i = start; i <= end; i++) pagesToShow.push(i);
+        if (end < total - 2) pagesToShow.push('...');
+
+        pagesToShow.push(total - 1);
+      }
+
+      pagesToShow.forEach((item) => {
+        if (typeof item === 'string') {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'w-6 text-center text-xs text-neutral-400 font-heading select-none';
+          ellipsis.textContent = '...';
+          paginationContainer.appendChild(ellipsis);
+        } else {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isCurrent = item === currentIndex;
+          btn.className = `w-9 h-9 sm:w-10 sm:h-10 border flex items-center justify-center font-heading text-xs tracking-wider transition-all duration-300 cursor-pointer shadow-sm ${
+            isCurrent
+              ? 'bg-[#1a1a1a] text-white border-[#1a1a1a]'
+              : 'bg-white text-[#1a1a1a] border-black/15 hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a]'
+          }`;
+          btn.textContent = String(item + 1).padStart(2, '0');
+          btn.addEventListener('click', () => {
+            currentIndex = item;
+            updateCarousel();
+          });
+          paginationContainer.appendChild(btn);
+        }
+      });
+    }
+
+    function updateCarousel() {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden');
+        
+        const prevIndex = (currentIndex - 1 + total) % total;
+        const nextIndex = (currentIndex + 1) % total;
+
+        if (i === currentIndex) {
+          slide.classList.add('is-active');
+        } else if (i === prevIndex) {
+          slide.classList.add('is-prev');
+        } else if (i === nextIndex) {
+          slide.classList.add('is-next');
+        } else {
+          slide.classList.add('is-hidden');
+        }
+      });
+
+      renderPagination();
+    }
+
+    function goNext() {
+      currentIndex = (currentIndex + 1) % total;
+      updateCarousel();
+    }
+
+    function goPrev() {
+      currentIndex = (currentIndex - 1 + total) % total;
+      updateCarousel();
+    }
+
+    prevBtn?.addEventListener('click', goPrev);
+    nextBtn?.addEventListener('click', goNext);
+
+    slides.forEach((slide) => {
+      slide.addEventListener('click', () => {
+        if (slide.classList.contains('is-prev')) goPrev();
+        if (slide.classList.contains('is-next')) goNext();
+      });
+    });
+
+    const stage = document.getElementById('testimonial-stage');
+    let startX = 0;
+    let endX = 0;
+
+    stage?.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    stage?.addEventListener('touchend', (e) => {
+      endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
+      }
+    });
+
+    updateCarousel();
+  }
+
+  setupTestimonialsCarousel();
+  document.addEventListener('astro:page-load', setupTestimonialsCarousel);
+</script>

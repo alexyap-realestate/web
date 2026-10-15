@@ -1,0 +1,201 @@
+---
+// src/components/Footer.astro
+interface Props {
+  dreNumber?: string;
+}
+
+const { dreNumber = "DRE #01452375" } = Astro.props;
+const currentYear = new Date().getFullYear();
+
+const navMain = [
+  { label: "Home", href: "/" },
+  { label: "Properties", href: "/properties" },
+  { label: "Communities", href: "/communities" },
+  { label: "About", href: "/about" },
+  { label: "Testimonials", href: "/testimonials" },
+];
+
+const navServices = [
+  { label: "Seller Representation", href: "/seller" },
+  { label: "Buyer Advisory", href: "/buyer" },
+  { label: "Home Valuation", href: "/valuation" },
+];
+---
+
+<footer class="bg-[#141210] border-t border-white/10 text-white font-body font-light pt-20 pb-12 selection:bg-[#8C7149] selection:text-white">
+  <div class="max-w-7xl mx-auto px-[5vw]">
+    
+    <!-- TOP ROW: Asymmetrical 12-Column Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 pb-16 border-b border-white/10">
+      
+      <!-- COLUMN 1-4: Brand Lockup & Persona (Span 4) -->
+      <div class="lg:col-span-4 flex flex-col justify-between items-start space-y-8">
+        <div>
+          <a href="/" class="inline-flex flex-col items-start select-none group" aria-label="Alex Yap Homepage">
+            <span class="font-heading text-2xl tracking-[0.25em] uppercase font-normal text-white leading-none">
+              Alex Yap
+            </span>
+            <span class="w-full h-[1px] bg-[#8C7149] mt-2 mb-2 group-hover:bg-white transition-colors duration-300"></span>
+            <span class="text-[10px] tracking-[0.35em] uppercase text-neutral-400 font-light leading-none">
+              Real Estate Advisor
+            </span>
+          </a>
+
+          <div class="mt-4 flex items-center gap-3 text-xs tracking-[1.5px] uppercase text-neutral-400">
+            <span>{dreNumber}</span>
+            <span class="w-1 h-1 rounded-full bg-[#8C7149]"></span>
+            <span>Realty World Dominion</span>
+          </div>
+
+          <p class="mt-5 text-sm text-neutral-400 leading-relaxed font-light max-w-sm">
+            Over two decades of trusted advisory, guiding discerning buyers and sellers across Silicon Valley and surrounding areas.
+          </p>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button 
+          type="button" 
+          id="footer-back-to-top"
+          class="inline-flex items-center gap-3 text-[11px] uppercase tracking-[2.5px] text-neutral-400 hover:text-white transition group cursor-pointer pt-2"
+          aria-label="Back to top"
+        >
+          <span class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-[#8C7149] group-hover:text-[#8C7149] transition duration-300">
+            <svg class="w-3.5 h-3.5 transform group-hover:-translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path>
+            </svg>
+          </span>
+          <span>Back to Top</span>
+        </button>
+      </div>
+
+      <!-- COLUMN 5-8: Sitemap Split in 2 Balanced Columns (Span 4) -->
+      <div class="lg:col-span-4 grid grid-cols-2 gap-6 sm:gap-8">
+        <!-- Main Navigation -->
+        <div>
+          <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
+            Navigation
+          </h4>
+          <ul class="space-y-3 text-xs uppercase tracking-[1.5px] text-neutral-300">
+            {navMain.map((item) => (
+              <li>
+                <a href={item.href} class="hover:text-white transition inline-block hover:translate-x-1 duration-200">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Client Services & Action -->
+        <div>
+          <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
+            Services
+          </h4>
+          <ul class="space-y-3 text-xs uppercase tracking-[1.5px] text-neutral-300">
+            {navServices.map((item) => (
+              <li>
+                <a href={item.href} class="hover:text-white transition inline-block hover:translate-x-1 duration-200">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li class="pt-2">
+              <button 
+                type="button" 
+                data-open-contact-modal
+                onclick="window.openContactModal && window.openContactModal()" 
+                class="text-[#8C7149] hover:text-white uppercase tracking-[1.5px] transition cursor-pointer text-left inline-flex items-center gap-1.5 group"
+              >
+                <span>Schedule Consult</span>
+                <span class="font-mono font-bold text-sm group-hover:translate-x-1 transition-transform">&gt;</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- COLUMN 9-12: Contact & Office Location Card (Span 4) -->
+      <div class="lg:col-span-4 bg-white/[0.02] border border-white/5 p-6 sm:p-7 flex flex-col justify-between">
+        <div>
+          <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
+            Contact &amp; Office
+          </h4>
+          
+          <div class="space-y-4 text-xs tracking-[1px] text-neutral-300 font-light">
+            <div>
+              <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Direct Line</span>
+              <a href="tel:4088170383" class="hover:text-white transition text-sm text-neutral-200 font-normal">
+                408.817.0383
+              </a>
+            </div>
+
+            <div>
+              <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Inquiries</span>
+              <a href="mailto:ayap26@gmail.com" class="hover:text-white transition lowercase text-neutral-200">
+                ayap26@gmail.com
+              </a>
+            </div>
+
+            <div class="pt-2 border-t border-white/5">
+              <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Office Location</span>
+              <address class="not-italic leading-relaxed text-neutral-300">
+                Realty World Dominion<br />
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=55+E+Hamilton+Ave,+Campbell,+CA+95008" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="hover:text-white hover:underline transition inline-flex items-center gap-1.5 mt-0.5 text-neutral-400 group"
+                >
+                  <span>55 E Hamilton Ave, Campbell, CA 95008</span>
+                  <span class="font-mono font-bold text-xs group-hover:translate-x-0.5 transition-transform">&gt;</span>
+                </a>
+              </address>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LEGAL DISCLAIMER & COMPLIANCE LOGOS -->
+    <div class="py-10 border-b border-white/10 text-[11px] leading-relaxed text-neutral-500 font-light">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <p class="lg:col-span-9 leading-relaxed">
+          Alex Yap is a licensed real estate professional affiliated with Realty World Dominion. Realty World Dominion is a licensed real estate broker and abides by Equal Housing Opportunity laws. All material presented herein is intended for informational purposes only. Information is compiled from sources deemed reliable but is subject to errors, omissions, changes in price, condition, sale, or withdrawal without notice. No statement is made as to accuracy of any description. All measurements and square footages are approximate. This is not intended to solicit property already listed.
+        </p>
+        
+        <!-- Monochrome Logos -->
+        <div class="lg:col-span-3 flex flex-wrap items-center lg:justify-end gap-5 shrink-0">
+          <img src="/icons/equal-housing-logowhite-250.png" width="26" height="24" alt="Equal Housing Opportunity" loading="lazy" decoding="async" class="h-6 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
+          <img src="/icons/realtor-logo-white.png" width="24" height="24" alt="REALTOR® Logo" loading="lazy" decoding="async" class="h-6 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
+          <img src="/icons/mls-listing-logo.png" width="70" height="24" alt="MLS Logo" loading="lazy" decoding="async" class="h-5 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
+          <img src="/icons/realty-world-logo.png" width="80" height="24" alt="Realty World Logo" loading="lazy" decoding="async" class="h-6 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
+        </div>
+      </div>
+    </div>
+
+    <!-- COPYRIGHT & METADATA -->
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] tracking-[1px] text-neutral-500 font-light">
+      <p>&copy; {currentYear} Alex Yap Real Estate Advisor. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="/privacy" class="hover:text-neutral-300 transition">Privacy Policy</a>
+        <a href="/terms" class="hover:text-neutral-300 transition">Terms of Service</a>
+        <span class="text-neutral-600">|</span>
+        <p class="text-neutral-500">Website designed and developed by Alex Yap</p>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  function setupFooter() {
+    const backToTopBtn = document.getElementById('footer-back-to-top');
+    backToTopBtn?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  setupFooter();
+  document.addEventListener('astro:page-load', setupFooter);
+</script>
