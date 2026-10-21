@@ -2,9 +2,9 @@
 // ============================================================================
 // FILE: src/pages/testimonials/[...page].astro
 // PURPOSE: Dedicated Testimonials Page with 3D Overlapping Carousel & Pagination
+//          Optimized for smooth mobile touch gestures and zero-flicker rendering.
 // ============================================================================
 
-// 1. IMPORT REQUIRED PACKAGES & COMPONENTS
 import '../../data/testimonials.xlsx?raw';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MarqueeTicker from '../../components/MarqueeTicker.astro';
@@ -13,14 +13,12 @@ import * as XLSX from 'xlsx';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// 2. STATIC PATH GENERATION (Astro requirement for dynamic route pages)
 export async function getStaticPaths() {
   return [
     { params: { page: undefined } }
   ];
 }
 
-// 3. READ & PARSE REVIEWS FROM EXCEL (testimonials.xlsx)
 const filePath = path.resolve(process.cwd(), 'src', 'data', 'testimonials.xlsx');
 let allReviews: any[] = [];
 
@@ -31,7 +29,6 @@ if (fs.existsSync(filePath)) {
   allReviews = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 }
 
-// 4. TICKER CONTENT DATA
 const marqueeItems = [
   { title: "Complete Peace of Mind", subtitle: "“Handled Every Detail Seamlessly From Day One”" },
   { title: "Flawless Execution", subtitle: "“Closed on Schedule Without a Single Hiccup”" },
@@ -45,7 +42,7 @@ const marqueeItems = [
 <BaseLayout title="Testimonials | Alex Yap Real Estate Advisor">
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-    <!-- HERO SECTION: Top Banner with Background Image & Title -->
+    <!-- HERO SECTION -->
     <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
       <img 
         src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
@@ -87,14 +84,13 @@ const marqueeItems = [
       </div>
     </section>
 
-    <!-- MARQUEE TICKER: Moving highlight statements banner -->
+    <!-- MARQUEE TICKER -->
     <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Client's", "Reviews"]} />
 
-    <!-- REVIEWS SECTION: 3D Overlapping Carousel & Pagination Controls -->
+    <!-- REVIEWS SECTION -->
     <section id="reviews-stage" class="w-full py-20 md:py-32 scroll-mt-24">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
-        <!-- Introduction Header Above Carousel -->
         <div class="mb-14 text-center max-w-3xl mx-auto">
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Representation Matters</span>
           <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">Stories of Trust, Equity &amp; Results</h2>
@@ -114,24 +110,17 @@ const marqueeItems = [
             <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
           
-          <!-- CAROUSEL STAGE: Loops through all reviews from Excel -->
+          <!-- CAROUSEL STAGE -->
           <div id="testimonial-stage" class="relative w-full flex items-center justify-center px-2 sm:px-4 min-h-[500px] sm:min-h-[540px] md:h-[62vh] md:min-h-[480px] md:max-h-[640px]" tabindex="0" role="region" aria-label="Client Testimonials Carousel">
             {allReviews.map((item, index) => (
               <article class="testimonial-slide absolute top-0 w-full sm:w-[78%] md:w-[68%] lg:w-[60%] h-full p-6 sm:p-8 md:p-10 flex flex-col justify-between select-none border transition-all duration-500 overflow-hidden shadow-sm bg-white" data-index={index} aria-roledescription="slide">
                 <div class="card-inner-frame absolute inset-3 pointer-events-none transition-opacity duration-500"></div>
                 
-                <!-- Card Header (Role, Community, 5-Star Icons) -->
                 <div class="card-header shrink-0 flex items-center justify-between pb-3 mb-2 border-b transition-colors duration-300">
                   <span class="card-tag font-body text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] font-medium leading-none">{item.role || 'Client'} &bull; {item.community || 'Silicon Valley'}</span>
                   <span class="card-stars text-xs sm:text-sm tracking-wider leading-none" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
                 </div>
                 
-                <!-- NOTE FOR FUTURE MODIFICATIONS: 
-                     - .card-body-wrapper wraps both the scrollable text container and the conditional overflow prompt.
-                     - .card-body-scroll is where the headline and quote text reside. 
-                     - When text is long and exceeds the card height, JavaScript dynamically adds the `.has-overflow` class, 
-                       which triggers the visible scrollbar on the right and reveals the "Scroll for more ↓" prompt at the bottom.
-                     - If text fits entirely within the card, `.has-overflow` is omitted, hiding both the scrollbar and prompt cleanly. -->
                 <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col">
                   <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
                     <h3 class="card-headline font-heading uppercase tracking-[1px] mb-3 font-normal leading-snug">"{item.headline}"</h3>
@@ -142,7 +131,6 @@ const marqueeItems = [
                   </div>
                 </div>
                 
-                <!-- Card Footer (Client Name, Verified Badge, Quote Icon) -->
                 <div class="card-footer shrink-0 relative z-10 pt-4 mt-2 border-t flex items-center justify-between transition-colors duration-300">
                   <div>
                     <p class="card-client font-heading text-xs sm:text-sm md:text-base uppercase tracking-[1px] font-medium leading-tight">{item.client}</p>
@@ -156,18 +144,14 @@ const marqueeItems = [
             ))}
           </div>
 
-          <!-- BOTTOM PAGINATION BAR: < Prev | Number Pills (01, 02 ... 32) | Next > -->
-          <!-- NOTE FOR FUTURE MODIFICATIONS: 
-               - The #pagination-prev and #pagination-next buttons handle stepping back and forward through items.
-               - The #testimonial-pagination container is dynamically populated by JavaScript in the script block below 
-                 to generate the numbered pill buttons (e.g. 01, 02, ..., 32) with smart ellipses (...) for large datasets. -->
-          <div class="flex items-center justify-center gap-3 sm:gap-4 mt-8 select-none flex-wrap">
+          <!-- UNIFIED BOTTOM PAGINATION BAR: < Prev | 01 02 ... 28 | Next > -->
+          <div class="flex items-center justify-center gap-2 sm:gap-3 mt-8 select-none flex-wrap">
             <button 
               type="button" 
               id="pagination-prev" 
-              class="px-4 py-2 bg-white text-[#1a1a1a] border border-black/15 font-heading text-xs uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              class="px-4 py-2.5 bg-white text-[#1a1a1a] border border-black/15 font-heading text-xs uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
             >
-              &lt; Prev
+              <span>&lt; Prev</span>
             </button>
             
             <div id="testimonial-pagination" class="flex justify-center items-center gap-1.5" aria-label="Carousel pagination"></div>
@@ -175,9 +159,9 @@ const marqueeItems = [
             <button 
               type="button" 
               id="pagination-next" 
-              class="px-4 py-2 bg-white text-[#1a1a1a] border border-black/15 font-heading text-xs uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              class="px-4 py-2.5 bg-white text-[#1a1a1a] border border-black/15 font-heading text-xs uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
             >
-              Next &gt;
+              <span>Next &gt;</span>
             </button>
           </div>
 
@@ -186,20 +170,20 @@ const marqueeItems = [
     </section>
   </main>
   
-  <!-- Call to Action Footer Component -->
   <WorkWithAlexCTA />
 </BaseLayout>
 
-<!-- STYLESHEET: Handles 3D rotations, colors, fonts, and conditional scrollbars -->
 <style>
-  /* Base transitions for sliding/scaling 3D cards */
+  /* Hardware-accelerated transitions to eliminate mobile flicker */
   .testimonial-slide {
-    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .card-headline { 
@@ -217,7 +201,6 @@ const marqueeItems = [
     border-color: rgba(0, 0, 0, 0.12);
   }
 
-  /* Conditional Scrollbar Styling (Only shows when content overflows) */
   .card-body-scroll {
     overflow-y: hidden;
   }
@@ -252,7 +235,6 @@ const marqueeItems = [
     color: #8C7149;
   }
 
-  /* Colors for Inactive Cards */
   .testimonial-slide .card-inner-frame { opacity: 0; border: 1px solid transparent; }
   .testimonial-slide .card-header, .testimonial-slide .card-footer { border-color: rgba(0, 0, 0, 0.08); }
   .testimonial-slide .card-tag { color: #8C7149; }
@@ -263,10 +245,9 @@ const marqueeItems = [
   .testimonial-slide .card-verified { color: #8C7149; }
   .testimonial-slide .card-quote-icon { color: #d3bc97; opacity: 0.6; }
 
-  /* Colors and Glow for Active (Center) 3D Card */
   .testimonial-slide.is-active {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) translateZ(0);
     z-index: 20;
     pointer-events: auto;
     background: linear-gradient(145deg, #181716 0%, #100f0e 100%);
@@ -297,10 +278,9 @@ const marqueeItems = [
   .testimonial-slide.is-active .card-quote { color: #E2DFD9; }
   .testimonial-slide.is-active .card-quote-icon { color: #d3bc97; opacity: 0.9; }
 
-  /* 3D Positioning States for Adjacent Cards */
   .testimonial-slide.is-prev {
     opacity: 0.45;
-    transform: translateX(-40%) scale(0.92);
+    transform: translateX(-40%) scale(0.92) translateZ(0);
     z-index: 10;
     pointer-events: auto;
     cursor: pointer;
@@ -309,7 +289,7 @@ const marqueeItems = [
 
   .testimonial-slide.is-next {
     opacity: 0.45;
-    transform: translateX(40%) scale(0.92);
+    transform: translateX(40%) scale(0.92) translateZ(0);
     z-index: 10;
     pointer-events: auto;
     cursor: pointer;
@@ -318,23 +298,21 @@ const marqueeItems = [
 
   .testimonial-slide.is-hidden {
     opacity: 0;
-    transform: translateX(0) scale(0.75);
+    transform: translateX(0) scale(0.75) translateZ(0);
     z-index: 0;
     pointer-events: none;
   }
 
-  /* Responsive Mobile Adjustment: Hides flanking peek cards on small screens */
   @media (max-width: 767px) {
     .testimonial-slide.is-prev,
     .testimonial-slide.is-next {
       opacity: 0;
-      transform: translateX(0) scale(0.95);
+      transform: translateX(0) scale(0.95) translateZ(0);
       pointer-events: none;
     }
   }
 </style>
 
-<!-- JAVASCRIPT: Carousel Interactivity, Pagination Builder, and Overflow Detectors -->
 <script>
   function setupTestimonialsCarousel() {
     const stage = document.getElementById('testimonial-stage');
@@ -353,7 +331,6 @@ const marqueeItems = [
     let currentIndex = 0;
     const total = slides.length;
 
-    // Checks whether card content is taller than the container box
     function checkOverflowStates() {
       slides.forEach((slide) => {
         const scrollContainer = slide.querySelector('.card-body-scroll');
@@ -372,7 +349,6 @@ const marqueeItems = [
       });
     }
 
-    // Renders the numbered pill navigation bar at the bottom (< 01 02 ... 32 >)
     function renderPagination() {
       if (!paginationContainer) return;
       paginationContainer.innerHTML = '';
@@ -409,7 +385,6 @@ const marqueeItems = [
       });
     }
 
-    // Updates active/prev/next classes on slides
     function updateCarousel() {
       const isMobile = window.innerWidth < 768;
 
@@ -440,7 +415,6 @@ const marqueeItems = [
     function goNext() { currentIndex = (currentIndex + 1) % total; updateCarousel(); }
     function goPrev() { currentIndex = (currentIndex - 1 + total) % total; updateCarousel(); }
 
-    // Event Listeners for Buttons, Arrows, Keyboard, and Touch Swipes
     prevBtn?.addEventListener('click', goPrev);
     nextBtn?.addEventListener('click', goNext);
     paginationPrevBtn?.addEventListener('click', goPrev);
@@ -472,9 +446,13 @@ const marqueeItems = [
       }
     });
 
+    let resizeTimer: number;
     window.addEventListener('resize', () => {
-      checkOverflowStates();
-      updateCarousel();
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        checkOverflowStates();
+        updateCarousel();
+      }, 150);
     });
 
     checkOverflowStates();
