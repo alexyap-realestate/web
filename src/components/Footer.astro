@@ -1,58 +1,87 @@
 ---
-// src/components/Footer.astro
+// ============================================================================
+// COMPONENT: Footer.astro
+// USAGE: Global site footer included across all pages via BaseLayout.astro
+// LAYOUT: Dark luxury theme (#141210) with an asymmetrical 12-column grid:
+//         - Col 1-4: Brand Lockup, Persona, DRE License, and Back-to-Top
+//         - Col 5-8: Sitemap split into Navigation and Services
+//         - Col 9-12: Contact Details & Office Location Card
+//         - Bottom Rows: Legal Compliance, DRE/MLS Logos, Copyright & Terms
+// ============================================================================
+
+// 1. DATA INPUTS (PROPS)
+// Optional DRE license number passed from parent layouts
 interface Props {
   dreNumber?: string;
 }
 
 const { dreNumber = "DRE #01452375" } = Astro.props;
+
+// Auto-generates the current calendar year for the copyright row
 const currentYear = new Date().getFullYear();
 
+// 2. PRIMARY SITEMAP LINKS
 const navMain = [
   { label: "Home", href: "/" },
   { label: "Properties", href: "/properties" },
   { label: "Communities", href: "/communities" },
+  { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Testimonials", href: "/testimonials" },
 ];
 
+// 3. CLIENT SERVICES & ADVISORY ROADMAP LINKS
 const navServices = [
-  { label: "Seller Representation", href: "/seller" },
-  { label: "Buyer Advisory", href: "/buyer" },
+  { label: "Seller", href: "/seller" },
+  { label: "Buyer", href: "/buyer" },
   { label: "Home Valuation", href: "/valuation" },
 ];
 ---
 
+<!-- ======================================================================= -->
+<!-- GLOBAL FOOTER CONTAINER                                                 -->
+<!-- Background: Warm dark tone (#141210) with subtle top border (white/10)   -->
+<!-- ======================================================================= -->
 <footer class="bg-[#141210] border-t border-white/10 text-white font-body font-light pt-20 pb-12 selection:bg-[#8C7149] selection:text-white">
-  <div class="max-w-7xl mx-auto px-[5vw]">
+  
+  <!-- Outer Grid Constraint matching site-wide alignment -->
+  <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
     
-    <!-- TOP ROW: Asymmetrical 12-Column Grid -->
+    <!-- =================================================================== -->
+    <!-- TOP ROW: ASYMMETRICAL 12-COLUMN MAIN FOOTER CONTENT                 -->
+    <!-- =================================================================== -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 pb-16 border-b border-white/10">
       
-      <!-- COLUMN 1-4: Brand Lockup & Persona (Span 4) -->
+      <!-- ================================================================= -->
+      <!-- COLUMN 1-4 (Span 4): BRAND IDENTITY, PERSONA & BACK-TO-TOP         -->
+      <!-- ================================================================= -->
       <div class="lg:col-span-4 flex flex-col justify-between items-start space-y-8">
         <div>
+          <!-- Brand Logo Text Lockup -->
           <a href="/" class="inline-flex flex-col items-start select-none group" aria-label="Alex Yap Homepage">
             <span class="font-heading text-2xl tracking-[0.25em] uppercase font-normal text-white leading-none">
               Alex Yap
             </span>
+            <!-- Gold Hairline Divider: Shifts to white on hover -->
             <span class="w-full h-[1px] bg-[#8C7149] mt-2 mb-2 group-hover:bg-white transition-colors duration-300"></span>
             <span class="text-[10px] tracking-[0.35em] uppercase text-neutral-400 font-light leading-none">
               Real Estate Advisor
             </span>
           </a>
 
-          <div class="mt-4 flex items-center gap-3 text-xs tracking-[1.5px] uppercase text-neutral-400">
-            <span>{dreNumber}</span>
-            <span class="w-1 h-1 rounded-full bg-[#8C7149]"></span>
-            <span>Realty World Dominion</span>
+          <!-- Brokerage Affiliation & State DRE License Number -->
+          <div class="mt-4 flex flex-col gap-1 text-xs tracking-[1.5px] uppercase">
+            <span class="text-neutral-300 font-normal">Realty World Dominion</span>
+            <span class="text-[11px] text-neutral-500 font-light">{dreNumber}</span>
           </div>
 
+          <!-- Value Proposition Statement -->
           <p class="mt-5 text-sm text-neutral-400 leading-relaxed font-light max-w-sm">
-            Over two decades of trusted advisory, guiding discerning buyers and sellers across Silicon Valley and surrounding areas.
+            Over two decades of trusted advisory, guiding sellers and buyers across Silicon Valley and surrounding areas.
           </p>
         </div>
 
-        <!-- Back to Top Button -->
+        <!-- Back to Top Action Cue (Smooth window scroll to 0) -->
         <button 
           type="button" 
           id="footer-back-to-top"
@@ -68,9 +97,13 @@ const navServices = [
         </button>
       </div>
 
-      <!-- COLUMN 5-8: Sitemap Split in 2 Balanced Columns (Span 4) -->
+      <!-- ================================================================= -->
+      <!-- COLUMN 5-8 (Span 4): SPLIT NAVIGATION SITEMAP                     -->
+      <!-- Left sub-column: Main pages | Right sub-column: Client services   -->
+      <!-- ================================================================= -->
       <div class="lg:col-span-4 grid grid-cols-2 gap-6 sm:gap-8">
-        <!-- Main Navigation -->
+        
+        <!-- Main Navigation Links -->
         <div>
           <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
             Navigation
@@ -86,7 +119,7 @@ const navServices = [
           </ul>
         </div>
 
-        <!-- Client Services & Action -->
+        <!-- Client Services & Private Consultation Trigger -->
         <div>
           <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
             Services
@@ -99,6 +132,8 @@ const navServices = [
                 </a>
               </li>
             ))}
+            
+            <!-- Quick Action: Opens the Contact Modal via Global Handler -->
             <li class="pt-2">
               <button 
                 type="button" 
@@ -114,7 +149,9 @@ const navServices = [
         </div>
       </div>
 
-      <!-- COLUMN 9-12: Contact & Office Location Card (Span 4) -->
+      <!-- ================================================================= -->
+      <!-- COLUMN 9-12 (Span 4): DIRECT CONTACT & OFFICE LOCATION CARD       -->
+      <!-- ================================================================= -->
       <div class="lg:col-span-4 bg-white/[0.02] border border-white/5 p-6 sm:p-7 flex flex-col justify-between">
         <div>
           <h4 class="font-heading text-xs uppercase tracking-[2.5px] font-normal text-[#8C7149] mb-6">
@@ -122,6 +159,7 @@ const navServices = [
           </h4>
           
           <div class="space-y-4 text-xs tracking-[1px] text-neutral-300 font-light">
+            <!-- Direct Phone Line -->
             <div>
               <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Direct Line</span>
               <a href="tel:4088170383" class="hover:text-white transition text-sm text-neutral-200 font-normal">
@@ -129,6 +167,7 @@ const navServices = [
               </a>
             </div>
 
+            <!-- Email Inquiries -->
             <div>
               <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Inquiries</span>
               <a href="mailto:ayap26@gmail.com" class="hover:text-white transition lowercase text-neutral-200">
@@ -136,6 +175,7 @@ const navServices = [
               </a>
             </div>
 
+            <!-- Physical Office Address with Google Maps Link -->
             <div class="pt-2 border-t border-white/5">
               <span class="block text-[10px] uppercase tracking-[2px] text-neutral-500 mb-0.5">Office Location</span>
               <address class="not-italic leading-relaxed text-neutral-300">
@@ -157,14 +197,17 @@ const navServices = [
 
     </div>
 
-    <!-- LEGAL DISCLAIMER & COMPLIANCE LOGOS -->
+    <!-- =================================================================== -->
+    <!-- MIDDLE ROW: LEGAL DISCLAIMER & INDUSTRY COMPLIANCE LOGOS           -->
+    <!-- =================================================================== -->
     <div class="py-10 border-b border-white/10 text-[11px] leading-relaxed text-neutral-500 font-light">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Legal Real Estate Representation Disclaimer -->
         <p class="lg:col-span-9 leading-relaxed">
           Alex Yap is a licensed real estate professional affiliated with Realty World Dominion. Realty World Dominion is a licensed real estate broker and abides by Equal Housing Opportunity laws. All material presented herein is intended for informational purposes only. Information is compiled from sources deemed reliable but is subject to errors, omissions, changes in price, condition, sale, or withdrawal without notice. No statement is made as to accuracy of any description. All measurements and square footages are approximate. This is not intended to solicit property already listed.
         </p>
         
-        <!-- Monochrome Logos -->
+        <!-- Mandatory Monochrome Compliance Logos (Equal Housing, REALTOR, MLS, Brokerage) -->
         <div class="lg:col-span-3 flex flex-wrap items-center lg:justify-end gap-5 shrink-0">
           <img src="/icons/equal-housing-logowhite-250.png" width="26" height="24" alt="Equal Housing Opportunity" loading="lazy" decoding="async" class="h-6 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
           <img src="/icons/realtor-logo-white.png" width="24" height="24" alt="REALTOR® Logo" loading="lazy" decoding="async" class="h-6 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity" />
@@ -174,7 +217,9 @@ const navServices = [
       </div>
     </div>
 
-    <!-- COPYRIGHT & METADATA -->
+    <!-- =================================================================== -->
+    <!-- BOTTOM ROW: COPYRIGHT, PRIVACY POLICY & ATTRIBUTION                 -->
+    <!-- =================================================================== -->
     <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] tracking-[1px] text-neutral-500 font-light">
       <p>&copy; {currentYear} Alex Yap Real Estate Advisor. All rights reserved.</p>
       <div class="flex items-center gap-6">
@@ -188,6 +233,10 @@ const navServices = [
   </div>
 </footer>
 
+<!-- ======================================================================= -->
+<!-- CLIENT-SIDE SCRIPT: SMOOTH BACK-TO-TOP HANDLER                          -->
+<!-- Re-initializes on Astro client-side page navigation                     -->
+<!-- ======================================================================= -->
 <script>
   function setupFooter() {
     const backToTopBtn = document.getElementById('footer-back-to-top');

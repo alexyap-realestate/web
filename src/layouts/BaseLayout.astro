@@ -1,10 +1,21 @@
 ---
+// ============================================================================
+// COMPONENT: BaseLayout.astro
+// USAGE: Master site shell and HTML wrapper used across every page in the application.
+// LAYOUT: Houses global styles, font preconnects, OpenGraph meta tags, ClientRouter
+//         for instant view transitions, the global adaptive Navbar, Footer, ContactModal,
+//         and the ADA Accessibility Widget.
+// ============================================================================
+
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
+import AccessibilityWidget from '../components/AccessibilityWidget.astro';
 
+// 1. DATA INPUTS (PROPS)
+// Allows individual pages to pass custom SEO titles and descriptions
 interface Props {
   title?: string;
   description?: string;
@@ -15,14 +26,18 @@ const {
   description = "Alex Yap delivers discreet advisory and bespoke representation for luxury coastal and architectural estates throughout the South Bay, Silicon Valley, and Peninsula enclaves."
 } = Astro.props;
 ---
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth bg-black">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO Meta Tags -->
   <title>{title}</title>
   <meta name="description" content={description} />
 
+  <!-- Open Graph / Social Sharing Meta Tags -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
@@ -30,27 +45,33 @@ const {
   <meta property="og:url" content="https://alexyaphomes.com" />
   <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- Favicons -->
   <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
   <link rel="icon" type="image/png" href="/icons/favicon.png">
 
-  <!-- 1. Preconnect early to third-party origins -->
+  <!-- ===================================================================== -->
+  <!-- PERFORMANCE: PRECONNECTS & RESOURCE PRELOADS                          -->
+  <!-- ===================================================================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://images.unsplash.com">
 
+  <!-- Preload critical hero background poster image for instant LCP -->
   <link rel="preload" as="image" href="https://res.cloudinary.com/qogrq7ve/video/upload/so_0/v1790747968/my-web-bg-4.jpg">
 
-  <!-- 2. Consolidated Google Fonts -->
+  <!-- Consolidated Google Fonts (Libre Franklin & Tenor Sans) -->
   <link 
     rel="stylesheet" 
     href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..600;1,100..600&family=Tenor+Sans&display=block"
   />
 
-  <!-- 3. Client-side Navigation Router: removes hard reload flashes -->
+  <!-- Client-Side Navigation Router: Eliminates hard reload flashes -->
   <ClientRouter />
 
-  <!-- Global Palette & Typography Definitions -->
+  <!-- ===================================================================== -->
+  <!-- GLOBAL DESIGN SYSTEM TOKENS & TYPOGRAPHY STYLES                       -->
+  <!-- ===================================================================== -->
   <style is:global>
     :root {
       --color-luxury-stone: #ECE8E1;
@@ -87,15 +108,29 @@ const {
     }
   </style>
 </head>
+
+<!-- ======================================================================= -->
+<!-- BODY SHELL                                                              -->
+<!-- Base typography, text selection color, and overflow handling.           -->
+<!-- ======================================================================= -->
 <body class="bg-black text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">
+  
+  <!-- Global Adaptive Navbar (Fixed at top) -->
   <Navbar />
   
+  <!-- Page-Specific Content Slot -->
   <slot />
 
+  <!-- Global Footer -->
   <div class="relative z-30">
     <Footer />
   </div>
 
+  <!-- Global Web3Forms Contact Modal (Triggered by [data-open-contact-modal]) -->
   <ContactModal />
+
+  <!-- ADA Accessibility Widget Toolbar -->
+  <AccessibilityWidget />
+
 </body>
 </html>

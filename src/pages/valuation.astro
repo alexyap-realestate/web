@@ -5,113 +5,165 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
 ---
 
 <BaseLayout 
-  title="What Is Your Home Worth? | Alex Yap Real Estate Advisor"
+  title="Property Valuation | Alex Yap Real Estate Advisor"
   description="Request a discreet, custom comparative market valuation for your South Bay or Silicon Valley property."
 >
-  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-28 md:pt-36 pb-16 px-[5vw]">
-    <div class="max-w-4xl mx-auto">
-      
-      <!-- Page Header -->
-      <div id="valuation-header" class="mb-10 text-center max-w-2xl mx-auto">
-        <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-bold mb-2">
-          Advisory &amp; Valuation
-        </p>
-        <h1 class="font-heading text-[32px] md:text-[44px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">
-          What Is Your Home Worth?
-        </h1>
-        <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">
-          Automated online algorithms miss custom finishes, lot topography, and off-market neighborhood demand. Enter your details below to receive a personalized, private pricing analysis.
-        </p>
-      </div>
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-      <!-- In-Page Form Card -->
-      <div class="relative bg-white border border-black/10 shadow-lg p-6 sm:p-10 md:p-12">
-        <form id="valuation-form" class="space-y-6">
-          <!-- Web3Forms Routing & Identifiers -->
-          <input type="hidden" name="access_key" value="6b57a488-ac7a-4fe7-b840-5d18ca3cdebc" />
-          <input type="hidden" name="subject" value="🏡 VALUATION LEAD: New Property Evaluation Request" />
-          <input type="hidden" name="from_name" value="Alex Yap Valuation Form" />
-          <input type="hidden" name="Inquiry_Type" value="Home Valuation / CMA Request" />
-          <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+    <!-- ELEVATED NATURAL ARCHITECTURAL HERO -->
+    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
+      <img 
+        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
+        alt="Private Property Valuation" 
+        class="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+      />
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label for="v-name" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Full Name *</label>
-              <input required id="v-name" name="name" type="text" autocomplete="name" placeholder="John Doe" class="w-full bg-[#fcfbf9] border border-black/15 p-3 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
+
+      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
+            
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+                  Discreet Advisory &bull; Confidential CMA
+                </span>
+              </div>
+
+              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                Request Your Home Valuation
+              </h1>
+
+              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+                  Receive a bespoke, data-driven comparative market analysis tailored to your property's unique positioning in the South Bay.
+                </p>
+              </div>
             </div>
 
-            <div>
-              <label for="v-phone" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Phone Number *</label>
-              <input required id="v-phone" name="phone" type="tel" autocomplete="tel" placeholder="(408) 000-0000" class="w-full bg-[#fcfbf9] border border-black/15 p-3 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+            <div class="self-start lg:self-auto flex items-center gap-4">
+              <a 
+                href="#valuation-form-container" 
+                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
+              >
+                <span>Complete Evaluation</span>
+                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
+              </a>
             </div>
-          </div>
 
-          <div>
-            <label for="v-email" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Email Address *</label>
-            <input required id="v-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" class="w-full bg-[#fcfbf9] border border-black/15 p-3 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
-          </div>
-
-          <div>
-            <label for="v-address" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Property Address to Evaluate *</label>
-            <input required id="v-address" name="address" type="text" placeholder="Street Address, City, State, Zip Code" class="w-full bg-[#fcfbf9] border border-black/15 p-3 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
-          </div>
-
-          <div>
-            <label for="v-message" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Recent Upgrades or Additional Notes</label>
-            <textarea id="v-message" name="message" rows="3" placeholder="Tell us about recent remodels, square footage adjustments, or timeline..." class="w-full bg-[#fcfbf9] border border-black/15 p-3 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition resize-none font-light"></textarea>
-          </div>
-
-          <div class="pt-2">
-            <button type="submit" id="val-submit-btn" class="w-full sm:w-auto bg-[#1a1a1a] text-white px-10 py-4 hover:bg-[#8C7149] transition duration-300 cursor-pointer font-heading text-[13px] uppercase tracking-[2px] shadow-sm">
-              Request Free Valuation
-            </button>
-          </div>
-        </form>
-
-        <!-- Success Confirmation Card with Top "X" & Return Buttons -->
-        <div id="valuation-success" class="hidden relative text-center py-12 px-4 sm:px-6">
-          <!-- Top Right Close X Button -->
-          <a 
-            href="/" 
-            id="val-close-btn"
-            aria-label="Close and return to home page" 
-            class="absolute -top-2 right-0 sm:top-2 sm:right-2 w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-100 rounded-full transition-all cursor-pointer"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </a>
-
-          <span class="block font-body text-xs uppercase tracking-[2px] text-[#8C7149] font-medium mb-2">
-            Analysis Requested
-          </span>
-          <h2 class="font-heading text-2xl sm:text-3xl font-normal uppercase tracking-wider mb-3 text-[#1a1a1a]">
-            Thank You
-          </h2>
-          <p class="font-body text-neutral-600 text-sm sm:text-base max-w-md mx-auto font-light leading-relaxed mb-8">
-            Alex will review recent comps and neighborhood sales for your property and follow up with you shortly.
-          </p>
-
-          <!-- Navigation Action Buttons -->
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a 
-              href="/" 
-              class="w-full sm:w-auto bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition duration-300 font-heading text-xs uppercase tracking-[2px] shadow-sm"
-            >
-              Return to Home Page
-            </a>
-            <button 
-              type="button" 
-              id="val-reset-btn"
-              class="w-full sm:w-auto border border-black/20 text-[#1a1a1a] px-8 py-3.5 hover:bg-neutral-100 transition duration-300 font-heading text-xs uppercase tracking-[2px]"
-            >
-              Submit Another Property
-            </button>
           </div>
         </div>
       </div>
+    </section>
 
-    </div>
+    <!-- CONTENT FORM SECTION -->
+    <section id="valuation-form-container" class="w-full py-20 md:py-32 scroll-mt-24">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <!-- Form Introduction Header (Placed Outside Above the White Card Box) -->
+        <div class="mb-14 text-center max-w-3xl mx-auto">
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Confidential Assessment</span>
+          <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">Discover Your Property’s True Market Standing</h2>
+          <p class="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
+            Accurate home valuations require more than automated online algorithms. Complete the secure evaluation below to have Alex Yap analyze recent micro-market sales, neighborhood inventory shifts, and buyer demand trends specifically for your address.
+          </p>
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+          <div class="relative bg-white border border-black/10 shadow-sm p-8 sm:p-12 md:p-16">
+            <div class="absolute top-0 left-12 right-12 h-[1px] bg-[#8C7149]/30"></div>
+
+            <form id="valuation-form" class="space-y-6">
+              <input type="hidden" name="access_key" value="6b57a488-ac7a-4fe7-b840-5d18ca3cdebc" />
+              <input type="hidden" name="subject" value="🏡 VALUATION LEAD: New Property Evaluation Request" />
+              <input type="hidden" name="from_name" value="Alex Yap Valuation Form" />
+              <input type="hidden" name="Inquiry_Type" value="Home Valuation / CMA Request" />
+              <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label for="v-name" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Full Name *</label>
+                  <input required id="v-name" name="name" type="text" autocomplete="name" placeholder="John Doe" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                </div>
+
+                <div>
+                  <label for="v-phone" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Phone Number *</label>
+                  <input required id="v-phone" name="phone" type="tel" autocomplete="tel" placeholder="(408) 000-0000" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                </div>
+              </div>
+
+              <div>
+                <label for="v-email" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Email Address *</label>
+                <input required id="v-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+              </div>
+
+              <div>
+                <label for="v-address" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Property Address to Evaluate *</label>
+                <input required id="v-address" name="address" type="text" placeholder="Street Address, City, State, Zip Code" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+              </div>
+
+              <div>
+                <label for="v-message" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Recent Upgrades or Additional Notes</label>
+                <textarea id="v-message" name="message" rows="4" placeholder="Tell us about recent remodels, square footage adjustments, or your timeline..." class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition resize-none font-light"></textarea>
+              </div>
+
+              <div class="pt-4 flex items-center justify-between flex-col sm:flex-row gap-4">
+                <button type="submit" id="val-submit-btn" class="w-full sm:w-auto bg-[#1a1a1a] text-white px-10 py-4 hover:bg-[#8C7149] transition duration-300 cursor-pointer font-heading text-[12px] uppercase tracking-[2.5px] shadow-sm">
+                  Request Valuation
+                </button>
+                <span class="font-body text-xs text-neutral-500 font-light tracking-wide">
+                  &bull; 100% Confidential &amp; Obligation-Free
+                </span>
+              </div>
+            </form>
+
+            <div id="valuation-success" class="hidden relative text-center py-12 px-4 sm:px-6">
+              <a 
+                href="/" 
+                id="val-close-btn"
+                aria-label="Close and return to home page" 
+                class="absolute -top-2 right-0 sm:top-2 sm:right-2 w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-100 rounded-full transition-all cursor-pointer"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </a>
+
+              <span class="block font-body text-xs uppercase tracking-[2px] text-[#8C7149] font-medium mb-2">
+                Analysis Requested
+              </span>
+              <h2 class="font-heading text-2xl sm:text-3xl font-normal uppercase tracking-wider mb-3 text-[#1a1a1a]">
+                Thank You
+              </h2>
+              <p class="font-body text-neutral-600 text-sm sm:text-base max-w-md mx-auto font-light leading-relaxed mb-8">
+                Alex will review recent comparable sales and micro-market inventory shifts for your property and follow up with you shortly.
+              </p>
+
+              <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a 
+                  href="/" 
+                  class="w-full sm:w-auto bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition duration-300 font-heading text-xs uppercase tracking-[2px] shadow-sm"
+                >
+                  Return to Home Page
+                </a>
+                <button 
+                  type="button" 
+                  id="val-reset-btn"
+                  class="w-full sm:w-auto border border-black/20 text-[#1a1a1a] px-8 py-3.5 hover:bg-neutral-100 transition duration-300 font-heading text-xs uppercase tracking-[2px]"
+                >
+                  Submit Another Property
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
   </main>
 
   <WorkWithAlexCTA />
@@ -124,7 +176,6 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
     const submitBtn = document.getElementById('val-submit-btn') as HTMLButtonElement | null;
     const resetBtn = document.getElementById('val-reset-btn');
 
-    // Guard against attaching duplicate listeners across view transitions
     if (!form || !submitBtn || form.dataset.listenerAttached === 'true') return;
     form.dataset.listenerAttached = 'true';
 
@@ -146,30 +197,28 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
         if (response.ok) {
           form.style.display = 'none';
           successBox?.classList.remove('hidden');
-          // Smooth scroll up to top of card so user sees the message and X button immediately
           successBox?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
           alert('Submission error. Please try again.');
-          submitBtn.textContent = 'Request Free Valuation';
+          submitBtn.textContent = 'Request Valuation';
           submitBtn.disabled = false;
         }
       } catch {
         alert('Network error. Please try again later.');
-        submitBtn.textContent = 'Request Free Valuation';
+        submitBtn.textContent = 'Request Valuation';
         submitBtn.disabled = false;
       }
     });
 
-    // Reset button functionality
     resetBtn?.addEventListener('click', () => {
       form.reset();
       form.style.display = 'block';
       successBox?.classList.add('hidden');
-      submitBtn.textContent = 'Request Free Valuation';
+      submitBtn.textContent = 'Request Valuation';
       submitBtn.disabled = false;
     });
   }
 
-  // Runs reliably on each page transition without duplicate calls
+  setupValuationForm();
   document.addEventListener('astro:page-load', setupValuationForm);
 </script>

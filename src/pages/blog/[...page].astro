@@ -1,0 +1,149 @@
+---
+// src/pages/blog/[...page].astro
+import type { Page } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import { getAllPosts } from '../../utils/getBlog.ts';
+
+export async function getStaticPaths({ paginate }: any) {
+  const allPosts = getAllPosts().map((post) => ({
+    ...post,
+    href: `/blog/${post.slug}`,
+  }));
+
+  return paginate(allPosts, { pageSize: 6 });
+}
+
+interface Props {
+  page: Page<any>;
+}
+
+let { page } = Astro.props;
+
+if (import.meta.env.DEV) {
+  const freshPosts = getAllPosts().map((post) => ({
+    ...post,
+    href: `/blog/${post.slug}`,
+  }));
+
+  page = {
+    ...page,
+    data: freshPosts.slice(0, 6),
+  };
+}
+---
+
+<BaseLayout title="Journal & Market Insights | Alex Yap Real Estate Advisor">
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
+    
+    <!-- ELEVATED NATURAL ARCHITECTURAL HERO -->
+    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
+      <img 
+        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
+        alt="Luxury Real Estate Interior" 
+        class="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+      />
+
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
+
+      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
+            
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+                  Expertise &bull; Perspectives
+                </span>
+              </div>
+
+              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                The Journal
+              </h1>
+
+              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+                  Everything you need to know about buying, selling, and micro-market insights across the South Bay.
+                </p>
+              </div>
+            </div>
+
+            <!-- Jump Cue -->
+            <div class="self-start lg:self-auto flex items-center gap-4">
+              <a 
+                href="#blog-feed" 
+                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
+              >
+                <span>Read Articles</span>
+                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDITORIAL ARTICLE FEED SECTION (Option B: Elegant Wide 1-Column Stack) -->
+    <section class="w-full py-20 md:py-32">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <div id="blog-feed" class="scroll-mt-32"></div>
+
+        {/* Spacious Editorial Stack */}
+        <div class="max-w-5xl mx-auto flex flex-col gap-8 md:gap-10">
+          {page.data && page.data.length > 0 ? (
+            page.data.map((post: any) => (
+              <BlogCard {...post} />
+            ))
+          ) : (
+            <div class="py-16 text-center">
+              <p class="text-neutral-500 font-mono text-sm uppercase tracking-[2px]">No articles found.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Minimal Right-Aligned Pagination Controls */}
+        {page.lastPage > 1 && (
+          <div class="max-w-5xl mx-auto mt-16 flex items-center justify-end">
+            <nav aria-label="Blog pagination" class="flex items-center gap-2">
+              {page.url.prev ? (
+                <a 
+                  href={`${page.url.prev}#blog-feed`} 
+                  aria-label="Previous Page"
+                  class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+                >
+                  &lt;
+                </a>
+              ) : (
+                <span aria-disabled="true" class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                  &lt;
+                </span>
+              )}
+
+              {page.url.next ? (
+                <a 
+                  href={`${page.url.next}#blog-feed`} 
+                  aria-label="Next Page"
+                  class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+                >
+                  &gt;
+                </a>
+              ) : (
+                <span aria-disabled="true" class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                  &gt;
+                </span>
+              )}
+            </nav>
+          </div>
+        )}
+
+      </div>
+    </section>
+  </main>
+
+  <WorkWithAlexCTA />
+</BaseLayout>

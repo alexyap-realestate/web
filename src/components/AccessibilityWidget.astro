@@ -1,0 +1,528 @@
+---
+// ============================================================================
+// COMPONENT: AccessibilityWidget.astro
+// USAGE: Production-ready ADA/WCAG helper toolbar for Astro & Tailwind CSS.
+// ============================================================================
+---
+
+<!-- Floating Accessibility Trigger Container -->
+<div id="a11y-container" class="fixed z-[99999] font-sans select-none transition-all duration-300">
+  <button 
+    id="a11y-trigger"
+    type="button"
+    aria-label="Open Accessibility Menu"
+    class="w-12 h-12 bg-[#1a1a1a] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#8C7149] transition-all cursor-pointer border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#8C7149]"
+  >
+    <!-- Universal Accessibility Icon -->
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  </button>
+
+  <!-- Expanded Accessibility Toolbar Panel -->
+  <div 
+    id="a11y-panel" 
+    class="hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex flex-col gap-4 max-h-[85vh] overflow-y-auto"
+  >
+    <div class="flex items-center justify-between border-b border-black/10 pb-3">
+      <span class="text-xs uppercase tracking-[1px] font-semibold text-[#8C7149]">Accessibility Tools</span>
+      <button id="a11y-close" type="button" class="text-neutral-400 hover:text-black text-xl font-medium px-1.5 cursor-pointer">&times;</button>
+    </div>
+
+    <!-- SECTION: ICON POSITION SELECTOR -->
+    <div class="space-y-1.5">
+      <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Icon Position</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-left">
+          ↖️ Top Left
+        </button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-right">
+          ↗️ Top Right
+        </button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-left">
+          ↙️ Bottom Left
+        </button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-right">
+          ↘️ Bottom Right
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: CONTRAST -->
+    <div class="space-y-1.5 border-t border-black/10 pt-3">
+      <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Contrast &amp; Colors</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-invert" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          🌗 Invert Colors
+        </button>
+        <button id="btn-grayscale" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          🔘 Grayscale
+        </button>
+        <button id="btn-highcontrast" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          ⬛ High Contrast
+        </button>
+        <button id="btn-highlightlinks" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          🔗 Highlight Links
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: FONT CONTROLS -->
+    <div class="space-y-1.5 border-t border-black/10 pt-3">
+      <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Typography</p>
+      <div class="grid grid-cols-3 gap-2">
+        <button id="btn-font" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+          <span>🔤 Larger</span>
+          <span class="flex items-center gap-1" aria-hidden="true">
+            <span class="font-dot w-1.5 h-1.5 rounded-full bg-neutral-400 transition-all"></span>
+            <span class="font-dot w-1.5 h-1.5 rounded-full bg-neutral-400 transition-all"></span>
+            <span class="font-dot w-1.5 h-1.5 rounded-full bg-neutral-400 transition-all"></span>
+          </span>
+        </button>
+        <button id="btn-spacing" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+          <span>↔️ Spacing</span>
+        </button>
+        <button id="btn-dyslexia" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+          <span>👁️ Readable</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: NAVIGATION & AIDS -->
+    <div class="space-y-1.5 border-t border-black/10 pt-3">
+      <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Navigation &amp; Motion</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-cursor" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          👆 Big Cursor
+        </button>
+        <button id="btn-keyboard" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          ⌨️ Keyboard Nav
+        </button>
+        <button id="btn-animation" type="button" class="col-span-2 p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
+          ⏸️ Stop Animations
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 4: CLICK-TO-READ -->
+    <div class="pt-3 border-t border-black/10 flex flex-col gap-2">
+      <button id="btn-read" type="button" class="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg bg-[#1a1a1a] text-white hover:bg-[#8C7149] transition text-xs font-semibold uppercase tracking-wider cursor-pointer">
+        <span>🔊</span> Read on Click: OFF
+      </button>
+      <p id="read-status" class="text-[10px] text-neutral-500 text-center italic hidden">Click any text or link on the page to hear it.</p>
+    </div>
+
+    <button id="btn-reset" type="button" class="w-full text-center text-[11px] uppercase tracking-wider text-neutral-400 hover:text-black pt-1 cursor-pointer">
+      Reset All Settings
+    </button>
+  </div>
+</div>
+
+<script>
+  function initAccessibility() {
+    const container = document.getElementById('a11y-container');
+    const trigger = document.getElementById('a11y-trigger');
+    const panel = document.getElementById('a11y-panel');
+    const closeBtn = document.getElementById('a11y-close');
+    
+    const posButtons = document.querySelectorAll('.pos-btn');
+    const btnInvert = document.getElementById('btn-invert');
+    const btnGrayscale = document.getElementById('btn-grayscale');
+    const btnHighContrast = document.getElementById('btn-highcontrast');
+    const btnHighlightLinks = document.getElementById('btn-highlightlinks');
+    
+    const btnFont = document.getElementById('btn-font');
+    const btnSpacing = document.getElementById('btn-spacing');
+    const btnDyslexia = document.getElementById('btn-dyslexia');
+
+    const btnCursor = document.getElementById('btn-cursor');
+    const btnKeyboard = document.getElementById('btn-keyboard');
+    const btnAnimation = document.getElementById('btn-animation');
+    const btnRead = document.getElementById('btn-read');
+    const readStatus = document.getElementById('read-status');
+    const btnReset = document.getElementById('btn-reset');
+
+    if (!trigger || !panel || !container) return;
+
+    trigger.onclick = () => panel.classList.toggle('hidden');
+    if (closeBtn) closeBtn.onclick = () => panel.classList.add('hidden');
+
+    function setActiveState(btn: HTMLElement | null, isActive: boolean) {
+      if (!btn) return;
+      if (isActive) {
+        btn.classList.remove('bg-[#F8F8F8]', 'text-[#1a1a1a]');
+        btn.classList.add('bg-[#8C7149]', 'text-white', 'shadow-sm');
+      } else {
+        btn.classList.remove('bg-[#8C7149]', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-[#F8F8F8]', 'text-[#1a1a1a]');
+      }
+    }
+
+    const positionMap: Record<string, { container: string[]; panel: string[] }> = {
+      'bottom-right': { container: ['bottom-6', 'right-6'], panel: ['bottom-16', 'right-0'] },
+      'bottom-left': { container: ['bottom-6', 'left-6'], panel: ['bottom-16', 'left-0'] },
+      'top-right': { container: ['top-6', 'right-6'], panel: ['top-16', 'right-0'] },
+      'top-left': { container: ['top-6', 'left-6'], panel: ['top-16', 'left-0'] }
+    };
+
+    const savedPos = localStorage.getItem('a11y_pos') || 'bottom-right';
+    applyPosition(savedPos);
+
+    function applyPosition(pos: string) {
+      container.className = 'fixed z-[99999] font-sans select-none transition-all duration-300';
+      panel.className = 'hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex flex-col gap-4 max-h-[85vh] overflow-y-auto';
+
+      const config = positionMap[pos] || positionMap['bottom-right'];
+      container.classList.add(...config.container);
+      panel.classList.add(...config.panel);
+
+      posButtons.forEach(b => {
+        const isMatch = b.getAttribute('data-pos') === pos;
+        setActiveState(b as HTMLElement, isMatch);
+      });
+    }
+
+    posButtons.forEach(btn => {
+      btn.onclick = () => {
+        const pos = btn.getAttribute('data-pos');
+        if (pos) {
+          localStorage.setItem('a11y_pos', pos);
+          applyPosition(pos);
+        }
+      };
+    });
+
+    // 1. Invert Colors
+    let isInvertActive = false;
+    if (btnInvert) {
+      btnInvert.onclick = () => {
+        isInvertActive = !isInvertActive;
+        document.documentElement.classList.toggle('a11y-invert', isInvertActive);
+        setActiveState(btnInvert, isInvertActive);
+      };
+    }
+
+    // 2. Grayscale
+    let isGrayscaleActive = false;
+    if (btnGrayscale) {
+      btnGrayscale.onclick = () => {
+        isGrayscaleActive = !isGrayscaleActive;
+        document.documentElement.classList.toggle('a11y-grayscale', isGrayscaleActive);
+        setActiveState(btnGrayscale, isGrayscaleActive);
+      };
+    }
+
+    // 3. High Contrast
+    let isHighContrastActive = false;
+    if (btnHighContrast) {
+      btnHighContrast.onclick = () => {
+        isHighContrastActive = !isHighContrastActive;
+        document.documentElement.classList.toggle('a11y-high-contrast', isHighContrastActive);
+        setActiveState(btnHighContrast, isHighContrastActive);
+      };
+    }
+
+    // 4. Highlight Links
+    let isHighlightLinksActive = false;
+    if (btnHighlightLinks) {
+      btnHighlightLinks.onclick = () => {
+        isHighlightLinksActive = !isHighlightLinksActive;
+        document.documentElement.classList.toggle('a11y-highlight-links', isHighlightLinksActive);
+        setActiveState(btnHighlightLinks, isHighlightLinksActive);
+      };
+    }
+
+    // 5. Larger Text (4-stage cycle)
+    let fontStep = 0; 
+    if (btnFont) {
+      const dots = btnFont.querySelectorAll('.font-dot');
+      
+      function updateFontDots() {
+        dots.forEach((dot, idx) => {
+          if (idx < fontStep) {
+            dot.classList.remove('bg-neutral-400');
+            dot.classList.add('bg-white');
+          } else {
+            dot.classList.remove('bg-white');
+            dot.classList.add('bg-neutral-400');
+          }
+        });
+      }
+
+      btnFont.onclick = () => {
+        fontStep = (fontStep + 1) % 4;
+        document.body.classList.remove('a11y-text-large', 'a11y-text-larger', 'a11y-text-largest');
+
+        if (fontStep === 0) {
+          setActiveState(btnFont, false);
+        } else if (fontStep === 1) {
+          document.body.classList.add('a11y-text-large');
+          setActiveState(btnFont, true);
+        } else if (fontStep === 2) {
+          document.body.classList.add('a11y-text-larger');
+          setActiveState(btnFont, true);
+        } else if (fontStep === 3) {
+          document.body.classList.add('a11y-text-largest');
+          setActiveState(btnFont, true);
+        }
+        updateFontDots();
+      };
+    }
+
+    // 6. Letter Spacing
+    let isSpacingActive = false;
+    if (btnSpacing) {
+      btnSpacing.onclick = () => {
+        isSpacingActive = !isSpacingActive;
+        document.body.classList.toggle('a11y-spacing', isSpacingActive);
+        setActiveState(btnSpacing, isSpacingActive);
+      };
+    }
+
+    // 7. Readable Font
+    let isDyslexiaActive = false;
+    if (btnDyslexia) {
+      btnDyslexia.onclick = () => {
+        isDyslexiaActive = !isDyslexiaActive;
+        document.documentElement.classList.toggle('a11y-dyslexia', isDyslexiaActive);
+        setActiveState(btnDyslexia, isDyslexiaActive);
+      };
+    }
+
+    // 8. Big Cursor
+    let isCursorActive = false;
+    if (btnCursor) {
+      btnCursor.onclick = () => {
+        isCursorActive = !isCursorActive;
+        document.documentElement.classList.toggle('a11y-big-cursor', isCursorActive);
+        setActiveState(btnCursor, isCursorActive);
+      };
+    }
+
+    // 9. Keyboard Navigation Outlines
+    let isKeyboardActive = false;
+    if (btnKeyboard) {
+      btnKeyboard.onclick = () => {
+        isKeyboardActive = !isKeyboardActive;
+        document.documentElement.classList.toggle('a11y-keyboard-focus', isKeyboardActive);
+        setActiveState(btnKeyboard, isKeyboardActive);
+      };
+    }
+
+    // 10. Stop Animations
+    let isAnimationActive = false;
+    if (btnAnimation) {
+      btnAnimation.onclick = () => {
+        isAnimationActive = !isAnimationActive;
+        document.documentElement.classList.toggle('a11y-stop-animations', isAnimationActive);
+        setActiveState(btnAnimation, isAnimationActive);
+      };
+    }
+
+    // 11. Click-to-Read Reader with Male Voice Selector
+    let synth = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis : null;
+    let isClickToReadActive = false;
+
+    function getMaleVoice() {
+      if (!synth) return null;
+      const voices = synth.getVoices();
+      const maleVoice = voices.find(v => 
+        v.lang.startsWith('en') && (
+          v.name.toLowerCase().includes('male') || 
+          v.name.toLowerCase().includes('david') || 
+          v.name.toLowerCase().includes('george') || 
+          v.name.toLowerCase().includes('mark') || 
+          v.name.toLowerCase().includes('daniel') ||
+          v.name.toLowerCase().includes('oliver') ||
+          v.name.toLowerCase().includes('aaron')
+        )
+      );
+      return maleVoice || voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
+    }
+
+    if (synth && synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = getMaleVoice;
+    }
+
+    if (btnRead) {
+      btnRead.onclick = () => {
+        if (!synth) {
+          alert('Text-to-speech is not supported in your browser.');
+          return;
+        }
+
+        isClickToReadActive = !isClickToReadActive;
+        synth.cancel();
+
+        if (isClickToReadActive) {
+          btnRead.classList.remove('bg-[#1a1a1a]');
+          btnRead.classList.add('bg-[#8C7149]');
+          btnRead.textContent = '🔊 Read on Click: ON';
+          readStatus?.classList.remove('hidden');
+          document.body.classList.add('a11y-reading-mode');
+
+          const enableUtter = new SpeechSynthesisUtterance("Page read enabled. Click text to read.");
+          const voice = getMaleVoice();
+          if (voice) enableUtter.voice = voice;
+          synth.speak(enableUtter);
+        } else {
+          stopReadingMode(true);
+        }
+      };
+    }
+
+    function stopReadingMode(speakDisable = false) {
+      isClickToReadActive = false;
+      if (synth) {
+        synth.cancel();
+        if (speakDisable) {
+          const disableUtter = new SpeechSynthesisUtterance("Page read disabled.");
+          const voice = getMaleVoice();
+          if (voice) disableUtter.voice = voice;
+          synth.speak(disableUtter);
+        }
+      }
+      if (btnRead) {
+        btnRead.classList.remove('bg-[#8C7149]');
+        btnRead.classList.add('bg-[#1a1a1a]');
+        btnRead.textContent = '🔊 Read on Click: OFF';
+      }
+      readStatus?.classList.add('hidden');
+      document.body.classList.remove('a11y-reading-mode');
+    }
+
+    const globalClickHandler = (e: MouseEvent) => {
+      if (!isClickToReadActive) return;
+      const widget = document.getElementById('a11y-container');
+      if (widget && widget.contains(e.target as Node)) return;
+
+      e.preventDefault(); 
+      if (synth) {
+        synth.cancel();
+        const target = e.target as HTMLElement;
+        const textToSpeak = target.innerText?.trim();
+        if (textToSpeak) {
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          const voice = getMaleVoice();
+          if (voice) utterance.voice = voice;
+          synth.speak(utterance);
+        }
+      }
+    };
+
+    document.removeEventListener('click', globalClickHandler, true);
+    document.addEventListener('click', globalClickHandler, true);
+
+    // Reset All
+    if (btnReset) {
+      btnReset.onclick = () => {
+        document.documentElement.classList.remove(
+          'a11y-invert', 'a11y-grayscale', 'a11y-high-contrast', 'a11y-highlight-links',
+          'a11y-dyslexia', 'a11y-big-cursor', 'a11y-keyboard-focus', 'a11y-stop-animations'
+        );
+        document.body.classList.remove('a11y-text-large', 'a11y-text-larger', 'a11y-text-largest', 'a11y-spacing');
+        fontStep = 0;
+        if (btnFont) {
+          setActiveState(btnFont, false);
+          btnFont.querySelectorAll('.font-dot').forEach(dot => {
+            dot.classList.remove('bg-white');
+            dot.classList.add('bg-neutral-400');
+          });
+        }
+        
+        [btnInvert, btnGrayscale, btnHighContrast, btnHighlightLinks, btnSpacing, btnDyslexia, btnCursor, btnKeyboard, btnAnimation].forEach(b => setActiveState(b, false));
+
+        stopReadingMode(false);
+        panel.classList.add('hidden');
+      };
+    }
+  }
+
+  initAccessibility();
+  document.addEventListener('astro:page-load', initAccessibility);
+</script>
+
+<style is:global>
+  /* 1. Typography Scaling */
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > p, 
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > span, 
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > a, 
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > h1, 
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > h2, 
+  body.a11y-text-large :not(#a11y-container, #a11y-container *) > h3 {
+    font-size: 1.12em !important;
+  }
+
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > p, 
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > span, 
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > a, 
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > h1, 
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > h2, 
+  body.a11y-text-larger :not(#a11y-container, #a11y-container *) > h3 {
+    font-size: 1.25em !important;
+  }
+
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > p, 
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > span, 
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > a, 
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > h1, 
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > h2, 
+  body.a11y-text-largest :not(#a11y-container, #a11y-container *) > h3 {
+    font-size: 1.4em !important;
+  }
+
+  /* 2. Spacing & Reflow */
+  body.a11y-spacing :not(#a11y-container, #a11y-container *) * {
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+    line-height: 1.8 !important;
+  }
+
+  /* 3. Contrast & Vision Filters */
+  .a11y-invert {
+    filter: invert(100%) hue-rotate(180deg) !important;
+    background: #111 !important;
+  }
+  .a11y-grayscale {
+    filter: grayscale(100%) !important;
+  }
+  .a11y-high-contrast {
+    filter: contrast(160%) !important;
+  }
+  .a11y-high-contrast body {
+    background-color: #000 !important;
+    color: #fff !important;
+  }
+  .a11y-highlight-links a {
+    background-color: #ffff00 !important;
+    color: #000 !important;
+    outline: 2px solid #000 !important;
+    padding: 1px 4px !important;
+  }
+
+  /* 4. Cognitive & Dyslexia Support */
+  .a11y-dyslexia *, .a11y-dyslexia p, .a11y-dyslexia span, .a11y-dyslexia a, .a11y-dyslexia h1, .a11y-dyslexia h2, .a11y-dyslexia h3 {
+    font-family: Arial, Helvetica, sans-serif !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  /* 5. Navigation, Cursor & Focus Enforcements */
+  .a11y-big-cursor *, .a11y-big-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><polygon points="0,0 0,20 6,14 12,24 16,22 10,12 18,12"/></svg>'), auto !important;
+  }
+  .a11y-keyboard-focus *:focus-visible {
+    outline: 3px solid #8C7149 !important;
+    outline-offset: 4px !important;
+  }
+  .a11y-stop-animations *, .a11y-stop-animations *::before, .a11y-stop-animations *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .a11y-reading-mode a, .a11y-reading-mode p, .a11y-reading-mode h1, .a11y-reading-mode h2, .a11y-reading-mode h3, .a11y-reading-mode span, .a11y-reading-mode button {
+    cursor: pointer !important;
+  }
+  .a11y-reading-mode a:hover, .a11y-reading-mode p:hover, .a11y-reading-mode h1:hover, .a11y-reading-mode h2:hover, .a11y-reading-mode h3:hover {
+    outline: 2px solid #8C7149 !important;
+    background-color: rgba(140, 113, 73, 0.12) !important;
+  }
+</style>

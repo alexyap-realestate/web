@@ -1,0 +1,135 @@
+---
+// ============================================================================
+// COMPONENT: BlogCardIndex.astro
+// USAGE: Used specifically on the Homepage (index.astro) inside "The Journal"
+// LAYOUT: Vertical Stack Card (Image on top, text underneath, fits 3-col grid)
+// ============================================================================
+
+// 1. DATA INPUTS EXPECTED BY THIS COMPONENT
+// Every article passes these pieces of information from blogs.xlsx
+interface Props {
+  title: string;    // Headline of the article
+  slug: string;     // URL identifier (e.g. "south-bay-market-trends")
+  date: string;     // Publish date (from Excel date column)
+  category: string; // Category badge (e.g. "Market Intelligence")
+  excerpt: string;  // 2-3 sentence teaser summary
+  image: string;    // Cover photo URL
+  href: string;     // Link destination (e.g. "/blog/south-bay-market-trends")
+}
+
+const { title, date, category, excerpt, image, href } = Astro.props;
+
+// 2. DATE FORMATTER
+// Converts raw Excel numbers or text into clean dates like "Oct 14, 2026"
+const formatBlogDate = (dateStr: string) => {
+  if (!dateStr) return 'Recent';
+  const num = Number(dateStr);
+  if (!isNaN(num) && num > 30000) {
+    const utcDays = Math.floor(num - 25569);
+    const dateObj = new Date(utcDays * 86400 * 1000);
+    return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return String(dateStr).trim();
+};
+
+const formattedDate = formatBlogDate(date);
+---
+
+<!-- ======================================================================= -->
+<!-- MAIN CARD WRAPPER                                                       -->
+<!-- Has tactile lift (-translate-y-1.5) and gold border transition on hover -->
+<!-- ======================================================================= -->
+<article class="group relative bg-white border border-black/10 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.08)] hover:border-[#8C7149]/40 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden h-full">
+  
+  <!-- Architectural Inset Frame: Lights up gold subtly on mouse hover -->
+  <div class="absolute inset-3 border border-transparent group-hover:border-[#8C7149]/20 transition-all duration-500 pointer-events-none z-10"></div>
+
+  <!-- ===================================================================== -->
+  <!-- TOP: 16:10 ASPECT RATIO COVER IMAGE CONTAINER                         -->
+  <!-- ===================================================================== -->
+  <a href={href} class="block relative aspect-[16/10] overflow-hidden bg-neutral-950 shrink-0">
+    
+    <!-- Photo: Smooth zoom (+5%) on mouse hover -->
+    <img 
+      src={image} 
+      alt={title} 
+      loading="lazy" 
+      class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105" 
+    />
+    
+    <!-- Subtle bottom shadow on image for badge contrast -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50"></div>
+    
+    <!-- Category Badge (Top-Left corner over image) -->
+    <span class="absolute top-4 left-4 z-20 font-body text-[10px] uppercase tracking-[2.5px] text-white bg-black/70 backdrop-blur-md px-3.5 py-1.5 border border-white/15">
+      {category}
+    </span>
+  </a>
+
+  <!-- ===================================================================== -->
+  <!-- BOTTOM: EDITORIAL CONTENT BOX                                         -->
+  <!-- Contains Date, Title, Excerpt, and Read Button                         -->
+  <!-- ===================================================================== -->
+  <div class="p-8 sm:p-9 flex flex-col justify-between flex-grow">
+    <div>
+      
+      <!-- Date Bar with Gold Pulse Dot -->
+      <div class="flex items-center gap-2.5 mb-4 pb-4 border-b border-black/10">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+        <span class="font-mono text-xs text-[#8C7149] uppercase tracking-[2px] font-medium">
+          {formattedDate}
+        </span>
+      </div>
+
+      <!-- Article Title: Turns gold (#8C7149) on hover -->
+      <h3 class="font-heading text-xl sm:text-2xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug mb-4 group-hover:text-[#8C7149] transition-colors duration-300">
+        <a href={href} class="focus:outline-none">{title}</a>
+      </h3>
+
+      <!-- Summary Excerpt: Clamped to 3 lines max for consistent grid card heights -->
+      <p class="font-body text-neutral-600 text-sm font-light leading-[1.8] line-clamp-3 mb-8">
+        {excerpt}
+      </p>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- BOTTOM ACTION ROW                                                   -->
+    <!-- Left: "Read Article" link with circular arrow                       -->
+    <!-- Right: "3 MIN READ" reading estimate badge                          -->
+    <!-- =================================================================== -->
+    <div class="pt-6 border-t border-black/10 flex items-center justify-between">
+      
+      <!-- Read Article Link -->
+      <a 
+        href={href} 
+        class="font-heading text-xs uppercase tracking-[2px] text-[#1a1a1a] group-hover:text-[#8C7149] inline-flex items-center gap-2.5 transition-colors duration-300"
+      >
+        <span>Read Article</span>
+        
+        <!-- Circular Arrow Icon Button -->
+        <span class="w-7 h-7 rounded-full border border-black/20 group-hover:border-[#8C7149] group-hover:bg-[#8C7149] group-hover:text-white flex items-center justify-center transition-all duration-300">
+          <svg class="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </a>
+
+      <!-- Reading Time Estimate (Right Side) -->
+      <span class="font-mono text-xs text-neutral-400 tracking-wider">
+        3 MIN READ
+      </span>
+    </div>
+
+  </div>
+
+</article>
+
+<style>
+  /* Keeps the teaser excerpt cleanly limited to 3 lines of text */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+</style>

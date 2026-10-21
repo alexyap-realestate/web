@@ -1,130 +1,208 @@
 ---
 // src/pages/seller.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MarqueeTicker from '../components/MarqueeTicker.astro';
 import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
+import ClientWizardForm from '../components/ClientWizardForm.astro';
 
 const steps = [
   {
     step: "01",
+    phase: "Strategy & Motivation",
     title: "Step 1: Understand Why You're Selling",
     description: "What do you want to accomplish with the sale of your home? Do you want to make a certain amount of money that you can put toward a larger or nicer home? Do you need to sell it as soon as possible to facilitate a move to a new city or area? Once you understand your needs, you can better craft your offer. For example, if you need to sell quickly, you might want to price your home lower than if your goal is to make a certain profit margin. Make sure you convey these needs to your REALTOR once you choose one so he or she can adjust your selling price accordingly.",
     image: "https://media-production.lp-cdn.com/media/b3c35964-4923-4563-a3a0-1c63fec1625d"
   },
   {
     step: "02",
+    phase: "Pricing & Valuation",
     title: "Step 2: Determine Selling Price",
     description: "Knowing how to price your home is one of the most important parts of the selling process. When you set a fair price in the beginning, you’ll get the most interest from other real estate agents and prospective buyers. Overpricing your home could lead to reduced interest, and underpricing leads to receiving less than what your home is worth. Working with a real estate agent is the best way to determine the right selling price for your home. An agent with experience can determine what other comparable homes are selling for, evaluate the current market, and may even suggest a home appraisal.",
     image: "https://media-production.lp-cdn.com/media/4586c51d-efac-43e9-bdc9-bfb324c8e050"
   },
   {
     step: "03",
+    phase: "Property Presentation",
     title: "Step 3: Start Preparations",
     description: "If you’ve kept your home in showroom condition since you’ve lived in it, you’re in the minority of homeowners. Once you price your home, it’s time to start getting it ready to be shown to potential buyers. This includes getting rid of clutter, depersonalizing the space so that buyers can envision themselves in the space, making any small repairs, and doing a deep clean to make sure your home is in pristine condition.",
     image: "https://media-production.lp-cdn.com/media/8429f2b7-4b89-494d-b095-0c5458f27904"
   },
   {
     step: "04",
+    phase: "Active Marketing",
     title: "Step 4: Develop a Marketing Strategy",
     description: "I will develop a marketing strategy that is perfect for advertising your home. This involves listing the home and then driving the right people to that listing through social media campaigns, agent-to-agent referrals, traditional media, or SEO advertising. My team creates a marketing campaign that aims to get the most possible traffic to your listing in the first three weeks after becoming a client.",
     image: "https://media-production.lp-cdn.com/media/a898bf26-3d7e-4577-a9fe-a5a7375ef9ea"
   },
   {
     step: "05",
+    phase: "Negotiation",
     title: "Step 5: Evaluate Offers",
     description: "Receiving an offer is an exciting part of the process, but it doesn’t mean the journey is over. We will evaluate each offer and make sure the party making the offer is prequalified or pre-approved by a mortgage lender and that their offer is acceptable to you. If the offer is too low, you can make a counter-offer or offer other ways to bridge the gap, such as covering some or all of the closing costs, making repairs, adjusting the move-in date, or leaving some appliances or fixtures for the new buyer.",
     image: "https://media-production.lp-cdn.com/media/6a73d092-ac9d-4822-896b-44067ea73696"
   },
   {
     step: "06",
+    phase: "Contract Defense",
     title: "Step 6: Accept an Offer",
     description: "Once we deem the offer is acceptable, we will review the proposed contract to make sure it’s all in order and includes the necessary components such as deposit amount, down payment, financing, inspection rights and repair allowances, contingencies, settlement date, and a list of fees and who will pay them. When both parties have agreed to the term, a final contract will be prepared by your agent.",
     image: "https://media-production.lp-cdn.com/media/8cfe9a3e-5ade-4227-91ac-8aa7b320d60c"
   },
   {
     step: "07",
+    phase: "Escrow Execution",
     title: "Step 7: Get Ready to Close",
     description: "You have accepted an offer and are now very close to the end of your selling journey. But first, you and the buyer must make a list of what needs to be done before closing. In some cases, your home may need to be formally inspected, surveyed, and appraised. In other cases, major or minor repairs will need to be made before the house can close. I will head up efforts to develop and execute this list, get each action item paid for by the correct party, and make sure everything is in order by the closing date. A few days before the closing date, we will call the company closing the transaction to make sure everything is ready to go. If you haven’t done so already, you also need to make arrangements to move out of the home so the new buyer can take possession.",
     image: "https://media-production.lp-cdn.com/media/65be7701-b1aa-4466-b4a5-0ef9d2a987ec"
   },
   {
     step: "08",
+    phase: "Final Transition",
     title: "Step 8: Close",
     description: "You’ve reached the last step in the seller’s process. When you close on a home you are selling, you are legally transferring ownership of the property to the new buyer. We will meet with the company closing the transaction to sign the final paperwork and go over any issues that have not yet been taken care of. During this time, you can also make plans with your REALTOR to handle final details such as canceling utilities, cable, and lawn or trash services, changing the name on accounts that the new owner is retaining and ensuring the new owner has instructions for all appliances that will remain in the home.",
     image: "https://media-production.lp-cdn.com/media/025a6760-939a-4572-9ebe-b1877cb11a84"
   }
 ];
+
+const marqueeItems = [
+  { title: "Strategic Preparation", subtitle: "High-ROI Improvements" },
+  { title: "Precision Market Valuation", subtitle: "Neighborhood Market Analysis" },
+  { title: "Buyer Cross-Qualification", subtitle: "Protecting Closing Certainty Before Acceptance" },
+  { title: "Aggressive Offer Negotiation", subtitle: "Dictating Price & Contract Terms" },
+  { title: "Uncompromising Contract Defense", subtitle: "Escrow & Contingency Control" },
+  { title: "Direct Guidance With Alex", subtitle: "End-to-End Representation" }
+];
 ---
 
 <BaseLayout title="Seller's Guide | Alex Yap Real Estate Advisor">
-  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] overflow-x-hidden">
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-    <!-- Full-Bleed Modern Hero Section (Touches Navigation & Screen Edges) -->
-    <section class="relative w-full h-[520px] md:h-[620px] flex items-center justify-center text-center overflow-hidden">
-      <!-- High-end architectural interior hero -->
+    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
       <img 
         src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
         alt="Seller's Guide" 
-        class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.98]"
+        class="absolute inset-0 w-full h-full object-cover object-center"
         loading="eager"
       />
-
-      <div class="absolute inset-0 bg-black/40"></div>
-
-      <div class="relative z-10 px-6 max-w-4xl mx-auto pt-20 md:pt-24">
-        <h1 class="font-heading text-[36px] sm:text-[48px] md:text-[64px] font-light uppercase tracking-[4px] md:tracking-[8px] text-white leading-tight mb-4 drop-shadow-md">
-          Seller's Guide
-        </h1>
-      </div>
-    </section>
-
-    <!-- Contained Content Stage (Matching max-w-7xl & px-[5vw]) -->
-    <div class="max-w-7xl mx-auto px-[5vw] py-16 md:py-24">
-      
-      <!-- Section Introductory Text (Her Exact Verbatim Copy) -->
-      <div class="mb-14 text-center max-w-3xl mx-auto">
-        <h2 class="font-heading text-[26px] md:text-[36px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">
-          A Step-by-Step First Time Seller's Guide
-        </h2>
-        <p class="font-body text-neutral-600 text-sm md:text-base font-light leading-relaxed">
-          Putting your home on the market can be a stressful process, especially when you don’t know what to expect. Fortunately, with the help of an experienced agent and this easy to follow guide, you can smoothly complete the process. Following these steps will help you prepare so you can get organized and sell your home for the best price possible.
-        </p>
-      </div>
-
-      <!-- Mosaic Grid (Flush edges, touches center, top, and bottom) -->
-      <div class="flex flex-col shadow-sm">
-        {steps.map((item, index) => (
-          <article class="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch bg-white/60">
-            
-            <!-- Image Column: Her site's exact image -->
-            <div class={`relative w-full min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
-              <img 
-                src={item.image} 
-                alt={item.title} 
-                loading="lazy" 
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105" 
-              />
-            </div>
-
-            <!-- Text Column -->
-            <div class={`flex flex-col justify-center p-8 sm:p-12 lg:p-14 xl:p-16 ${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
-              <div class="space-y-4">
-                <h3 class="font-heading text-xl sm:text-2xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug">
-                  {item.title}
-                </h3>
-
-                <p class="font-body text-[#3d3d3d] text-sm sm:text-[15px] font-light leading-[1.85]">
-                  {item.description}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
+      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+                  Advisory Playbook &bull; 8-Step Roadmap
+                </span>
+              </div>
+              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                Seller's Guide
+              </h1>
+              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+                  A structured, transparent roadmap designed to protect your net equity and maximize final proceeds.
                 </p>
               </div>
             </div>
-
-          </article>
-        ))}
+            <div class="self-start lg:self-auto flex items-center gap-4">
+              <a 
+                href="#seller-form-section" 
+                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
+              >
+                <span>Get Seller Assessment</span>
+                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
 
-    </div>
+    <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Seller's", "Guide"]} />
+
+    <!-- 8-STEP ROADMAP SECTION -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)]">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        <div class="mb-16 text-center max-w-3xl mx-auto">
+          <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">Step-by-Step Overview</p>
+          <h2 class="font-heading text-[28px] md:text-[40px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-5">A First-Time Seller's Guide</h2>
+          <p class="font-body text-neutral-700 text-sm md:text-base font-light leading-relaxed">
+            Putting your home on the market can be a stressful process, especially when you don’t know what to expect. Fortunately, with the help of an experienced agent and this easy to follow guide, you can smoothly complete the process. Following these steps will help you prepare so you can get organized and sell your home for the best price possible.
+          </p>
+        </div>
+
+        <div id="steps-nav" class="flex flex-wrap items-center justify-center gap-3 mb-16 scroll-mt-28">
+          <a href="#step-01" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">1. Strategy &amp; Pricing</a>
+          <a href="#step-03" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">2. Prep &amp; Marketing</a>
+          <a href="#step-05" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">3. Offers &amp; Escrow</a>
+          <a href="#step-08" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">4. Closing</a>
+        </div>
+
+        <div class="flex flex-col gap-10 lg:gap-14">
+          {steps.map((item, index) => (
+            <article id={`step-${item.step}`} class="scroll-mt-28 grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch border border-black/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] overflow-hidden bg-[var(--color-luxury-chalk,#F4F2EE)]">
+              <div class={`relative w-full min-h-[340px] sm:min-h-[420px] lg:min-h-[480px] overflow-hidden lg:col-span-6 ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
+                <img src={item.image} alt={item.title} loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
+                <span class="absolute top-6 left-6 font-mono text-xs uppercase tracking-[3px] text-white bg-black/60 backdrop-blur-sm px-4 py-2 border border-white/20">Phase {item.step} / 08</span>
+              </div>
+              <div class={`flex flex-col justify-between p-8 sm:p-12 lg:p-14 xl:p-16 lg:col-span-6 ${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
+                <div>
+                  <span class="font-body text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium block mb-3">{item.phase}</span>
+                  <h3 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug mb-5">{item.title}</h3>
+                  <p class="font-body text-[#3d3d3d] text-sm sm:text-[15px] font-light leading-[1.85]">{item.description}</p>
+                </div>
+                <div class="pt-8 mt-8 border-t border-black/10 flex items-center justify-between">
+                  <span class="font-mono text-xs text-neutral-400 uppercase tracking-widest">Dedicated Guidance</span>
+                  <span class="font-heading text-sm text-[#8C7149]">&bull; Step {item.step}</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- SELLER WIZARD FORM SECTION -->
+    <section id="seller-form-section" class="w-full py-20 md:py-28 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10 scroll-mt-24">
+      <div class="max-w-4xl mx-auto px-6 lg:px-12">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Exclusive Seller Consultation</span>
+          <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-3">Request Your Custom Property Valuation</h2>
+          <p class="font-body text-neutral-700 text-sm font-light">
+            Complete the advisory wizard below to receive a personalized market analysis and strategic roadmap from Alex Yap.
+          </p>
+        </div>
+
+        <ClientWizardForm mode="seller" />
+      </div>
+    </section>
+
   </main>
-
-  <!-- Global Footer CTA -->
   <WorkWithAlexCTA />
 </BaseLayout>
+
+<script>
+  function setupStepJumps() {
+    const buttons = document.querySelectorAll('.step-jump-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('href');
+        if (!targetId) return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          const offset = 100;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = targetEl.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  setupStepJumps();
+  document.addEventListener('astro:page-load', setupStepJumps);
+</script>

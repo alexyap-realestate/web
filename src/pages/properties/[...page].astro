@@ -42,7 +42,6 @@ export async function getStaticPaths({ paginate }: any) {
     const address = String(row.address || row.Address || '').trim();
     const city = String(row.city || row.City || '').trim();
     const state = String(row.state || row.State || 'California').trim();
-    const zip = String(row.zip || row.Zip || '').trim();
     const status = String(row.status || row.Status || 'Active').trim();
     
     const priceVal = row.price !== undefined ? row.price : row.Price;
@@ -57,7 +56,6 @@ export async function getStaticPaths({ paginate }: any) {
 
     const slug = String(row.slug || row.Slug || fallbackSlug).trim();
 
-    // Dynamically look for the first valid image column from the excel row
     let firstImage = '';
     Object.keys(row).forEach((key) => {
       const cleanKey = key.trim().toLowerCase();
@@ -103,65 +101,124 @@ interface Props {
 const { page } = Astro.props;
 ---
 
-<BaseLayout title="Properties | Alex Yap Real Estate Advisor">
-  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-28 md:pt-36 pb-12 md:pb-16 px-[5vw]">
-    <div class="max-w-7xl mx-auto">
+<BaseLayout title="Current Listings & Past Sales | Alex Yap Real Estate Advisor">
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
+
+    <!-- ======================================================== -->
+    <!-- BRIGHT, NATURAL ARCHITECTURAL HERO                       -->
+    <!-- ======================================================== -->
+    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
       
-      <div id="listings" class="scroll-mt-24 md:scroll-mt-32"></div>
+      <!-- Background Image Layer: 100% natural color, no dimming filter -->
+      <img 
+        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
+        alt="Featured Listings & Sales" 
+        class="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+      />
 
-      <!-- Page Header -->
-      <div class="mb-10">
-        <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-2">
-          Featured listings and past transactions
-        </p>
-        <h1 class="font-heading text-[32px] md:text-[44px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight">
-          Properties
-        </h1>
-      </div>
+      <!-- Soft, Sheer Bottom-Up Gradient (Leaves upper architecture bright & clear) -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
 
-      <!-- Properties Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {page.data.map((listing: any) => (
-          <PropertyCard {...listing} />
-        ))}
-      </div>
+      <!-- Overlaid Architectural Masthead -->
+      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+          
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
+            
+            <!-- Left-Anchored Editorial Title Block -->
+            <div class="max-w-3xl">
+              
+              <!-- Category Eyebrow with Frosted Glass -->
+              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+                  Featured Listings &amp; Past Transactions
+                </span>
+              </div>
 
-      <!-- Pagination Controls with Bold < and > -->
-      {page.lastPage > 1 && (
-        <div class="mt-12 flex items-center justify-end">
-          <nav aria-label="Properties pagination" class="flex items-center gap-2">
-            {page.url.prev ? (
+              <!-- H1 Title with Subtle Soft Drop Shadow -->
+              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                Current Listings &amp; Past Sales
+              </h1>
+
+              <!-- Editorial Subtitle with Vertical Accent Bar -->
+              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+                  Explore active listings and completed transactions.
+                </p>
+              </div>
+            </div>
+
+            <!-- Right-Anchored Floating Meta & Jump Cue -->
+            <div class="self-start lg:self-auto flex items-center gap-4">
               <a 
-                href={`${page.url.prev}#listings`}
-                aria-label="Previous Page"
-                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+                href="#listings" 
+                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
               >
-                &lt;
+                <span>View All Properties</span>
+                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
               </a>
-            ) : (
-              <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
-                &lt;
-              </span>
-            )}
+            </div>
 
-            {page.url.next ? (
-              <a 
-                href={`${page.url.next}#listings`}
-                aria-label="Next Page"
-                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
-              >
-                &gt;
-              </a>
-            ) : (
-              <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
-                &gt;
-              </span>
-            )}
-          </nav>
+          </div>
+
         </div>
-      )}
+      </div>
+    </section>
 
-    </div>
+    <!-- ======================================================== -->
+    <!-- PROPERTIES GRID SECTION (Matched to The Blueprint)       -->
+    <!-- ======================================================== -->
+    <section class="w-full py-20 md:py-32">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <div id="listings" class="scroll-mt-32"></div>
+
+        <!-- 3-Column Grid with Blueprint-matched Gaps -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {page.data.map((listing: any) => (
+            <PropertyCard {...listing} />
+          ))}
+        </div>
+
+        <!-- Pagination Controls -->
+        {page.lastPage > 1 && (
+          <div class="mt-16 flex items-center justify-end">
+            <nav aria-label="Listings and sales pagination" class="flex items-center gap-2">
+              {page.url.prev ? (
+                <a 
+                  href={`${page.url.prev}#listings`}
+                  aria-label="Previous Page"
+                  class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+                >
+                  &lt;
+                </a>
+              ) : (
+                <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                  &lt;
+                </span>
+              )}
+
+              {page.url.next ? (
+                <a 
+                  href={`${page.url.next}#listings`}
+                  aria-label="Next Page"
+                  class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95"
+                >
+                  &gt;
+                </a>
+              ) : (
+                <span class="w-10 h-10 border border-black/10 bg-white/50 text-neutral-300 flex items-center justify-center font-mono font-bold text-base cursor-not-allowed select-none">
+                  &gt;
+                </span>
+              )}
+            </nav>
+          </div>
+        )}
+
+      </div>
+    </section>
   </main>
 
   <WorkWithAlexCTA />

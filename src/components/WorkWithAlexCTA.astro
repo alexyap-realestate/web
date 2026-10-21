@@ -1,13 +1,22 @@
 ---
-// src/components/WorkWithAlexCTA.astro
+// ============================================================================
+// COMPONENT: WorkWithAlexCTA.astro
+// USAGE: Reusable conversion call-to-action banner used across bottom sections
+//        of subpages (seller, buyer, about, valuation, communities, blog detail).
+// LAYOUT: Full-width container with a parallax/fixed background photograph,
+//         frosted warm ivory glass card (#eeede9/60), centered editorial typography,
+//         hairline divider, and global contact modal trigger button.
+// ============================================================================
+
+// 1. DATA INPUTS (PROPS)
 interface Props {
-  eyebrow?: string;
-  headlineFirstLine?: string;
-  headlineHighlight?: string;
-  bodyFirstLine?: string;
-  bodySecondLine?: string;
-  buttonText?: string;
-  backgroundImage?: string;
+  eyebrow?: string;            // Small italicized category title (e.g., "Get in Touch")
+  headlineFirstLine?: string;  // Primary heading phrase (e.g., "Ready to talk about your")
+  headlineHighlight?: string;  // Italicized emphasis phrase (e.g., "next move?")
+  bodyFirstLine?: string;      // Supporting paragraph sentence 1
+  bodySecondLine?: string;     // Supporting paragraph sentence 2
+  buttonText?: string;         // Call to action button label (e.g., "Let's Connect")
+  backgroundImage?: string;    // High-resolution architectural background photo URL
 }
 
 const {
@@ -21,22 +30,33 @@ const {
 } = Astro.props;
 ---
 
+<!-- ======================================================================= -->
+<!-- SECTION WRAPPER                                                         -->
+<!-- Uses [clip-path:inset(0)] to stabilize fixed background layer on mobile. -->
+<!-- ======================================================================= -->
 <section class="relative min-h-[560px] md:min-h-[660px] flex items-center justify-center px-6 py-20 md:py-32 overflow-hidden [clip-path:inset(0)]">
-  <!-- Background with layer isolation -->
+  
+  <!-- ===================================================================== -->
+  <!-- 1. FIXED BACKGROUND LAYER (Parallax Effect)                           -->
+  <!-- Positioned fixed with dark gradient tint overlay for text legibility. -->
+  <!-- ===================================================================== -->
   <div 
     class="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none -z-10"
     style={`background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${backgroundImage}');`}
   ></div>
   
-  <!-- Container widened to max-w-3xl for optimal line lengths -->
+  <!-- ===================================================================== -->
+  <!-- 2. FROSTED WARM IVORY GLASS CARD                                      -->
+  <!-- Widened to max-w-3xl with frosted glass blur and soft drop shadow.    -->
+  <!-- ===================================================================== -->
   <div class="relative z-10 max-w-3xl w-full p-6 sm:p-10 md:p-14 text-center shadow-[0_30px_70px_rgba(0,0,0,0.22)] bg-[#eeede9]/60 backdrop-blur-md border border-white/50">
     
-    <!-- Eyebrow: Regular weight (font-normal), larger text -->
+    <!-- Eyebrow Tag: Semi-bold italic bronze (#8C7149) -->
     <p class="font-body text-[12px] sm:text-[20px] uppercase tracking-[2.5px] italic mb-3 font-semibold text-[#8C7149]">
       {eyebrow}
     </p>
 
-    <!-- Headline: Uses Tenor Sans (font-heading), single line first phrase, next move? on second line -->
+    <!-- Headline: Tenor Sans (font-heading) with decorative horizontal divider -->
     <h2 class="font-heading text-[22px] sm:text-[32px] md:text-[42px] font-normal text-[#1a1a1a] mb-6 leading-tight after:content-[''] after:block after:w-[120px] after:h-[1px] after:bg-current after:mx-auto after:mt-6">
       <span class="block sm:whitespace-nowrap">
         {headlineFirstLine}
@@ -46,14 +66,17 @@ const {
       </span>
     </h2>
 
-    <!-- Body: Sized to 15px with max-w-[620px] to sit on exactly two balanced lines -->
+    <!-- Supporting Body Copy: Balanced line length with responsive line breaks -->
     <p class="font-body text-[14px] sm:text-[15px] leading-[1.7] md:leading-[1.8] mb-10 max-w-[620px] mx-auto font-light text-[#404040]">
       {bodyFirstLine}
       <br class="hidden sm:inline" />
       {bodySecondLine}
     </p>
 
-    <!-- Button -->
+    <!-- ===================================================================== -->
+    <!-- 3. CALL TO ACTION BUTTON                                              -->
+    <!-- Triggers the global ContactModal via inline JavaScript function.      -->
+    <!-- ===================================================================== -->
     <div class="flex justify-center">
       <button 
         type="button" 
@@ -63,5 +86,6 @@ const {
         <span>{buttonText}</span>
       </button>
     </div>
+
   </div>
 </section>

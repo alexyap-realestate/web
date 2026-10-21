@@ -1,6 +1,19 @@
 ---
-// src/components/ContactModal.astro
+// ============================================================================
+// COMPONENT: ContactModal.astro
+// USAGE: Global pop-up modal dialog triggered by clicking any button or link
+//        that contains the [data-open-contact-modal] attribute.
+// LAYOUT: Two-column split overlay on desktop (contact info left, form right),
+//         stacked vertically on mobile.
+// FORM HANDLER: Submits to Web3Forms via an async JavaScript fetch call.
+// ============================================================================
 ---
+
+<!-- ======================================================================= -->
+<!-- MODAL BACKDROP CONTAINER                                                -->
+<!-- Fixed full-screen overlay (z-50) with 95% opacity black backdrop.       -->
+<!-- Initially hidden via inline style="display: none;".                      -->
+<!-- ======================================================================= -->
 <div 
   id="contact-modal" 
   style="display: none;" 
@@ -9,36 +22,51 @@
   aria-modal="true" 
   aria-labelledby="modal-title"
 >
-  <!-- Modal Card -->
+  <!-- ===================================================================== -->
+  <!-- MODAL CARD FRAME                                                      -->
+  <!-- Centered dialog card with dark semi-transparent gradient over a       -->
+  <!-- background photo (/images/contact-bg.jpg). Max width: 5xl (1024px).   -->
+  <!-- ===================================================================== -->
   <div 
     class="relative w-full max-w-5xl my-auto bg-neutral-900 text-white shadow-2xl overflow-hidden flex flex-col lg:flex-row bg-cover bg-center border border-white/10"
     style="background-image: linear-gradient(rgba(2, 5, 7, 0.94), rgba(2, 5, 7, 0.94)), url('/images/contact-bg.jpg');"
   >
-    <!-- Always-Visible Close Button -->
+    <!-- =================================================================== -->
+    <!-- CLOSE BUTTON ("X" Icon in Top-Right Corner)                         -->
+    <!-- Uses an absolute position so it stays pinned inside the card.        -->
+    <!-- =================================================================== -->
     <button 
       type="button" 
       id="modal-close-btn" 
       class="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 flex items-center justify-center text-white bg-black/40 md:bg-transparent rounded-full hover:opacity-75 z-30 cursor-pointer touch-manipulation" 
       aria-label="Close dialog window"
     >
+      <!-- CSS "X" drawn with pseudo-elements to avoid external SVG assets -->
       <span class="relative block w-5 h-[1.5px] bg-white rotate-45 after:content-[''] after:absolute after:inset-0 after:bg-white after:-rotate-90 pointer-events-none"></span>
     </button>
 
+    <!-- Inner Content Flex Container -->
     <div class="w-full flex flex-col lg:flex-row p-6 sm:p-10 md:p-14 gap-8 lg:gap-14">
       
-      <!-- Left: Contact Details (Compact on Mobile) -->
+      <!-- ================================================================= -->
+      <!-- LEFT COLUMN: DIRECT CONTACT DETAILS                               -->
+      <!-- Width: 100% on mobile, 5/12 (~41%) on desktop                     -->
+      <!-- ================================================================= -->
       <div class="w-full lg:w-5/12 flex flex-col justify-between pt-2">
         <div>
+          <!-- Column Title -->
           <h2 id="modal-title" class="font-heading text-xl sm:text-2xl md:text-3xl font-normal mb-4 sm:mb-6 uppercase tracking-[1px]">
             Contact Details
           </h2>
           
           <div class="space-y-4 sm:space-y-6">
             <div>
+              <!-- Agent Name & Subtitle -->
               <p class="font-heading text-sm uppercase tracking-wider mb-3 text-[#d3bc97]">
                 Alex Yap | Real Estate Advisor
               </p>
               
+              <!-- Direct Phone Line Link -->
               <div class="flex items-center gap-3 mb-3">
                 <svg class="w-4 h-4 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -48,6 +76,7 @@
                 </div>
               </div>
 
+              <!-- Direct Email Address Link -->
               <div class="flex items-center gap-3 mb-3">
                 <svg class="w-4 h-4 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -57,7 +86,8 @@
                 </div>
               </div>
 
-              <!-- Office Address Hidden on small phone screens to save critical vertical height -->
+              <!-- Physical Office Location -->
+              <!-- Hidden on small mobile screens to prevent scrolling off the screen -->
               <div class="hidden sm:flex items-start gap-3 pt-2">
                 <svg class="w-4 h-4 mt-1 shrink-0 text-[#d3bc97]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -72,43 +102,59 @@
         </div>
       </div>
 
-      <!-- Right: Inquiry Form -->
+      <!-- ================================================================= -->
+      <!-- RIGHT COLUMN: INQUIRY SUBMISSION FORM                             -->
+      <!-- Width: 100% on mobile, 7/12 (~58%) on desktop with divider border -->
+      <!-- ================================================================= -->
       <div class="w-full lg:w-7/12 lg:border-l lg:border-white/15 lg:pl-12 flex flex-col justify-center">
+        <!-- Form Header -->
         <h3 class="font-heading text-lg sm:text-2xl font-normal mb-4 sm:mb-6 uppercase tracking-[1px]">
           Submit an Inquiry
         </h3>
         
+        <!-- Interactive Form Element -->
         <form id="modal-contact-form" class="font-body font-light">
+          <!-- Web3Forms Routing Configuration (Hidden Fields) -->
           <input type="hidden" name="access_key" value="6b57a488-ac7a-4fe7-b840-5d18ca3cdebc" />
           <input type="hidden" name="subject" value="New Inquiry from Alex Yap Website Modal" />
           <input type="hidden" name="from_name" value="Alex Yap Website (Contact Modal)" />
+          <!-- Honeypot anti-spam protection -->
           <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
 
+          <!-- Input Field: Full Name -->
           <div class="mb-4 sm:mb-5">
             <label for="m-name" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Name</label>
             <input required id="m-name" name="name" type="text" autocomplete="name" placeholder="Full Name" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
           </div>
 
+          <!-- Input Field: Email Address -->
           <div class="mb-4 sm:mb-5">
             <label for="m-email" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Email</label>
             <input required id="m-email" name="email" type="email" autocomplete="email" placeholder="Email Address" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
           </div>
 
+          <!-- Input Field: Phone Number -->
           <div class="mb-4 sm:mb-5">
             <label for="m-phone" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Phone</label>
             <input id="m-phone" name="phone" type="tel" autocomplete="tel" placeholder="Phone Number" class="w-full bg-transparent border-b border-white/30 py-1.5 sm:py-2 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition font-light" />
           </div>
 
+          <!-- Input Field: Message Body -->
           <div class="mb-6">
             <label for="m-message" class="block text-[11px] uppercase tracking-[2px] font-normal text-neutral-400 mb-1">Message</label>
             <textarea required id="m-message" name="message" rows="2" placeholder="Type your message" class="w-full bg-transparent border border-white/30 p-2.5 text-sm text-white outline-none placeholder:text-neutral-500 focus:border-white transition resize-none font-light"></textarea>
           </div>
 
+          <!-- Action Button: Submit Form -->
           <button type="submit" id="modal-submit-btn" class="w-full sm:w-auto bg-[#1a1a1a] border border-white/20 text-white px-8 py-3.5 hover:bg-[#333333] transition duration-300 cursor-pointer font-heading text-[13px] uppercase tracking-[2px] touch-manipulation">
             Submit
           </button>
         </form>
 
+        <!-- =============================================================== -->
+        <!-- SUCCESS STATE CONFIRMATION                                      -->
+        <!-- Shown automatically after successful Web3Forms API response     -->
+        <!-- =============================================================== -->
         <div id="modal-success" class="hidden text-center py-8">
           <span class="block font-body text-xs uppercase tracking-[2px] text-[#d3bc97] font-normal mb-2">Thank You</span>
           <h4 class="font-heading text-lg sm:text-xl font-normal uppercase tracking-wider mb-2">Message Sent Successfully</h4>
@@ -121,6 +167,10 @@
   </div>
 </div>
 
+<!-- ======================================================================= -->
+<!-- JAVASCRIPT LOGIC: MODAL OPEN / CLOSE & ASYNC FORM SUBMISSION            -->
+<!-- Handles backdrop click, escape key, autofocus, and Web3Forms submission -->
+<!-- ======================================================================= -->
 <script>
   function setupModal() {
     const contactModal = document.getElementById('contact-modal');
@@ -131,15 +181,17 @@
 
     if (!contactModal || !modalForm) return;
 
-    // Guard against attaching duplicate listeners
+    // Guard against attaching duplicate event listeners on Astro page transitions
     if (modalForm.dataset.listenerAttached === 'true') return;
     modalForm.dataset.listenerAttached = 'true';
 
+    // Open Modal: Displays backdrop, locks background page scroll, focuses first input
     function openContactModal() {
       if (contactModal) {
         contactModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
 
+        // Auto-focus first input on desktop viewports with a mouse
         const isDesktopWithMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 1024;
         if (isDesktopWithMouse) {
           const firstInput = document.getElementById('m-name');
@@ -148,6 +200,7 @@
       }
     }
 
+    // Close Modal: Hides backdrop, restores page scroll, resets form fields & buttons
     function closeContactModal() {
       if (contactModal) {
         contactModal.style.display = 'none';
@@ -167,8 +220,10 @@
       }
     }
 
+    // Expose openContactModal globally on the window object
     (window as any).openContactModal = openContactModal;
 
+    // Attach click triggers to any button with data-open-contact-modal attribute
     document.querySelectorAll('[data-open-contact-modal]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -176,18 +231,22 @@
       });
     });
 
+    // Close on close-button click
     modalCloseBtn?.addEventListener('click', closeContactModal);
     
+    // Close on clicking outside the dialog card (on the black backdrop)
     contactModal?.addEventListener('click', (e) => {
       if (e.target === contactModal) closeContactModal();
     });
 
+    // Close on keyboard Escape key press
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && contactModal && contactModal.style.display !== 'none') {
         closeContactModal();
       }
     });
 
+    // Form Submission: Send form data asynchronously via fetch to Web3Forms
     modalForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!modalSubmitBtn) return;
@@ -221,6 +280,6 @@
     });
   }
 
-  // Runs once on each page transition without duplicate calls
+  // Ensures setup runs seamlessly across Astro Client Router page transitions
   document.addEventListener('astro:page-load', setupModal);
 </script>

@@ -1,142 +1,222 @@
 ---
 // src/pages/buyer.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MarqueeTicker from '../components/MarqueeTicker.astro';
 import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
+import ClientWizardForm from '../components/ClientWizardForm.astro';
 
 const steps = [
   {
     step: "01",
+    phase: "Market Research",
     title: "Step 1: Research",
     description: "Do you already know where you want to buy? If you want a condo, townhome, or single-family home? Which features do you like and dislike? What’s available on the market now? If you answered no to any of these questions, now is the time to start researching. In addition to looking for homes that interest you, also take note of any changes in asking prices. This could give you valuable insight into housing trends in specific neighborhoods and help you when the time comes to make an offer.",
     image: "https://images.unsplash.com/photo-1524946274118-e7680e33ccc5?ixid=Mnw0MTQ1MnwwfDF8c2VhcmNofDgyfHxiZWFjaHxlbnwwfHx8fDE2NjYzODczMDE&ixlib=rb-4.0.3&q=80&w=1920"
   },
   {
     step: "02",
+    phase: "Financial Planning",
     title: "Step 2: Decide on Your Budget",
     description: "Notice I said to decide on your budget—not determine how much the mortgage company will give you. In many cases, a mortgage company will pre-approve you for more than you’re comfortable spending, which is why you need to determine the monthly payment you feel comfortable with before talking to a lender. This likely includes doing a full household budget and taking into consideration what changes other than a mortgage payment will occur once you move into your new home. If you’ve lived in an apartment or with roommates, you may overlook new expenses like garbage, water, or HOA fees that could easily blow your budget.",
     image: "https://images.unsplash.com/photo-1594833152133-c1e9c964d166?ixid=Mnw0MTQ1MnwwfDF8c2VhcmNofDg5fHxmbG9yaWRhfGVufDB8fHx8MTY2NjM4MDMyOA&ixlib=rb-4.0.3&q=80&w=1920"
   },
   {
     step: "03",
+    phase: "Mortgage Qualification",
     title: "Step 3: Get Prequalified",
     description: "Just because you think you can afford a certain payment every month doesn’t mean the mortgage company will agree. Just as they may approve you for too large of an amount, they may also approve you for a lesser amount or deny you a mortgage altogether. Lack of time at a job, insufficient credit, past bankruptcies, or other financial issues can cause major problems when trying to secure a mortgage. Before you get your heart set on a home, talk to a mortgage professional to find out what amount you can qualify for. This will also be an advantage when you make an offer on a home, as some sellers won’t entertain offers from those who aren’t already prequalified for a loan.",
     image: "https://media-production.lp-cdn.com/media/7192c204-d4db-41c8-8a50-025549b4b4e3"
   },
   {
     step: "04",
+    phase: "Agent Representation",
     title: "Step 4: Choose a Real Estate Agent",
     description: "Can you shop for, look at, and ultimately make an offer on a home without a real estate agent? Technically yes, but why would you when it costs you nothing for an agent like me to take much of the stress off your shoulders? Not only will I help identify properties you might be interested in, arrange showings, and ultimately handle the offer process, but I also have a knowledge of the market that you don’t possess. I may suggest hidden gems, or give you pointers that will help you find your dream home for the right price.",
     image: "https://images.unsplash.com/photo-1554180178-365b0c084f5a?ixid=Mnw0MTQ1MnwwfDF8c2VhcmNofDZ8fGZsb3JpZGElMjBjb25kb3xlbnwwfHx8fDE2NjYzODcyNjM&ixlib=rb-4.0.3&q=80&w=1920"
   },
   {
     step: "05",
+    phase: "Property Tours",
     title: "Step 5: Find the Right Home",
     description: "This should be the most enjoyable step of the entire process (other than moving in!). I will arrange showings of homes you’re interested in that are within your price range. Take notes about what you like and don’t like, and make sure to pay attention to details. Turn light switches on and off, open and close doors, and run the faucets in various rooms. Don’t limit your inspection to the home itself. Make sure to take time to explore the neighborhood and keep an eye on traffic at certain times of the day, the parking situation, and how close it is to necessities like schools and grocery stores.",
     image: "https://media-production.lp-cdn.com/media/fb4bc84d-22b6-4434-9a72-758ee9c9dca6"
   },
   {
     step: "06",
+    phase: "Offer Strategy",
     title: "Step 6: Make an Offer",
     description: "Once you have selected the perfect home, work with your agent to craft a fair offer based on the value of comparable homes on the market. Depending on what the home is listed at and whether the current environment is a buyer’s or seller’s market, your offer may be below, at, or even above the asking price. I will be able to help you negotiate if you receive a counteroffer and reach an agreement. At this point, the house will go into escrow.",
     image: "https://media-production.lp-cdn.com/media/97259275-90b3-40d6-9336-df5a5c8b077d"
   },
   {
     step: "07",
+    phase: "Due Diligence",
     title: "Step 7: Have the Home Inspected",
     description: "In most cases, your offer will be contingent on having the home inspected to ensure there is no major structural damage or large repairs needed. I can help you arrange this, and you can schedule it within days of making an offer. If there are no major issues, the process goes to step eight. If there is, you can renegotiate your offer based on what needs to be fixed, or you can withdraw it.",
     image: "https://media-production.lp-cdn.com/media/b1bf8917-be03-4fdf-84d7-4a52d9c8ac9d"
   },
   {
     step: "08",
+    phase: "Financing Execution",
     title: "Step 8: Select Your Loan",
     description: "Now is the time to go back to the mortgage lender who pre-approved or pre-qualified you and choose your mortgage. You will be presented with various options based on your unique financial situation, including fixed-rate, variable-rate, 15-year, 30-year, or special programs such as VA loans or FHA loans. Work with your mortgage lender to select the option you feel the most comfortable with.",
     image: "https://media-production.lp-cdn.com/media/50222c78-6ecb-4ad4-a493-1a9ee86a66ab"
   },
   {
     step: "09",
+    phase: "Independent Valuation",
     title: "Step 9: Get a Home Appraisal",
     description: "Your lender will have your new home appraised so they have their independent value of it. The appraisal is to ensure that all parties involved are paying a fair price for the house.",
     image: "https://media-production.lp-cdn.com/media/b413829f-f89b-456a-aebb-a99641dd1c7c"
   },
   {
     step: "10",
+    phase: "Closing & Keys",
     title: "Step 10: Finish Paperwork",
     description: "No one looks forward to all the paperwork involved in buying a home, but it’s a necessary part of the process. Fortunately, everything will be arranged by your lender and title company and, when you’re finished, you’ll know you are the legal owner of your new home.",
     image: "https://media-production.lp-cdn.com/media/fae19511-03ec-4236-88bb-a01bb62f4c7e"
   }
 ];
+
+const marqueeItems = [
+  { title: "Thorough Market Research", subtitle: "Neighborhood Trend Analysis" },
+  { title: "Smart Budgeting", subtitle: "Comprehensive Financial Planning" },
+  { title: "Prequalification Power", subtitle: "Securing Lender Confidence" },
+  { title: "Expert Representation", subtitle: "Dedicated Buyer Advocacy" },
+  { title: "Protected Escrow & Inspections", subtitle: "Rigorous Due Diligence" },
+  { title: "Direct Guidance With Alex", subtitle: "End-to-End Representation" }
+];
 ---
 
 <BaseLayout title="Buyer's Guide | Alex Yap Real Estate Advisor">
-  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] overflow-x-hidden">
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-    <!-- Full-Bleed Modern Hero Section (Touches Navigation & Screen Edges) -->
-    <section class="relative w-full h-[520px] md:h-[620px] flex items-center justify-center text-center overflow-hidden">
-      <!-- High-end architectural interior hero -->
+    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
       <img 
         src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2560&q=85" 
         alt="Buyer's Guide" 
-        class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.98]"
+        class="absolute inset-0 w-full h-full object-cover object-center"
         loading="eager"
       />
-
-      <div class="absolute inset-0 bg-black/40"></div>
-
-      <div class="relative z-10 px-6 max-w-4xl mx-auto pt-20 md:pt-24">
-        <h1 class="font-heading text-[36px] sm:text-[48px] md:text-[64px] font-light uppercase tracking-[4px] md:tracking-[8px] text-white leading-tight mb-4 drop-shadow-md">
-          Buyer's Guide
-        </h1>
-      </div>
-    </section>
-
-    <!-- Contained Content Stage (Matching max-w-7xl & px-[5vw]) -->
-    <div class="max-w-7xl mx-auto px-[5vw] py-16 md:py-24">
-      
-      <!-- Section Introductory Text (Her Exact Verbatim Copy) -->
-      <div class="mb-14 text-center max-w-3xl mx-auto">
-        <h2 class="font-heading text-[26px] md:text-[36px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">
-          A Step-by-Step First Time Buyer's Guide
-        </h2>
-        <p class="font-body text-neutral-600 text-sm md:text-base font-light leading-relaxed">
-          Buying a home is one of the most exciting milestones of your life. To prepare yourself for this moment, you need to know what to expect during the process. This step-by-step first time buyer’s guide created by your agent will help reduce the stress of buying a home and help you enjoy the journey as much as possible.
-        </p>
-      </div>
-
-      <!-- Mosaic Grid (Flush edges, touches center, top, and bottom) -->
-      <div class="flex flex-col shadow-sm">
-        {steps.map((item, index) => (
-          <article class="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch bg-white/60">
-            
-            <!-- Image Column: Her site's exact image -->
-            <div class={`relative w-full min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
-              <img 
-                src={item.image} 
-                alt={item.title} 
-                loading="lazy" 
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105" 
-              />
-            </div>
-
-            <!-- Text Column -->
-            <div class={`flex flex-col justify-center p-8 sm:p-12 lg:p-14 xl:p-16 ${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
-              <div class="space-y-4">
-                <h3 class="font-heading text-xl sm:text-2xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug">
-                  {item.title}
-                </h3>
-
-                <p class="font-body text-[#3d3d3d] text-sm sm:text-[15px] font-light leading-[1.85]">
-                  {item.description}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
+      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+                  Advisory Playbook &bull; 10-Step Roadmap
+                </span>
+              </div>
+              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                Buyer's Guide
+              </h1>
+              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+                  A structured, transparent roadmap designed to protect your interests and secure your ideal property.
                 </p>
               </div>
             </div>
-
-          </article>
-        ))}
+            <div class="self-start lg:self-auto flex items-center gap-4">
+              <a 
+                href="#buyer-form-section" 
+                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
+              >
+                <span>Get Buyer Assessment</span>
+                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
 
-    </div>
+    <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Buyer's", "Guide"]} />
+
+    <!-- 10-STEP ROADMAP SECTION -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)]">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        <div class="mb-16 text-center max-w-3xl mx-auto">
+          <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">Step-by-Step Overview</p>
+          <h2 class="font-heading text-[28px] md:text-[40px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-5">A First-Time Buyer's Guide</h2>
+          <p class="font-body text-neutral-700 text-sm md:text-base font-light leading-relaxed">
+            Buying a home is one of the most exciting milestones of your life. To prepare yourself for this moment, you need to know what to expect during the process. This step-by-step first time buyer’s guide created by your agent will help reduce the stress of buying a home and help you enjoy the journey as much as possible.
+          </p>
+        </div>
+
+        <div id="steps-nav" class="flex flex-wrap items-center justify-center gap-3 mb-16 scroll-mt-28">
+          <a href="#step-01" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">1. Research &amp; Budget</a>
+          <a href="#step-04" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">2. Agent &amp; Tours</a>
+          <a href="#step-06" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">3. Offer &amp; Inspection</a>
+          <a href="#step-08" class="step-jump-btn font-mono text-xs uppercase tracking-[2px] px-5 py-2.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all shadow-sm">4. Financing &amp; Closing</a>
+        </div>
+
+        <div class="flex flex-col gap-10 lg:gap-14">
+          {steps.map((item, index) => (
+            <article id={`step-${item.step}`} class="scroll-mt-28 grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch border border-black/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] overflow-hidden bg-[var(--color-luxury-chalk,#F4F2EE)]">
+              <div class={`relative w-full min-h-[340px] sm:min-h-[420px] lg:min-h-[480px] overflow-hidden lg:col-span-6 ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
+                <img src={item.image} alt={item.title} loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
+                <span class="absolute top-6 left-6 font-mono text-xs uppercase tracking-[3px] text-white bg-black/60 backdrop-blur-sm px-4 py-2 border border-white/20">Phase {item.step} / 10</span>
+              </div>
+              <div class={`flex flex-col justify-between p-8 sm:p-12 lg:p-14 xl:p-16 lg:col-span-6 ${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
+                <div>
+                  <span class="font-body text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium block mb-3">{item.phase}</span>
+                  <h3 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-snug mb-5">{item.title}</h3>
+                  <p class="font-body text-[#3d3d3d] text-sm sm:text-[15px] font-light leading-[1.85]">{item.description}</p>
+                </div>
+                <div class="pt-8 mt-8 border-t border-black/10 flex items-center justify-between">
+                  <span class="font-mono text-xs text-neutral-400 uppercase tracking-widest">Dedicated Guidance</span>
+                  <span class="font-heading text-sm text-[#8C7149]">&bull; Step {item.step}</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- BUYER WIZARD FORM SECTION -->
+    <section id="buyer-form-section" class="w-full py-20 md:py-28 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10 scroll-mt-24">
+      <div class="max-w-4xl mx-auto px-6 lg:px-12">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Exclusive Buyer Consultation</span>
+          <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-3">Begin Your Property Search</h2>
+          <p class="font-body text-neutral-700 text-sm font-light">
+            Complete the advisory wizard below to outline your purchasing goals and connect directly with Alex Yap for tailored representation.
+          </p>
+        </div>
+
+        <ClientWizardForm mode="buyer" />
+      </div>
+    </section>
+
   </main>
-
-  <!-- Global Footer CTA -->
   <WorkWithAlexCTA />
 </BaseLayout>
+
+<script>
+  function setupStepJumps() {
+    const buttons = document.querySelectorAll('.step-jump-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('href');
+        if (!targetId) return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          const offset = 100;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = targetEl.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  setupStepJumps();
+  document.addEventListener('astro:page-load', setupStepJumps);
+</script>

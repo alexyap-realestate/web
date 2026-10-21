@@ -1,26 +1,42 @@
 ---
-// src/components/CommunityCard.astro
+// ============================================================================
+// COMPONENT: CommunityCard.astro
+// USAGE: Used on the Communities listing page (/communities/[...page].astro)
+// LAYOUT: Full-card background image with an anchored bottom text overlay.
+// ============================================================================
 
+// 1. DATA INPUTS (PROPS)
+// Data passed in from communities.xlsx via Astro
 interface Props {
-  name: string;
-  city: string;
-  tagline?: string;
-  description?: string;
-  image?: string;
-  heroImage?: string;
-  slug: string;
-  featured?: string;
+  name: string;          // Name of the neighborhood (e.g., "Silver Creek Valley")
+  city: string;          // City/region shown on the top-left badge (e.g., "San Jose")
+  tagline?: string;      // Short 1-sentence descriptor beneath the title
+  description?: string;  // Longer summary (optional here; primary text lives on detail page)
+  image?: string;        // Fallback or secondary card photo
+  heroImage?: string;    // Main landscape photo for the community
+  slug: string;          // URL path name (e.g., "silver-creek-valley")
+  featured?: string;     // "YES" / "NO" indicator from Excel (optional)
 }
 
 const { name, city, tagline, image, heroImage, slug } = Astro.props;
+
+// 2. IMAGE FALLBACK LOGIC
+// Checks for heroImage first, then image, then falls back to a clean default photo
 const displayImage = heroImage || image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
 ---
 
+<!-- ======================================================================= -->
+<!-- MAIN CARD LINK WRAPPER                                                  -->
+<!-- Entire card is clickable; height is 450px on mobile, 520px on desktop   -->
+<!-- ======================================================================= -->
 <a 
   href={`/communities/${slug}`}
   class="group relative block w-full h-[450px] sm:h-[520px] overflow-hidden bg-black border border-black/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-500"
 >
-  <!-- Background Image -->
+  <!-- ===================================================================== -->
+  <!-- BACKGROUND IMAGE                                                      -->
+  <!-- Slowly expands (+5%) on mouse hover via group-hover:scale-105         -->
+  <!-- ===================================================================== -->
   <img 
     src={displayImage} 
     alt={name} 
@@ -28,22 +44,34 @@ const displayImage = heroImage || image || 'https://images.unsplash.com/photo-16
     loading="lazy"
   />
 
-  <!-- Gradient Overlay (Darker at bottom for text legibility) -->
+  <!-- ===================================================================== -->
+  <!-- GRADIENT SHIELD                                                       -->
+  <!-- Protects contrast: darker at bottom (90% black) so text stays legible  -->
+  <!-- ===================================================================== -->
   <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 opacity-90 group-hover:opacity-95 transition-opacity"></div>
 
-  <!-- City Badge (Top Left - background changed to #8C7149) -->
+  <!-- ===================================================================== -->
+  <!-- CITY BADGE (Top-Left)                                                 -->
+  <!-- Gold accent background (#8C7149) with clean white monospace typography -->
+  <!-- ===================================================================== -->
   <div class="absolute top-4 left-4 z-10 flex items-center bg-[#8C7149] backdrop-blur-md px-3 py-1 border border-white/20 shadow-sm">
     <span class="text-[9px] font-heading uppercase tracking-[2px] text-white">
       {city}
     </span>
   </div>
 
-  <!-- Content Overlay Positioned at the Bottom over the Photo -->
+  <!-- ===================================================================== -->
+  <!-- BOTTOM CONTENT OVERLAY                                                -->
+  <!-- Contains Title, Tagline, and the Explore Profile call-to-action       -->
+  <!-- ===================================================================== -->
   <div class="absolute inset-x-0 bottom-0 z-10 p-6 sm:p-8 flex flex-col justify-end text-white">
     <div>
+      <!-- Community Name: Turns gold (#8C7149) on card hover -->
       <h3 class="font-heading text-xl sm:text-2xl uppercase tracking-[1px] text-white group-hover:text-[#8C7149] transition-colors mb-2 font-normal leading-tight">
         {name}
       </h3>
+
+      <!-- Tagline: Clamped to 2 lines max to keep card heights tidy -->
       {tagline && (
         <p class="font-body text-xs sm:text-sm text-neutral-300 uppercase tracking-[1.5px] font-light line-clamp-2">
           {tagline}
@@ -51,9 +79,14 @@ const displayImage = heroImage || image || 'https://images.unsplash.com/photo-16
       )}
     </div>
 
+    <!-- Bottom Action Row: Arrow slides right on card hover -->
     <div class="mt-4 pt-4 border-t border-white/20 flex items-center justify-between text-[#8C7149]">
-      <span class="font-heading text-xs uppercase tracking-[2px] font-medium text-neutral-200 group-hover:text-white transition-colors">Explore Profile</span>
-      <span class="font-mono font-bold text-base text-[#8C7149] group-hover:translate-x-1 transition-transform">&rarr;</span>
+      <span class="font-heading text-xs uppercase tracking-[2px] font-medium text-neutral-200 group-hover:text-white transition-colors">
+        Explore Profile
+      </span>
+      <span class="font-mono font-bold text-base text-[#8C7149] group-hover:translate-x-1 transition-transform">
+        &rarr;
+      </span>
     </div>
   </div>
 </a>

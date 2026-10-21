@@ -1,0 +1,132 @@
+---
+// ============================================================================
+// COMPONENT: PropertyCardIndex.astro
+// USAGE: Used exclusively on the Homepage (index.astro) inside the 
+//        Featured Listings & Sales carousel slider.
+// LAYOUT: Compact vertical listing card tailored for side-by-side sliding 
+//         tiles (16:10 photograph, status badge, corner arrow, price overlay, 
+//         and truncated address headline with specs footer).
+// ============================================================================
+
+// 1. DATA INPUTS (PROPS)
+// Passed directly from properties.xlsx via index.astro carousel loop
+interface Props {
+  title?: string;          // Fallback title (e.g., "Exclusive Residence")
+  price?: string;          // Formatted price string (e.g., "$1,850,000")
+  address?: string;        // Street address (e.g., "789 Hamilton Ave")
+  location?: string;       // City and state (e.g., "Campbell, California")
+  beds?: number | string;  // Bedroom count
+  baths?: number | string; // Bathroom count
+  sqft?: string | number;  // Formatted square footage string (e.g., "2,400")
+  image?: string;          // Cover photograph URL
+  badge?: string;          // Listing status badge (e.g., "Active", "Pending", "Sold")
+  href?: string;           // Direct link to the single property page (/properties/[slug])
+  class?: string;          // Optional custom styling classes passed from parent
+}
+
+const { 
+  title = "Exclusive Residence", 
+  price = "", 
+  address = "", 
+  location = "Silicon Valley, California", 
+  beds = 0, 
+  baths = 0, 
+  sqft = "—", 
+  image = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", 
+  badge = "Active", 
+  href = "/properties",
+  class: className = "" 
+} = Astro.props;
+
+// Determine if the property is a closed sale (hides price overlay if sold)
+const isSold = String(badge || '').toLowerCase() === 'sold';
+---
+
+<!-- ======================================================================= -->
+<!-- MAIN CARD LINK CONTAINER                                                -->
+<!-- Functions as a smooth sliding tile inside the homepage properties track -->
+<!-- Features gold focus-visible ring for clean accessibility.               -->
+<!-- ======================================================================= -->
+<a 
+  href={href}
+  class={`w-full shrink-0 bg-white border-r border-black/10 flex flex-col shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all duration-500 group overflow-hidden select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8C7149] ${className}`}
+  aria-label={`View details for ${address || title}`}
+>
+  <!-- ===================================================================== -->
+  <!-- 1. LANDSCAPE IMAGE CONTAINER (16:10 Ratio)                              -->
+  <!-- ===================================================================== -->
+  <div class="relative w-full aspect-[16/10] overflow-hidden bg-neutral-900 shrink-0">
+    
+    <!-- Primary Photograph: Smooth zoom (+5%) on hover -->
+    <img 
+      src={image} 
+      alt={title || address} 
+      loading="lazy" 
+      class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]" 
+    />
+    
+    <!-- Top-Left Status Badge -->
+    {badge && (
+      <div class="absolute top-3 left-3 z-10 bg-[#161514]/90 backdrop-blur-sm text-white px-2.5 py-0.5 font-heading text-[10px] uppercase tracking-[1.5px] border border-white/10">
+        {badge}
+      </div>
+    )}
+
+    <!-- Top-Right Corner Arrow Indicator (Turns gold on hover) -->
+    <span 
+      class="absolute top-3 right-3 z-10 w-7 h-7 rounded-full border border-white/20 bg-black/35 backdrop-blur-sm flex items-center justify-center text-white/80 group-hover:text-white group-hover:border-[#8C7149] group-hover:bg-[#8C7149] transition-all duration-300 shadow-sm"
+      aria-hidden="true"
+    >
+      <svg 
+        class="w-3 h-3 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="1.5" 
+        viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+      </svg>
+    </span>
+
+    <!-- Bottom Price Tag Overlay (Active listings only) -->
+    {!isSold && price && (
+      <div class="absolute inset-x-0 bottom-0 z-10 pt-8 pb-2.5 px-3.5 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end items-start">
+        <!-- Gold Hairline Accent Bar -->
+        <div class="w-5 group-hover:w-8 h-[1.5px] bg-[#8C7149] mb-1 transition-all duration-500"></div>
+        <span class="font-heading text-base sm:text-lg text-white font-normal tracking-[0.5px] leading-none drop-shadow-sm">
+          {price}
+        </span>
+      </div>
+    )}
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. CONTENT BOX (Compact & Tight Spacing)                              -->
+  <!-- ===================================================================== -->
+  <div class="bg-white p-4 sm:p-5 flex flex-col">
+    
+    {/* City / Location Eyebrow Tag */}
+    <p class="font-body text-[9px] sm:text-[10px] uppercase tracking-[1.5px] text-[#8C7149] font-medium mb-1">
+      {location}
+    </p>
+
+    {/* Address Headline: Truncated with ellipsis if it overflows */}
+    <h3 
+      title={address}
+      class="font-heading text-sm sm:text-base uppercase tracking-[0.5px] text-[#1a1a1a] font-normal leading-snug group-hover:text-[#8C7149] transition-colors duration-300 truncate"
+    >
+      {address}
+    </h3>
+
+    <!-- ================================================================= -->
+    <!-- 3. SPECS FOOTER BAR (Beds, Baths, Sq.Ft.)                           -->
+    <!-- ================================================================= -->
+    <div class="pt-2.5 mt-2.5 border-t border-black/10 flex items-center justify-between text-neutral-600 font-body text-xs font-light">
+      <span><strong class="font-normal text-[#1a1a1a]">{beds}</strong> Beds</span>
+      <span class="text-black/20" aria-hidden="true">&bull;</span>
+      <span><strong class="font-normal text-[#1a1a1a]">{baths}</strong> Baths</span>
+      <span class="text-black/20" aria-hidden="true">&bull;</span>
+      <span><strong class="font-normal text-[#1a1a1a]">{sqft}</strong> Sq.Ft.</span>
+    </div>
+  </div>
+</a>

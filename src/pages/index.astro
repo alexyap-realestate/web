@@ -2,9 +2,13 @@
 // src/pages/index.astro
 import '../data/properties.xlsx?raw';
 import '../data/communities.xlsx?raw';
+import '../data/blogs.xlsx?raw';
+import '../data/testimonials.xlsx?raw';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PropertyCard from '../components/PropertyCard.astro';
-import CommunityCard from '../components/CommunityCard.astro';
+import PropertyCardIndex from '../components/PropertyCardIndex.astro';
+import CommunityCardIndex from '../components/CommunityCardIndex.astro';
+import BlogCardIndex from '../components/BlogCardIndex.astro';
+import MarqueeTicker from '../components/MarqueeTicker.astro';
 import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
 import * as XLSX from 'xlsx';
 import path from 'node:path';
@@ -33,101 +37,223 @@ function formatSqft(val: any): string {
 
 // 1. Read properties.xlsx directly from src/data/
 const propFilePath = path.resolve(process.cwd(), 'src', 'data', 'properties.xlsx');
-const propFileBuffer = fs.readFileSync(propFilePath);
-const propWorkbook = XLSX.read(propFileBuffer, { type: 'buffer' });
-const propSheet = propWorkbook.Sheets[propWorkbook.SheetNames[0]];
-const propRawRows: any[] = XLSX.utils.sheet_to_json(propSheet);
+let propRawRows: any[] = [];
+if (fs.existsSync(propFilePath)) {
+  const propFileBuffer = fs.readFileSync(propFilePath);
+  const propWorkbook = XLSX.read(propFileBuffer, { type: 'buffer' });
+  const propSheet = propWorkbook.Sheets[propWorkbook.SheetNames[0]];
+  propRawRows = XLSX.utils.sheet_to_json(propSheet);
+}
+
+const fallbackHero = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
 
 const properties = propRawRows
-  .filter((row) => String(row.featured || '').trim().toUpperCase() === 'YES')
+  .filter((row) => String(row.featured || row.Featured || '').trim().toUpperCase() === 'YES')
   .slice(0, 6)
-  .map((row) => ({
-    title: `${row.address || ''}, ${row.city || ''}`.trim(),
-    price: formatPrice(row.price),
-    address: String(row.address || '').trim(),
-    location: `${row.city || ''}, ${row.state || 'California'}`.trim(),
-    beds: Number(row.bedroom) || 0,
-    baths: Number(row.bathroom) || 0,
-    sqft: formatSqft(row.square),
-    badge: String(row.status || 'Active').trim(),
-    image: String(row.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80').trim()
-  }));
+  .map((row) => {
+    const address = String(row.address || row.Address || '').trim();
+    const city = String(row.city || row.City || '').trim();
+    const state = String(row.state || row.State || 'California').trim();
+    const status = String(row.status || row.Status || 'Active').trim();
+    
+    const priceVal = row.price !== undefined ? row.price : row.Price;
+    const bedVal = row.bedroom !== undefined ? row.bedroom : (row.Bedrooms || row.beds);
+    const bathVal = row.bathroom !== undefined ? row.bathroom : (row.Bathrooms || row.baths);
+    const sqftVal = row.square !== undefined ? row.square : (row.sqft || row.Square);
+
+    let firstImage = '';
+    Object.keys(row).forEach((key) => {
+      const cleanKey = key.trim().toLowerCase();
+      const match = cleanKey.match(/^image[-_\s]?(\d+)$/);
+      if (match && !firstImage) {
+        const rawVal = row[key];
+        if (rawVal !== undefined && rawVal !== null) {
+          const val = String(rawVal).trim();
+          if (
+            val.length > 10 && 
+            (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))
+          ) {
+            firstImage = val;
+          }
+        }
+      }
+    });
+
+    const singleImage = String(row.image || row.Image || '').trim();
+
+    return {
+      title: `${address}, ${city}`.trim(),
+      price: formatPrice(priceVal),
+      address,
+      location: `${city}, ${state}`.trim(),
+      beds: Number(bedVal) || 0,
+      baths: Number(bathVal) || 0,
+      sqft: formatSqft(sqftVal),
+      badge: status,
+      image: firstImage || singleImage || fallbackHero
+    };
+  });
 
 // 2. Read communities.xlsx directly from src/data/
 const commFilePath = path.resolve(process.cwd(), 'src', 'data', 'communities.xlsx');
-const commFileBuffer = fs.readFileSync(commFilePath);
-const commWorkbook = XLSX.read(commFileBuffer, { type: 'buffer' });
-const commSheet = commWorkbook.Sheets[commWorkbook.SheetNames[0]];
-const commRawRows: any[] = XLSX.utils.sheet_to_json(commSheet);
+let commRawRows: any[] = [];
+if (fs.existsSync(commFilePath)) {
+  const commFileBuffer = fs.readFileSync(commFilePath);
+  const commWorkbook = XLSX.read(commFileBuffer, { type: 'buffer' });
+  const commSheet = commWorkbook.Sheets[commWorkbook.SheetNames[0]];
+  commRawRows = XLSX.utils.sheet_to_json(commSheet);
+}
 
 const fallbackCommunityImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
 
 const communities = commRawRows
   .filter((row) => {
-    const feat = String(row.featured || '').trim().toUpperCase();
+    const feat = String(row.featured || row.Featured || '').trim().toUpperCase();
     return feat === 'YES' || feat === 'TRUE';
   })
   .slice(0, 4)
   .map((row) => {
-    const rawImg = String(row.image || '').trim();
-    const name = String(row.name || '').trim();
+    const name = String(row.name || row.Name || '').trim();
     const fallbackSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+
+    const imageEntries: { index: number; url: string }[] = [];
+    Object.keys(row).forEach((key) => {
+      const cleanKey = key.trim().toLowerCase();
+      const match = cleanKey.match(/^image[-_\s]?(\d+)$/);
+      if (match) {
+        const index = parseInt(match[1], 10);
+        const rawVal = row[key];
+        if (rawVal !== undefined && rawVal !== null) {
+          const val = String(rawVal).trim();
+          if (val.length > 10 && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))) {
+            imageEntries.push({ index, url: val });
+          }
+        }
+      }
+    });
+
+    imageEntries.sort((a, b) => a.index - b.index);
+    const gallery = imageEntries.map((e) => e.url);
+
+    if (gallery.length === 0) {
+      const singleImage = String(row.image || row.Image || '').trim();
+      gallery.push(singleImage.length > 0 ? singleImage : fallbackCommunityImage);
+    }
 
     return {
       name,
       city: String(row.city || row.City || row.county || row.County || '').trim(),
-      tagline: String(row.tagline || '').trim(),
-      description: String(row.description || '').trim(),
-      image: rawImg.length > 0 ? rawImg : fallbackCommunityImage,
-      slug: String(row.slug || fallbackSlug).trim()
+      tagline: String(row.tagline || row.Tagline || '').trim(),
+      description: String(row.description || row.Description || '').trim(),
+      image: gallery[0],
+      slug
     };
   });
 
+// 3. Read blogs.xlsx directly from src/data/
+const blogFilePath = path.resolve(process.cwd(), 'src', 'data', 'blogs.xlsx');
+let blogRawRows: any[] = [];
+if (fs.existsSync(blogFilePath)) {
+  const blogFileBuffer = fs.readFileSync(blogFilePath);
+  const blogWorkbook = XLSX.read(blogFileBuffer, { type: 'buffer' });
+  const blogSheet = blogWorkbook.Sheets[blogWorkbook.SheetNames[0]];
+  blogRawRows = XLSX.utils.sheet_to_json(blogSheet);
+}
+
+const fallbackBlogImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
+
+const journalPosts = blogRawRows
+  .filter((row) => {
+    const feat = String(row.featured || row.Featured || '').trim().toUpperCase();
+    return feat === 'YES' || feat === 'TRUE' || feat === '';
+  })
+  .slice(0, 3)
+  .map((row) => {
+    const title = String(row.title || row.Title || '').trim();
+    const fallbackSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slugVal = String(row.slug || row.Slug || fallbackSlug).trim();
+    const formattedSlug = slugVal.startsWith('/') ? slugVal : `/blog/${slugVal}`;
+    const rawImg = String(row.image || row.Image || '').trim();
+
+    return {
+      title,
+      slug: slugVal,
+      date: String(row.date || row.Date || 'Recent').trim(),
+      category: String(row.category || row.Category || 'Market Intelligence').trim(),
+      excerpt: String(row.description || row.Description || row.excerpt || '').trim(),
+      image: rawImg.length > 0 ? rawImg : fallbackBlogImage,
+      href: formattedSlug
+    };
+  });
+
+// 4. Read testimonials.xlsx directly from src/data/
+const testimonialFilePath = path.resolve(process.cwd(), 'src', 'data', 'testimonials.xlsx');
+let allReviews: any[] = [];
+if (fs.existsSync(testimonialFilePath)) {
+  const testFileBuffer = fs.readFileSync(testimonialFilePath);
+  const testWorkbook = XLSX.read(testFileBuffer, { type: 'buffer' });
+  const testSheetName = testWorkbook.SheetNames[0];
+  allReviews = XLSX.utils.sheet_to_json(testWorkbook.Sheets[testSheetName]);
+}
+
+const testimonials = allReviews.filter((item) => {
+  const val = String(item.featured || '').trim().toUpperCase();
+  return val === 'YES' || val === 'TRUE';
+});
+
 const blueprintPillars = [
   {
-    num: "01",
+    num: "Phase 01",
     tagline: "Smart Preparation",
     title: "Invest Only Where You Get Real Dollars Back",
     description: "You shouldn't spend a single dollar fixing up your home unless it puts money back in your pocket at closing. We look at your property through the eyes of active local buyers, pointing out the simple repairs and staging choices that actually boost offer prices—and telling you which costly projects to skip."
   },
   {
-    num: "02",
+    num: "Phase 02",
     tagline: "First Impressions",
     title: "Every Extra Week on Market Costs You Money",
     description: "A home gets the highest buyer attention in its first ten days. When a listing sits, buyers start asking what's wrong and look for discounts. We make sure disclosure packets and presentation are completely ready in advance to build serious interest right out of the gate."
   },
   {
-    num: "03",
+    num: "Phase 03",
     tagline: "Pricing Strategy",
     title: "Price to Spark Competition, Not to Test the Waters",
     description: "Overpricing to 'see what happens' backfires almost every time. It chases away serious buyers and forces price cuts later. We study active neighborhood demand to price your home where buyers feel urgency, compete, and bid with conviction."
   },
   {
-    num: "04",
+    num: "Phase 04",
     tagline: "Active Marketing",
     title: "We Hunt for Real Buyers, Not Just Post to the MLS",
     description: "Uploading a listing and sitting by the phone doesn't work. We work every inquiry directly. We follow up with every agent who unlocks the door, answer buyer questions promptly before they become objections, and keep interested parties actively engaged."
   },
   {
-    num: "05",
+    num: "Phase 05",
     tagline: "Contract Defense",
     title: "Never Let a Buyer Renegotiate After You Agree",
     description: "Accepting an offer is only half the battle. Many buyers try to use home inspections or repair requests to chip away at your agreed price weeks later. We enforce contract timelines, push back on unreasonable demands, and make sure the agreed price is what you take home."
   },
   {
-    num: "06",
+    num: "Phase 06",
     tagline: "Personal Attention",
     title: "You Work Directly With Alex. No Hand-Offs.",
     description: "Many teams have a senior agent sign the agreement, only to pass you off to assistants you've never met. With this practice, Alex handles your sale personally from the initial walkthrough to the day keys are handed over, giving you direct guidance at every step."
   }
 ];
+
+const marqueeItems = [
+  { title: "Strategic Preparation", subtitle: "High-ROI Improvements" },
+  { title: "High-Impact Marketing", subtitle: "Maximum Market Exposure" },
+  { title: "Multiple-Offer Strategy", subtitle: "Creating Immediate Buyer Urgency" },
+  { title: "Aggressive Offer Negotiation", subtitle: "Dictating Price, Contingencies & Timelines" },
+  { title: "Uncompromising Contract Defense", subtitle: "Escrow & Contingency Control" },
+  { title: "Direct Guidance With Alex", subtitle: "End-to-End Representation" }
+];
 ---
 
 <BaseLayout title="Alex Yap Real Estate Advisor | South Bay Residential & Listing Specialist">
   
-  <!-- ======================================================== -->
-  <!-- 1. STICKY HERO VIEWPORT                                  -->
-  <!-- ======================================================== -->
+  <!-- 1. STICKY HERO VIEWPORT -->
   <div class="sticky top-0 h-[100dvh] w-full overflow-hidden z-0 bg-black">
     <video
       id="hero-video"
@@ -142,14 +268,11 @@ const blueprintPillars = [
       <source src="https://res.cloudinary.com/qogrq7ve/video/upload/q_auto,vc_h264/v1790747968/my-web-bg-4.mp4" type="video/mp4" />
     </video>
 
-    <!-- Warm Cinematic Vignette Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 pointer-events-none"></div>
 
-    <div class="relative z-10 flex flex-col items-center justify-between h-full text-center px-5 max-w-4xl mx-auto text-white pt-28 pb-12">
-      
+    <div class="relative z-10 flex flex-col items-center justify-between h-full text-center px-6 max-w-5xl mx-auto text-white pt-28 pb-12">
       <div></div>
 
-      <!-- Main Central Typography -->
       <div class="flex flex-col items-center">
         <img 
           src="/images/alex-yap-logo.png" 
@@ -174,18 +297,18 @@ const blueprintPillars = [
           <span class="w-8 h-[1px] bg-white/40"></span>
         </div>
 
+        {/* Hero Primary Button */}
         <a 
-          href="#properties" 
+          href="#listings" 
           class="hero-scroll-trigger font-heading text-xs uppercase tracking-[2.5px] bg-white text-[#1a1a1a] px-10 py-4 hover:bg-[#8C7149] hover:text-white transition-all duration-300 shadow-xl"
         >
-          Explore Properties
+          Explore Listings &amp; Sales
         </a>
       </div>
 
-      <!-- Architectural Vertical Scroll Cue -->
       <a 
-        href="#properties" 
-        aria-label="Scroll to properties" 
+        href="#listings" 
+        aria-label="Scroll to listings and sales" 
         class="hero-scroll-trigger flex flex-col items-center gap-2.5 text-white/70 hover:text-white transition-colors group cursor-pointer"
       >
         <span class="font-body text-[10px] uppercase tracking-[3px]">Scroll</span>
@@ -193,42 +316,37 @@ const blueprintPillars = [
           <span class="absolute inset-x-0 top-0 h-1/2 bg-[#8C7149] animate-[scrollLine_2s_cubic-bezier(0.65,0,0.35,1)_infinite]"></span>
         </div>
       </a>
-
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- 2. THE SLIDING CURTAIN CONTAINER                         -->
-  <!-- ======================================================== -->
+  <!-- 2. THE SLIDING CURTAIN CONTAINER -->
   <main id="curtain-container" class="relative z-20 w-full bg-[var(--color-luxury-chalk,#F4F2EE)] shadow-[0_-25px_60px_rgba(0,0,0,0.7)]">
     
-    <!-- PROPERTIES CAROUSEL -->
-    <section id="properties" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-16 md:py-24 px-[5vw] overflow-hidden">
-      <div class="max-w-7xl mx-auto">
-        
-        <!-- Architectural Split Header with Live Counter & Stepper -->
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-5 border-b border-black/10">
+    <!-- SECTION A: LISTINGS & SALES (Chalk BG) -->
+    <section id="listings" class="scroll-mt-0 lg:scroll-mt-[80px] w-full pt-16 md:pt-24 pb-12 md:pb-16 overflow-hidden bg-[var(--color-luxury-chalk,#F4F2EE)]">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12 mb-10">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
             <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
-              Curated Portfolio
+              Featured Listings &amp; Past Transactions
             </p>
             <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
-              Featured Properties
+              Current Listings &amp; Past Sales
             </h2>
           </div>
 
-          <!-- Top-Right Controls with Bold < and > Stepper -->
           <div class="flex items-center gap-4 self-start sm:self-auto">
             <span id="prop-counter" class="font-mono text-xs tracking-[2px] text-neutral-500 select-none">
               <strong class="text-[#1a1a1a] font-semibold">01</strong> / {String(properties.length + 1).padStart(2, '0')}
             </span>
 
+            {/* Carousel Arrow Controls */}
             <div class="flex items-center gap-2">
               <button 
                 type="button" 
                 id="prop-step-prev" 
-                aria-label="Previous property"
-                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
+                aria-label="Previous listing"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
               >
                 &lt;
               </button>
@@ -236,80 +354,99 @@ const blueprintPillars = [
               <button 
                 type="button" 
                 id="prop-step-next" 
-                aria-label="Next property"
-                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
+                aria-label="Next listing"
+                class="w-10 h-10 border border-black/15 bg-white text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all font-mono font-bold text-base cursor-pointer shadow-sm active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
               >
                 &gt;
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- CAROUSEL VIEWPORT -->
-        <div class="relative w-full overflow-hidden">
-          <div 
-            id="properties-carousel-track" 
-            class="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] w-full"
-          >
-            {properties.map((listing, index) => (
-              <div 
-                class="carousel-item w-full md:w-1/2 lg:w-1/3 shrink-0 px-0 sm:px-3 flex flex-col"
-                data-property-index={index}
-              >
-                <PropertyCard {...listing} />
-              </div>
-            ))}
-
-            <!-- End-Cap Card: View More -->
+      <!-- Carousel Viewport -->
+      <div 
+        id="properties-carousel-viewport" 
+        class="w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none"
+        tabindex="0"
+        role="region"
+        aria-label="Featured Listings & Sales Carousel"
+        style="touch-action: pan-y;"
+      >
+        <div 
+          id="properties-carousel-track" 
+          class="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] w-full will-change-transform"
+        >
+          {properties.map((listing, index) => (
             <div 
-              class="carousel-item w-full md:w-1/2 lg:w-1/3 shrink-0 px-0 sm:px-3 flex flex-col"
-              data-property-index={properties.length}
+              class="carousel-item w-full sm:w-1/2 lg:w-1/3 shrink-0 flex flex-col"
+              data-property-index={index}
             >
-              <div class="group relative h-full min-h-[420px] bg-gradient-to-b from-white to-[#F9F8F5] border border-black/10 p-8 sm:p-12 flex flex-col items-center justify-center text-center shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] hover:border-black/25 transition-all duration-500 overflow-hidden">
-                <div class="absolute inset-3 border border-black/[0.04] group-hover:border-[#8C7149]/30 transition-colors duration-500 pointer-events-none"></div>
-                <div class="w-8 h-[2px] bg-[#8C7149] mb-8 opacity-60 group-hover:w-12 transition-all duration-500"></div>
+              <PropertyCardIndex {...listing} />
+            </div>
+          ))}
 
-                <div class="relative z-10 px-4 py-2 transition-transform duration-500 group-hover:-translate-y-1">
+          <!-- End-Cap Card: View More -->
+          <div 
+            class="carousel-item w-full sm:w-1/2 lg:w-1/3 shrink-0 flex flex-col"
+            data-property-index={properties.length}
+          >
+            <div class="group relative h-full min-h-[380px] sm:min-h-[400px] bg-gradient-to-b from-[#FAF8F5] via-[#F4F1EA] to-[#EBE7DF] border-r border-black/10 p-8 sm:p-12 flex flex-col items-center justify-between text-center select-none shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] overflow-hidden transition-all duration-500">
+              
+              <div class="absolute inset-3 border border-black/[0.06] group-hover:border-[#8C7149]/40 transition-colors duration-500 pointer-events-none"></div>
+              <div class="absolute inset-[15px] border border-black/[0.02] group-hover:border-[#8C7149]/20 transition-colors duration-500 pointer-events-none"></div>
+
+              <div class="relative z-10 flex flex-col items-center gap-1.5 pt-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]/80"></span>
+                <span class="w-8 h-[1px] bg-[#8C7149]/40 group-hover:w-12 transition-all duration-500"></span>
+              </div>
+
+              <div class="relative z-10 flex flex-col items-center my-auto py-4">
+                <div class="relative px-7 py-5 bg-white border border-black/10 rounded-sm shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06)] group-hover:shadow-[0_16px_36px_-6px_rgba(140,113,73,0.18)] group-hover:-translate-y-1 transition-all duration-500">
                   <img 
                     src="/icons/alex-yap-logo.jpg" 
                     alt="Alex Yap Real Estate Advisor" 
-                    class="h-16 md:h-18 w-auto max-w-[200px] object-contain select-none"
+                    class="h-14 sm:h-16 w-auto max-w-[190px] object-contain select-none"
                     loading="lazy"
                   />
+                  <div class="absolute inset-x-4 -bottom-[1px] h-[2px] bg-gradient-to-r from-transparent via-[#8C7149]/60 to-transparent"></div>
                 </div>
 
-                <div class="relative z-10 my-7 flex items-center justify-center gap-2">
-                  <span class="w-5 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/50 transition-colors duration-300"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
-                  <span class="w-5 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/50 transition-colors duration-300"></span>
+                <div class="my-6 flex items-center justify-center gap-2.5">
+                  <span class="w-6 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/60 transition-colors duration-300"></span>
+                  <span class="w-1.5 h-1.5 rotate-45 border border-[#8C7149] bg-white"></span>
+                  <span class="w-6 h-[1px] bg-black/15 group-hover:bg-[#8C7149]/60 transition-colors duration-300"></span>
                 </div>
+              </div>
 
+              {/* Action CTA */}
+              <div class="relative z-10 w-full max-w-[320px] px-2 pb-1">
                 <a 
                   href="/properties" 
-                  class="relative z-10 font-heading text-[12px] sm:text-[13px] uppercase tracking-[2.5px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm hover:shadow-md whitespace-nowrap active:scale-[0.98]"
+                  class="relative w-full font-heading text-[11px] sm:text-xs uppercase tracking-[2px] bg-[#1a1a1a] text-white px-4 sm:px-6 py-4 hover:bg-[#8C7149] hover:text-white transition-all duration-300 inline-flex items-center justify-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_10px_25px_rgba(140,113,73,0.35)] text-center leading-snug active:scale-[0.98] group/btn"
                 >
-                  <span>Explore All Properties</span>
-                  <span class="font-mono font-bold text-sm transition-transform duration-300 group-hover:translate-x-1">&gt;</span>
+                  <span>View All Listings &amp; Sales</span>
+                  <span class="font-mono font-bold text-sm text-[#d3bc97] group-hover/btn:text-white transition-all duration-300 group-hover/btn:translate-x-1 shrink-0">&gt;</span>
                 </a>
               </div>
+
             </div>
-
           </div>
-        </div>
 
+        </div>
       </div>
     </section>
 
-    <!-- COMMUNITIES SECTION -->
-    <section id="communities" class="scroll-mt-0 lg:scroll-mt-[80px] w-full pt-16 md:pt-24 pb-0 bg-white border-y border-black/10 overflow-hidden">
-      <div class="max-w-7xl mx-auto px-[5vw] mb-10">
+    <!-- SECTION B: COMMUNITIES (Stone BG) -->
+    <section id="communities" class="scroll-mt-0 lg:scroll-mt-[80px] w-full pt-16 md:pt-24 pb-16 md:pb-24 bg-[var(--color-luxury-stone,#ECE8E1)] overflow-hidden">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12 mb-10">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
-              Silicon Valley &amp; Beyond
+              Bay Area Neighborhoods
             </p>
             <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
-              Featured Communities
+              Community Guides
             </h2>
           </div>
           <a 
@@ -322,59 +459,290 @@ const blueprintPillars = [
         </div>
       </div>
 
-      <!-- Flush 4-column edge-to-edge container -->
-      <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-black/10">
+      <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
         {communities.map((comm) => (
-          <CommunityCard {...comm} />
+          <CommunityCardIndex {...comm} />
         ))}
       </div>
     </section>
 
-    <!-- THE BLUEPRINT SECTION -->
-    <section id="why-choose" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-16 md:py-24 px-[5vw] overflow-hidden">
-      <div class="max-w-7xl mx-auto">
-        <div class="mb-12">
-          <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
-            Listing Advisory &amp; Strategy
+    <!-- SECTION C: THE BLUEPRINT (Chalk BG) -->
+    <section id="why-choose" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-20 md:py-32 bg-[var(--color-luxury-chalk,#F4F2EE)] overflow-hidden">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div>
+            <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-2">
+              Listing Advisory &amp; Strategy
+            </p>
+            <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+              The Blueprint to Selling Your Home for Maximum Value
+            </h2>
+          </div>
+          <p class="font-body text-neutral-600 text-sm max-w-md font-light leading-relaxed">
+            A systematic, high-conviction approach dedicated to positioning your property to outperform the market, protect your equity, and maximize buyer competition at every stage.
           </p>
-          <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
-            The Blueprint to Selling
-          </h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* ELEVATED 6-CARD GRID */}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
           {blueprintPillars.map((item) => (
-            <article class="group relative bg-white border border-black/10 hover:border-black/30 p-8 sm:p-10 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden">
-              <span class="absolute top-5 right-8 font-heading text-6xl text-black/[0.04] group-hover:text-[#8C7149]/15 select-none transition-colors duration-500 pointer-events-none">
-                {item.num}
+            <article class="group relative bg-white border border-black/10 p-8 sm:p-10 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_-15px_rgba(140,113,73,0.18)] hover:border-[#8C7149]/50 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+              
+              <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+              
+              <div class="absolute inset-3 border border-black/[0.04] group-hover:border-[#8C7149]/25 transition-colors duration-500 pointer-events-none"></div>
+
+              <span class="absolute top-4 right-6 font-heading text-6xl md:text-7xl font-light text-black/[0.04] group-hover:text-[#8C7149]/15 select-none pointer-events-none transition-all duration-500 group-hover:scale-105">
+                {item.num.replace('Phase ', '')}
               </span>
-              <div>
-                <div class="flex items-center gap-2 mb-6 pb-4 border-b border-black/10">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
-                  <span class="font-body text-[11px] uppercase tracking-[2px] text-[#8C7149] font-medium">
-                    {item.tagline}
+
+              <div class="relative z-10">
+                <div class="flex items-center justify-between mb-8 pb-5 border-b border-black/[0.08] group-hover:border-[#8C7149]/20 transition-colors">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149] group-hover:scale-125 transition-transform duration-300"></span>
+                    <span class="font-body text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium">
+                      {item.tagline}
+                    </span>
+                  </div>
+                  <span class="font-mono text-[10px] uppercase tracking-[2px] text-neutral-400 group-hover:text-[#8C7149] transition-colors">
+                    {item.num}
                   </span>
                 </div>
+
                 <h3 class="font-heading text-xl uppercase tracking-[1px] font-normal text-[#1a1a1a] mb-4 leading-snug group-hover:text-[#8C7149] transition-colors duration-300">
                   {item.title}
                 </h3>
-                <p class="font-body text-[#3d3d3d] text-sm font-light leading-[1.8]">
+                <p class="font-body text-neutral-600 text-sm font-light leading-[1.8]">
                   {item.description}
                 </p>
+              </div>
+
+              <div class="relative z-10 mt-8 pt-4 flex items-center justify-between text-xs tracking-[2px] uppercase text-neutral-400 font-mono">
+                <span class="text-[11px] text-neutral-500 group-hover:text-[#1a1a1a] transition-colors">Proven Execution</span>
+                <span class="w-8 h-[1px] bg-black/15 group-hover:w-16 group-hover:bg-[#8C7149] transition-all duration-500"></span>
               </div>
             </article>
           ))}
         </div>
 
-        <div class="mt-12 flex justify-end">
+        {/* Blueprint Dual Action Buttons */}
+        <div class="mb-16 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-4">
           <a 
             href="/seller" 
-            class="font-heading text-[13px] uppercase tracking-[2px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition-all duration-300 inline-flex items-center gap-3 shadow-sm group"
+            class="font-heading text-[13px] uppercase tracking-[2px] bg-white text-[#1a1a1a] border border-black/15 px-8 py-3.5 hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm group"
           >
-            <span>Explore Complete 10-Step Roadmap</span>
+            <span>Explore Roadmap of Selling</span>
+            <span class="font-mono font-bold text-sm text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all">&gt;</span>
+          </a>
+
+          <a 
+            href="/valuation" 
+            class="font-heading text-[13px] uppercase tracking-[2px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] hover:text-white transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm group"
+          >
+            <span>Request for Home Valuation</span>
+            <span class="font-mono font-bold text-sm text-[#d3bc97] group-hover:text-white group-hover:translate-x-1 transition-all">&gt;</span>
+          </a>
+
+        </div>
+      </div>
+
+      {/* Marquee Section with Global Badge Prop */}
+      <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Selling", "Blueprint"]} />
+    </section>
+
+    <!-- SECTION D: REAL ESTATE JOURNAL (Stone BG) -->
+    <section id="blog" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)] overflow-hidden">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div>
+            <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-2">
+              Expertise &amp; Perspectives
+            </p>
+            <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+              The Journal
+            </h2>
+          </div>
+          <a 
+            href="/blog" 
+            class="font-heading text-xs uppercase tracking-[2px] text-[#1a1a1a] hover:text-[#8C7149] inline-flex items-center gap-2 transition group self-start sm:self-auto"
+          >
+            <span>View All Articles</span>
             <span class="font-mono font-bold text-sm group-hover:translate-x-1 transition-transform">&gt;</span>
           </a>
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {journalPosts.map((post) => (
+            <BlogCardIndex 
+              title={post.title}
+              slug={post.slug}
+              date={post.date}
+              category={post.category}
+              excerpt={post.excerpt}
+              image={post.image}
+              href={post.href}
+            />
+          ))}
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION E: TESTIMONIALS (Chalk BG) -->
+    <section id="testimonials" class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] pt-16 md:pt-24 pb-20 md:pb-28 px-[5vw] scroll-mt-28 border-t border-black/15">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Section Header (Centered) -->
+        <div class="mb-10 md:mb-14 text-center">
+          <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-1.5">
+            Client Experiences
+          </p>
+          <h2 class="font-heading text-[30px] md:text-[42px] font-normal uppercase tracking-[1px] text-[#1a1a1a] leading-tight">
+            Testimonials
+          </h2>
+        </div>
+
+        <!-- 3D Carousel Stage with Side-Flanking Arrows -->
+        <div class="relative w-full max-w-5xl mx-auto py-4">
+          
+          <button 
+            type="button" 
+            id="testimonial-prev" 
+            aria-label="Previous testimonial"
+            class="absolute -left-2 sm:-left-5 lg:-left-7 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95"
+          >
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button 
+            type="button" 
+            id="testimonial-next" 
+            aria-label="Next testimonial"
+            class="absolute -right-2 sm:-right-5 lg:-right-7 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95"
+          >
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <!-- Stage Track -->
+          <div 
+            id="testimonial-stage" 
+            class="relative h-[62vh] min-h-[480px] max-h-[640px] w-full flex items-center justify-center px-2 sm:px-4"
+            tabindex="0"
+            aria-roledescription="carousel"
+          >
+            {testimonials.map((item, index) => (
+              <article 
+                class="testimonial-slide absolute top-0 w-[94%] sm:w-[78%] md:w-[68%] lg:w-[60%] h-full p-6 sm:p-8 md:p-10 flex flex-col justify-between select-none border transition-all duration-500 overflow-hidden shadow-sm"
+                data-index={index}
+              >
+                <div class="card-inner-frame absolute inset-3 pointer-events-none transition-opacity duration-500"></div>
+
+                <!-- Pinned Header (Always Visible) -->
+                <div class="card-header shrink-0 flex items-center justify-between pb-3 mb-2 border-b transition-colors duration-300">
+                  <span class="card-tag font-body text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] font-medium leading-none">
+                    {item.role} &bull; {item.community}
+                  </span>
+                  <span class="card-stars text-xs sm:text-sm tracking-wider leading-none">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                </div>
+
+                <!-- Scrollable Quote Area with Conditional Scrollbar & Prompt -->
+                <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col">
+                  <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
+                    <h3 class="card-headline font-heading uppercase tracking-[1px] mb-3 font-normal leading-snug">
+                      "{item.headline}"
+                    </h3>
+
+                    <p class="card-quote font-body font-light italic">
+                      "{item.quote}"
+                    </p>
+                  </div>
+                  <div class="scroll-prompt shrink-0 text-center py-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-80 pointer-events-none select-none">
+                    Scroll for more &darr;
+                  </div>
+                </div>
+
+                <!-- Pinned Footer (Always Visible) -->
+                <div class="card-footer shrink-0 relative z-10 pt-4 mt-2 border-t flex items-center justify-between transition-colors duration-300">
+                  <div>
+                    <p class="card-client font-heading text-xs sm:text-sm md:text-base uppercase tracking-[1px] font-medium leading-tight">
+                      {item.client}
+                    </p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="card-verified font-body text-[9px] sm:text-[10px] uppercase tracking-[1.5px] font-light leading-none">
+                        Verified Review
+                      </span>
+                    </div>
+                  </div>
+                  <svg class="card-quote-icon w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                  </svg>
+                </div>
+              </article>
+            ))}
+
+            <!-- Card: Dedicated End-Cap Card Linking to /testimonials (Reversed Background) -->
+            <article 
+              class="testimonial-slide testimonial-endcap absolute top-0 w-[94%] sm:w-[78%] md:w-[68%] lg:w-[60%] h-full p-6 sm:p-8 md:p-10 flex flex-col justify-between shadow-2xl select-none border transition-all duration-500 overflow-hidden"
+              data-index={testimonials.length}
+            >
+              <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col">
+                <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
+                  <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium block mb-3">
+                    Guidance You Can Rely On &bull; 20+ Years
+                  </span>
+                  <h3 class="card-headline font-heading text-xl sm:text-2xl md:text-3xl uppercase tracking-[1px] font-normal leading-snug mb-4 text-[#1a1a1a]">
+                    See What It's Like Working With Alex
+                  </h3>
+                  <p class="card-quote font-body text-neutral-600 text-sm sm:text-base font-light leading-relaxed">
+                    Browse reviews from buyers, sellers, and industry colleagues across all markets.
+                  </p>
+                </div>
+                <div class="scroll-prompt shrink-0 text-center py-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-80 pointer-events-none select-none">
+                  Scroll for more &darr;
+                </div>
+              </div>
+
+              <div class="shrink-0 space-y-3 pt-4 border-t border-black/10">
+                <a 
+                  href="/testimonials" 
+                  class="block w-full text-center font-heading text-[11px] sm:text-xs uppercase tracking-[2px] bg-[#1a1a1a] text-white py-3 sm:py-3.5 hover:bg-[#8C7149] hover:text-white transition duration-300 font-medium shadow-sm cursor-pointer"
+                >
+                  View All Reviews &rarr;
+                </a>
+              </div>
+            </article>
+          </div>
+
+          <!-- Pagination Indicator Pills -->
+          <div id="testimonial-dots" class="flex justify-center items-center gap-2 mt-8">
+            {Array.from({ length: testimonials.length + 1 }).map((_, i) => (
+              <button 
+                type="button" 
+                class="carousel-dot h-1.5 transition-all duration-300 bg-black/25 rounded-full cursor-pointer"
+                aria-label={`Go to slide ${i + 1}`}
+                data-dot-index={i}
+              />
+            ))}
+          </div>
+        </div>
+
+        <!-- Bottom Action Row -->
+        <div class="mt-8 flex justify-end">
+          <a 
+            href="/testimonials" 
+            class="w-full sm:w-auto text-center font-heading text-[12px] uppercase tracking-[2px] bg-white text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 py-3.5 px-6 border border-black/15 shadow-sm inline-flex items-center justify-center gap-2 whitespace-nowrap"
+          >
+            <span>View All Reviews</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+
       </div>
     </section>
 
@@ -390,11 +758,254 @@ const blueprintPillars = [
     50% { transform: translateY(100%); }
     100% { transform: translateY(100%); }
   }
+
+  /* Testimonials Base Card Transitions */
+  .testimonial-slide {
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, opacity;
+  }
+
+  .card-headline {
+    font-size: clamp(15px, 2.2vh, 23px);
+    line-height: 1.35;
+  }
+
+  .card-quote {
+    font-size: clamp(12.5px, 1.8vh, 18px);
+    line-height: clamp(1.4, 2.4vh, 1.85);
+  }
+
+  /* Default/Side State for Standard Review Cards (Light) */
+  .testimonial-slide:not(.testimonial-endcap) {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-inner-frame {
+    opacity: 0;
+    border: 1px solid transparent;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-header,
+  .testimonial-slide:not(.testimonial-endcap) .card-footer {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-tag {
+    color: #8C7149;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-stars {
+    color: #8C7149;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-headline {
+    color: #1a1a1a;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-quote {
+    color: #4a4a4a;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-client {
+    color: #1a1a1a;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-verified {
+    color: #8C7149;
+  }
+  .testimonial-slide:not(.testimonial-endcap) .card-quote-icon {
+    color: #d3bc97;
+    opacity: 0.6;
+  }
+
+  /* Default/Side State for End-Cap Card (Dark) */
+  .testimonial-slide.testimonial-endcap {
+    background: linear-gradient(145deg, #181716 0%, #100f0e 100%);
+    border-color: rgba(211, 188, 151, 0.35);
+    color: white;
+  }
+  .testimonial-slide.testimonial-endcap h3 {
+    color: #FFFFFF;
+  }
+  .testimonial-slide.testimonial-endcap p {
+    color: #E2DFD9;
+  }
+  .testimonial-slide.testimonial-endcap span {
+    color: #d3bc97;
+  }
+  .testimonial-slide.testimonial-endcap .border-t {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Conditional Scrollbar States */
+  .card-body-scroll {
+    overflow-y: hidden;
+  }
+
+  .scroll-prompt {
+    display: none;
+  }
+
+  .card-body-scroll.has-overflow {
+    overflow-y: scroll !important;
+    scrollbar-width: thin;
+    scrollbar-color: #8C7149 rgba(0, 0, 0, 0.08);
+  }
+
+  .card-body-scroll.has-overflow::-webkit-scrollbar {
+    width: 6px;
+    display: block !important;
+  }
+
+  .card-body-scroll.has-overflow::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+  }
+
+  .card-body-scroll.has-overflow::-webkit-scrollbar-thumb {
+    background: #8C7149;
+    border-radius: 3px;
+  }
+
+  .card-body-wrapper.has-overflow .scroll-prompt {
+    display: block;
+    color: #8C7149;
+  }
+
+  /* Active (Center) State for Standard Review Cards (Dark) */
+  .testimonial-slide:not(.testimonial-endcap).is-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    z-index: 20;
+    pointer-events: auto;
+    background: linear-gradient(145deg, #181716 0%, #100f0e 100%);
+    border-color: rgba(211, 188, 151, 0.35);
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.45), 0 0 35px -5px rgba(211, 188, 151, 0.12);
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow {
+    scrollbar-color: #d3bc97 rgba(255, 255, 255, 0.15);
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow::-webkit-scrollbar-thumb {
+    background: #d3bc97;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-body-wrapper.has-overflow .scroll-prompt {
+    color: #d3bc97;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-inner-frame {
+    opacity: 1;
+    border: 1px solid rgba(211, 188, 151, 0.18);
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-header,
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-footer {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-tag {
+    color: #d3bc97;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-stars {
+    color: #d3bc97;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-headline {
+    color: #FFFFFF;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-quote {
+    color: #E2DFD9;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-client {
+    color: #FFFFFF;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-verified {
+    color: #d3bc97;
+  }
+
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-quote-icon {
+    color: #d3bc97;
+    opacity: 0.9;
+  }
+
+  /* Active (Center) State for End-Cap Card (Inverted to Light) */
+  .testimonial-slide.testimonial-endcap.is-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    z-index: 20;
+    pointer-events: auto;
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.15), 0 0 35px -5px rgba(140, 113, 73, 0.1);
+  }
+  .testimonial-slide.testimonial-endcap.is-active h3 {
+    color: #1a1a1a;
+  }
+  .testimonial-slide.testimonial-endcap.is-active p {
+    color: #4a4a4a;
+  }
+  .testimonial-slide.testimonial-endcap.is-active span {
+    color: #8C7149;
+  }
+  .testimonial-slide.testimonial-endcap.is-active .border-t {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .testimonial-slide.is-prev {
+    opacity: 0.45;
+    transform: translateX(-40%) scale(0.92);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .testimonial-slide.is-next {
+    opacity: 0.45;
+    transform: translateX(40%) scale(0.92);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .testimonial-slide.is-hidden {
+    opacity: 0;
+    transform: translateX(0) scale(0.75);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .testimonial-slide.is-prev {
+      transform: translateX(-14%) scale(0.95);
+      opacity: 0.25;
+    }
+    .testimonial-slide.is-next {
+      transform: translateX(14%) scale(0.95);
+      opacity: 0.25;
+    }
+  }
+
+  .carousel-dot.active {
+    width: 2rem;
+    background-color: #8C7149;
+  }
+  .carousel-dot:not(.active) {
+    width: 0.5rem;
+  }
 </style>
 
 <script>
   function setupPageScripts() {
-    // 1. Smooth scroll down to curtain container
+    // 1. Smooth Scroll Cue Triggers
     const triggers = document.querySelectorAll('.hero-scroll-trigger');
     const curtain = document.getElementById('curtain-container');
 
@@ -412,57 +1023,214 @@ const blueprintPillars = [
       });
     });
 
-    // 2. Carousel Stepper Logic
+    // 2. Properties Carousel Logic
+    const viewport = document.getElementById('properties-carousel-viewport');
     const track = document.getElementById('properties-carousel-track') as HTMLElement | null;
     const prevBtn = document.getElementById('prop-step-prev') as HTMLButtonElement | null;
     const nextBtn = document.getElementById('prop-step-next') as HTMLButtonElement | null;
     const counter = document.getElementById('prop-counter') as HTMLElement | null;
     const items = Array.from(document.querySelectorAll<HTMLElement>('.carousel-item'));
 
-    if (!track || items.length === 0) return;
-    if (track.dataset.initialized === 'true') return;
-    track.dataset.initialized = 'true';
+    if (track && viewport && items.length > 0 && track.dataset.initialized !== 'true') {
+      track.dataset.initialized = 'true';
 
-    const totalItems = items.length;
-    let currentIndex = 0;
+      const totalItems = items.length;
+      let currentIndex = 0;
 
-    function getVisibleCount(): number {
-      if (window.innerWidth >= 1024) return 3;
-      if (window.innerWidth >= 768) return 2;
-      return 1;
-    }
-
-    function getMaxIndex(): number {
-      return Math.max(0, totalItems - getVisibleCount());
-    }
-
-    function updateCarousel(newIndex: number) {
-      const maxIndex = getMaxIndex();
-      currentIndex = Math.max(0, Math.min(newIndex, maxIndex));
-
-      const itemWidth = items[0].getBoundingClientRect().width;
-      if (track) {
-        track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+      function getVisibleCount(): number {
+        if (window.innerWidth >= 1024) return 3;
+        if (window.innerWidth >= 640) return 2;
+        return 1;
       }
 
-      if (counter) {
-        counter.innerHTML = `<strong class="text-[#1a1a1a] font-semibold">${String(currentIndex + 1).padStart(2, '0')}</strong> / ${String(totalItems).padStart(2, '0')}`;
+      function getMaxIndex(): number {
+        return Math.max(0, totalItems - getVisibleCount());
       }
 
-      if (prevBtn) prevBtn.disabled = currentIndex === 0;
-      if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
+      function updateCarousel(newIndex: number) {
+        const maxIndex = getMaxIndex();
+        currentIndex = Math.max(0, Math.min(newIndex, maxIndex));
+
+        const itemWidth = items[0].getBoundingClientRect().width;
+        if (track) {
+          track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        }
+
+        if (counter) {
+          counter.innerHTML = `<strong class="text-[#1a1a1a] font-semibold">${String(currentIndex + 1).padStart(2, '0')}</strong> / ${String(totalItems).padStart(2, '0')}`;
+        }
+
+        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+        if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
+      }
+
+      function goNext() {
+        if (currentIndex < getMaxIndex()) updateCarousel(currentIndex + 1);
+      }
+
+      function goPrev() {
+        if (currentIndex > 0) updateCarousel(currentIndex - 1);
+      }
+
+      prevBtn?.addEventListener('click', goPrev);
+      nextBtn?.addEventListener('click', goNext);
+
+      viewport.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'ArrowRight') goNext();
+        if (e.key === 'ArrowLeft') goPrev();
+      });
+
+      let startX = 0;
+      let startY = 0;
+      let isHorizontalSwipe = false;
+
+      viewport.addEventListener('touchstart', (e: TouchEvent) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isHorizontalSwipe = false;
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', (e: TouchEvent) => {
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = Math.abs(currentX - startX);
+        const diffY = Math.abs(currentY - startY);
+
+        if (diffX > diffY && diffX > 10) {
+          isHorizontalSwipe = true;
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchend', (e: TouchEvent) => {
+        if (!isHorizontalSwipe) return;
+        const endX = e.changedTouches[0].clientX;
+        const diffX = startX - endX;
+
+        if (Math.abs(diffX) > 40) {
+          if (diffX > 0) {
+            goNext();
+          } else {
+            goPrev();
+          }
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        updateCarousel(currentIndex);
+      });
+
+      updateCarousel(0);
     }
 
-    prevBtn?.addEventListener('click', () => updateCarousel(currentIndex - 1));
-    nextBtn?.addEventListener('click', () => updateCarousel(currentIndex + 1));
+    // 3. Testimonial 3D Carousel Logic with Overflow Check
+    const testStage = document.getElementById('testimonial-stage');
+    if (testStage && testStage.dataset.initialized !== 'true') {
+      testStage.dataset.initialized = 'true';
 
-    window.addEventListener('resize', () => {
-      updateCarousel(currentIndex);
-    });
+      const slides = Array.from(document.querySelectorAll<HTMLElement>('.testimonial-slide'));
+      const testPrevBtn = document.getElementById('testimonial-prev');
+      const testNextBtn = document.getElementById('testimonial-next');
+      const dots = Array.from(document.querySelectorAll<HTMLElement>('.carousel-dot'));
 
-    updateCarousel(0);
+      if (slides.length > 0) {
+        let currentTestIndex = 0;
+        const total = slides.length;
+
+        function checkOverflowStates() {
+          slides.forEach((slide) => {
+            const scrollContainer = slide.querySelector('.card-body-scroll');
+            const wrapper = slide.querySelector('.card-body-wrapper');
+            if (scrollContainer && wrapper) {
+              scrollContainer.classList.add('has-overflow');
+              wrapper.classList.add('has-overflow');
+              
+              const hasOverflow = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+              
+              if (!hasOverflow) {
+                scrollContainer.classList.remove('has-overflow');
+                wrapper.classList.remove('has-overflow');
+              }
+            }
+          });
+        }
+
+        function updateTestimonialCarousel() {
+          const isMobile = window.innerWidth < 768;
+
+          slides.forEach((slide, i) => {
+            slide.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden');
+            
+            const prevIndex = (currentTestIndex - 1 + total) % total;
+            const nextIndex = (currentTestIndex + 1) % total;
+
+            if (i === currentTestIndex) {
+              slide.classList.add('is-active');
+            } else if (!isMobile && i === prevIndex) {
+              slide.classList.add('is-prev');
+            } else if (!isMobile && i === nextIndex) {
+              slide.classList.add('is-next');
+            } else {
+              slide.classList.add('is-hidden');
+            }
+          });
+
+          dots.forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === currentTestIndex);
+          });
+          checkOverflowStates();
+        }
+
+        function goTestNext() {
+          currentTestIndex = (currentTestIndex + 1) % total;
+          updateTestimonialCarousel();
+        }
+
+        function goTestPrev() {
+          currentTestIndex = (currentTestIndex - 1 + total) % total;
+          updateTestimonialCarousel();
+        }
+
+        testPrevBtn?.addEventListener('click', goTestPrev);
+        testNextBtn?.addEventListener('click', goTestNext);
+
+        slides.forEach((slide) => {
+          slide.addEventListener('click', () => {
+            if (slide.classList.contains('is-prev')) goTestPrev();
+            if (slide.classList.contains('is-next')) goTestNext();
+          });
+        });
+
+        dots.forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            currentTestIndex = index;
+            updateTestimonialCarousel();
+          });
+        });
+
+        let testStartX = 0;
+        testStage.addEventListener('touchstart', (e) => {
+          testStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        testStage.addEventListener('touchend', (e) => {
+          const endX = e.changedTouches[0].clientX;
+          const diff = testStartX - endX;
+          if (Math.abs(diff) > 40) {
+            if (diff > 0) goTestNext();
+            else goTestPrev();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          checkOverflowStates();
+          updateTestimonialCarousel();
+        });
+
+        checkOverflowStates();
+        updateTestimonialCarousel();
+      }
+    }
   }
 
-  setupPageScripts();
   document.addEventListener('astro:page-load', setupPageScripts);
 </script>

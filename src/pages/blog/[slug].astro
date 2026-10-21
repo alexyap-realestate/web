@@ -1,0 +1,317 @@
+---
+// ============================================================================
+// COMPONENT: blog/[slug].astro
+// USAGE: Individual blog detail page. Reads blog post data from Excel, 
+//        translates Markdown/Excel text into styled HTML elements via 
+//        `formatPostContent`, and renders a clean reading canvas with 
+//        previous/next article pagination.
+// ============================================================================
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
+import { getAllPosts, type BlogPost } from '../../utils/getBlog.ts';
+
+// ============================================================================
+// 1. GET STATIC PATHS (Build Time / Cloudflare Deploy)
+// Generates a static web page for every blog post found in the Excel spreadsheet.
+// ============================================================================
+export async function getStaticPaths() {
+  const allPosts = getAllPosts();
+
+  return allPosts.map((post, index) => {
+    // Determine the previous and next article in sequence for bottom navigation
+    const prevPost = index > 0 ? allPosts[index - 1] : null;
+    const nextPost = index < allPosts.length - 1 ? allPosts[index + 1] : null;
+
+    return {
+      params: { slug: post.slug },
+      props: {
+        post,
+        prevPost: prevPost ? { title: prevPost.title, slug: prevPost.slug } : null,
+        nextPost: nextPost ? { title: nextPost.title, slug: nextPost.slug } : null,
+      }
+    };
+  });
+}
+
+// ============================================================================
+// 2. PROPS HANDLING (With Dev-Mode Live Reloading)
+// Receives the current post and neighbor links. In development mode, it reads 
+// live updates directly from Excel so you can edit text and see it instantly.
+// ============================================================================
+interface Props {
+  post: BlogPost;
+  prevPost: { title: string; slug: string } | null;
+  nextPost: { title: string; slug: string } | null;
+}
+
+let { post, prevPost, nextPost } = Astro.props;
+
+if (import.meta.env.DEV) {
+  const currentSlug = Astro.params.slug;
+  const livePosts = getAllPosts();
+  const currentIndex = livePosts.findIndex((p) => p.slug === currentSlug);
+
+  if (currentIndex !== -1) {
+    post = livePosts[currentIndex];
+    const prev = currentIndex > 0 ? livePosts[currentIndex - 1] : null;
+    const next = currentIndex < livePosts.length - 1 ? livePosts[currentIndex + 1] : null;
+    prevPost = prev ? { title: prev.title, slug: prev.slug } : null;
+    nextPost = next ? { title: next.title, slug: next.slug } : null;
+  }
+}
+
+// ============================================================================
+// 🎯 EXCEL TEXT TRANSLATOR (formatPostContent)
+// Converts plain text and formatting codes typed in Excel into beautifully 
+// styled website elements (headings, bold text, bullet lists, blockquotes, etc.).
+// ============================================================================
+const formatPostContent = (str: string) => {
+  // 1. Safety Check: If the Excel cell is empty, return an empty string
+  if (!str) return '';
+
+  // 2. Character Clean-up: Converts encoded web symbols back to normal characters
+  let text = str
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&');
+
+  // If the text is already valid HTML code, leave it as is
+  if (/<\/?[a-z][\s\S]*>/i.test(text)) {
+    return text;
+  }
+
+  // 3. Headings Translation
+  // Turns "### Subheading" into an HTML Level 3 Heading (medium bold title)
+  text = text.replace(
+    /^###[ \t]+(.*$)/gim, 
+    '<h3 class="text-xl font-heading font-normal uppercase tracking-[1px] text-[#1a1a1a] mt-10 mb-4 leading-snug">$1</h3>'
+  );
+
+  // Turns "## Main Heading" into an HTML Level 2 Heading with a bottom dividing line
+  text = text.replace(
+    /^##[ \t]+(.*$)/gim, 
+    '<h2 class="text-2xl sm:text-3xl font-heading font-normal uppercase tracking-[1.5px] text-[#1a1a1a] mt-12 mb-6 leading-tight border-b border-black/10 pb-3">$1</h2>'
+  );
+
+  // 4. Bold & Italic Style Translation
+  // Turns **bold text** into dark, medium-weight text
+  text = text.replace(
+    /\*\*(.*?)\*\*/gim, 
+    '<strong class="font-medium text-[#1a1a1a]">$1</strong>'
+  );
+
+  // Turns *italic text* into styled slanting text
+  text = text.replace(
+    /\*(.*?)\*/gim, 
+    '<em class="italic text-neutral-800">$1</em>'
+  );
+
+  // 5. Links Translation
+  // Turns [Link Text](https://website.com) into a clickable gold underlined link
+  text = text.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/gim,
+    '<a href="$2" target="_blank" rel="noopener noreferrer" class="font-medium underline underline-offset-4 decoration-[#8C7149] text-[#8C7149] hover:text-[#1a1a1a] transition-colors inline-flex items-center gap-1">$1</a>'
+  );
+
+  // 6. Blockquotes (Callout boxes) Translation
+  // Turns lines starting with ">" into an indented quote box with a gold left border
+  text = text.replace(
+    /^>[ \t]+(.*$)/gim,
+    '<blockquote class="border-l-[3px] border-[#8C7149] bg-[#FAF8F5] pl-6 sm:pl-8 py-5 my-8 italic text-neutral-800 font-body text-base sm:text-lg leading-relaxed shadow-sm">$1</blockquote>'
+  );
+
+  // 7. Divider Lines Translation
+  // Turns "---" on its own line into a clean horizontal dividing line
+  text = text.replace(
+    /^---$/gim,
+    '<hr class="my-10 border-t border-black/10" />'
+  );
+
+  // 8. Paragraphs & Bullet Lists Processing
+  // Splits the text into distinct blocks wherever there are blank lines in Excel
+  const blocks = text.split(/\r?\n\s*\r?\n/);
+
+  const formattedBlocks = blocks
+    .map((b) => b.trim())
+    .filter((b) => b.length > 0)
+    .map((b) => {
+      // If the block is already a heading, quote, or divider, leave it untouched
+      if (
+        b.startsWith('<h2') || 
+        b.startsWith('<h3') || 
+        b.startsWith('<blockquote') || 
+        b.startsWith('<hr')
+      ) {
+        return b;
+      }
+
+      // If lines start with "- ", convert them into an HTML bullet point list
+      if (b.split('\n').every((line) => line.trim().startsWith('- '))) {
+        const items = b
+          .split('\n')
+          .map((line) => `<li class="ml-4 pl-1">${line.trim().replace(/^-\s*/, '')}</li>`)
+          .join('');
+        return `<ul class="list-disc list-outside mb-6 space-y-2 text-neutral-700 leading-relaxed font-light font-body">${items}</ul>`;
+      }
+
+      // Otherwise, wrap standard text blocks inside a beautifully spaced paragraph tag
+      return `<p class="mb-6 leading-[1.85] text-neutral-700 font-body font-light text-base sm:text-lg">${b.replace(/\r?\n/g, '<br />')}</p>`;
+    });
+
+  return formattedBlocks.join('');
+};
+
+const renderedContent = formatPostContent(post.content);
+---
+
+<!-- ======================================================================= -->
+<!-- PAGE HTML TEMPLATE                                                      -->
+<!-- ======================================================================= -->
+<BaseLayout title={`${post.title} | Alex Yap Real Estate Advisor`}>
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] min-h-screen overflow-x-hidden pt-28 md:pt-36">
+    
+    <!-- Outer Editorial Container -->
+    <section class="w-full py-12 md:py-20">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <!-- Centered Reading Canvas (Max width 4xl for comfortable book-like line length) -->
+        <div class="max-w-4xl mx-auto">
+          
+          <!-- Top Navigation Bar (Back to Journal + Prev/Next Article Links in Matching Format) -->
+          <div class="flex items-center justify-between mb-10">
+            <a 
+              href="/blog" 
+              class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[2px] text-neutral-500 hover:text-[#8C7149] transition-colors group"
+            >
+              <span class="font-bold text-sm leading-none transition-transform group-hover:-translate-x-1">&lt;</span>
+              <span>Back to Journal</span>
+            </a>
+
+            <div class="flex items-center gap-6">
+              {prevPost ? (
+                <a 
+                  href={`/blog/${prevPost.slug}`} 
+                  class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[2px] text-neutral-500 hover:text-[#8C7149] transition-colors group"
+                  title={prevPost.title}
+                >
+                  <span class="font-bold text-sm leading-none transition-transform group-hover:-translate-x-1">&lt;</span>
+                  <span>Prev</span>
+                </a>
+              ) : null}
+              {nextPost ? (
+                <a 
+                  href={`/blog/${nextPost.slug}`} 
+                  class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[2px] text-neutral-500 hover:text-[#8C7149] transition-colors group"
+                  title={nextPost.title}
+                >
+                  <span>Next</span>
+                  <span class="font-bold text-sm leading-none transition-transform group-hover:translate-x-1">&gt;</span>
+                </a>
+              ) : null}
+            </div>
+          </div>
+
+          <!-- Article Header (Category, Date, Title, Excerpt) -->
+          <header class="mb-12">
+            {(post.category || post.date) && (
+              <div class="flex items-center gap-3 mb-4">
+                {post.category && (
+                  <span class="font-body text-[11px] uppercase tracking-[2px] text-[#8C7149] bg-white border border-black/10 px-3 py-1 font-medium shadow-sm">
+                    {post.category}
+                  </span>
+                )}
+                {post.date && (
+                  <span class="text-neutral-500 text-xs font-mono tracking-wider">
+                    {post.date}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <h1 class="font-heading text-2xl sm:text-3xl md:text-4xl uppercase tracking-[1px] text-[#1a1a1a] font-normal leading-[1.2] mb-6">
+              {post.title}
+            </h1>
+
+            {post.excerpt && (
+              <p class="font-body text-neutral-600 text-base sm:text-lg md:text-xl font-light leading-relaxed border-l-2 border-[#8C7149] pl-5 italic">
+                {post.excerpt}
+              </p>
+            )}
+          </header>
+
+          <!-- Featured Cover Image with Luxury Inset Border -->
+          {post.image && (
+            <div class="relative w-full aspect-[16/9] max-h-[500px] overflow-hidden mb-12 shadow-sm border border-black/10 bg-neutral-900">
+              <img 
+                src={post.image} 
+                alt={post.title} 
+                class="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          <!-- Main Translated Article Body Box -->
+          {renderedContent && (
+            <div class="bg-white border border-black/10 p-8 sm:p-12 md:p-16 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
+              <article class="blog-content prose prose-neutral max-w-none text-[#2b2b2b]">
+                <div set:html={renderedContent} />
+              </article>
+            </div>
+          )}
+
+          <!-- Previous / Next Article Pagination Controls -->
+          <nav aria-label="Post navigation" class="flex items-center justify-between border-t border-black/10 pt-10 mt-16">
+            {prevPost ? (
+              <a 
+                href={`/blog/${prevPost.slug}`} 
+                aria-label={`Previous article: ${prevPost.title}`}
+                class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all font-mono text-xs uppercase tracking-[2px] shadow-sm group"
+              >
+                <span class="font-bold text-sm leading-none transition-transform group-hover:-translate-x-1">&lt;</span>
+                <span>Prev Article</span>
+              </a>
+            ) : (
+              <div />
+            )}
+
+            {nextPost ? (
+              <a 
+                href={`/blog/${nextPost.slug}`} 
+                aria-label={`Next article: ${nextPost.title}`}
+                class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-white text-[#1a1a1a] border border-black/15 hover:bg-[#1a1a1a] hover:text-white transition-all font-mono text-xs uppercase tracking-[2px] shadow-sm group ml-auto"
+              >
+                <span>Next Article</span>
+                <span class="font-bold text-sm leading-none transition-transform group-hover:translate-x-1">&gt;</span>
+              </a>
+            ) : (
+              <div />
+            )}
+          </nav>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <WorkWithAlexCTA />
+</BaseLayout>
+
+<!-- Custom Styling for Links Inside Translated Articles -->
+<style is:global>
+  .blog-content a {
+    color: #8C7149 !important;
+    text-decoration: underline dotted #8C7149 !important;
+    text-underline-offset: 6px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .blog-content a:hover {
+    color: #1a1a1a !important;
+    text-decoration-color: #1a1a1a !important;
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+// ============================================================================
+// COMPONENT: MarqueeTicker.astro
+// USAGE: Infinite-scrolling luxury text ticker ribbon used across pages.
+// LAYOUT: Dark textured bar (#1a1a1a) with dual looping content sets and 
+//         a taller, elevated architectural divider badge breaking past bounds.
+// ============================================================================
+
+interface Item {
+  title: string;    
+  subtitle: string; 
+}
+
+interface Props {
+  items: Item[];         
+  speed?: string;        
+  badgeText?: string[];  // Two-line text array, e.g. ["Selling", "Blueprint"]
+}
+
+const { items, speed = "80s", badgeText } = Astro.props;
+---
+
+<!-- Outer Container: overflow-visible allows the badge to break past top and bottom borders -->
+<div class="w-full bg-[#1a1a1a] text-white py-8 md:py-10 relative border-y border-white/10 overflow-visible select-none">
+  
+  <!-- ELEVATED ARCHITECTURAL BADGE: Taller height (-top-3 and -bottom-3) with gold divider -->
+  {badgeText && badgeText.length === 2 && (
+    <div class="absolute left-0 -top-3 -bottom-3 z-10 flex items-center justify-center bg-[#1a1a1a] text-white px-4 sm:px-8 md:px-12 border-r border-[#d3bc97]/30 shadow-[15px_0_40px_rgba(0,0,0,0.7)] select-none pointer-events-none text-center">
+      <div class="flex flex-col tracking-[2px] uppercase font-heading text-[11px] sm:text-xs md:text-sm font-normal leading-tight text-center">
+        <span class="text-[#d3bc97]">{badgeText[0]}</span>
+        <span>{badgeText[1]}</span>
+      </div>
+    </div>
+  )}
+
+  <!-- Viewport Window: Keeps overflow-hidden so scrolling ticker text stays constrained -->
+  <div class="w-full overflow-hidden">
+    
+    <!-- ANIMATED TRACK -->
+    <div 
+      class="marquee-track flex whitespace-nowrap items-center" 
+      style={`animation-duration: ${speed};`}
+    >
+      
+      <!-- SET 1: PRIMARY CONTENT GROUP -->
+      <div class="marquee-group flex items-center shrink-0">
+        {items.map((item) => (
+          <div class="flex items-center">
+            
+            <div class="mx-8 sm:mx-10 flex flex-col items-center text-center">
+              <span class="font-heading text-base sm:text-lg uppercase tracking-[2px] text-[#d3bc97] leading-tight">
+                {item.title}
+              </span>
+              <span class="font-body text-[11px] uppercase tracking-[1.5px] text-white/60 mt-1">
+                {item.subtitle}
+              </span>
+            </div>
+
+            <span class="text-[#d3bc97]/40 px-3 text-lg select-none" aria-hidden="true">
+              &bull;
+            </span>
+
+          </div>
+        ))}
+      </div>
+
+      <!-- SET 2: DUPLICATE CONTENT GROUP (CLONE) -->
+      <div class="marquee-group flex items-center shrink-0" aria-hidden="true">
+        {items.map((item) => (
+          <div class="flex items-center">
+            
+            <div class="mx-8 sm:mx-10 flex flex-col items-center text-center">
+              <span class="font-heading text-base sm:text-lg uppercase tracking-[2px] text-[#d3bc97] leading-tight">
+                {item.title}
+              </span>
+              <span class="font-body text-[11px] uppercase tracking-[1.5px] text-white/60 mt-1">
+                {item.subtitle}
+              </span>
+            </div>
+
+            <span class="text-[#d3bc97]/40 px-3 text-lg select-none">
+              &bull;
+            </span>
+
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Track Movement: Uses GPU transform for 60fps smooth horizontal translation */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: scrollMarquee linear infinite;
+  }
+
+  /* Interaction: Pauses scrolling when visitor hovers with their mouse to read */
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  /* Keyframe Loop: Scrolls from 0 to -50% (exactly the width of Set 1) before repeating */
+  @keyframes scrollMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Accessibility: Disables animation and restores scrollbar for motion-sensitive users */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+      transform: translateX(0);
+    }
+    .marquee-group[aria-hidden="true"] {
+      display: none;
+    }
+  }
+</style>

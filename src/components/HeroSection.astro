@@ -1,0 +1,87 @@
+---
+// ============================================================================
+// COMPONENT: HeroSection.astro
+// USAGE: Reusable subpage hero masthead for editorial and directory pages
+//        (/properties, /communities, /seller, /buyer, /about, /valuation, etc.)
+// LAYOUT: High-impact full-bleed architectural photograph with a bottom-anchored,
+//         left-aligned editorial title block and natural bottom scrim lighting.
+// ============================================================================
+
+// 1. DATA INPUTS (PROPS)
+interface Props {
+  tag?: string;      // Category or micro-badge text (e.g. "Over 20 Years Experience")
+  title: string;     // Primary H1 page headline (e.g. "Featured Listings & Sales")
+  subtitle?: string; // Supporting 1-2 sentence lead-in description
+  image?: string;    // Background hero photo URL
+  imageAlt?: string; // Accessible image description for screen readers
+}
+
+const {
+  tag = 'Expertise & Perspectives',
+  title,
+  subtitle,
+  image = 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85',
+  imageAlt = 'Luxury Real Estate Interior',
+} = Astro.props;
+---
+
+<!-- ======================================================================= -->
+<!-- HERO CONTAINER                                                          -->
+<!-- Full width with calibrated viewport height (460px mobile -> 760px max)  -->
+<!-- ======================================================================= -->
+<section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
+  
+  <!-- ===================================================================== -->
+  <!-- 1. NATURAL FULL-BLEED BACKGROUND PHOTOGRAPH                           -->
+  <!-- Displays at 100% natural vibrance without artificial darkening filters -->
+  <!-- ===================================================================== -->
+  <img 
+    src={image} 
+    alt={imageAlt} 
+    class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+    loading="eager"
+  />
+
+  <!-- ===================================================================== -->
+  <!-- 2. SOFT BOTTOM-UP CONTRAST SCRIM                                      -->
+  <!-- Transparent across top 65%; gently rises to 75% black behind the text -->
+  <!-- ===================================================================== -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- 3. LEFT-ANCHORED EDITORIAL MASTHEAD OVERLAY                           -->
+  <!-- Pinned to the site-wide grid boundary (max-w-[96rem] px-6 lg:px-12)   -->
+  <!-- ===================================================================== -->
+  <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+    <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
+      <div class="max-w-3xl text-white">
+        
+        <!-- Category Eyebrow Badge with Gold Pulse Indicator -->
+        {tag && (
+          <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
+            <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
+              {tag}
+            </span>
+          </div>
+        )}
+
+        <!-- Primary Display H1 Title -->
+        <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+          {title}
+        </h1>
+
+        <!-- Subtitle with Signature Vertical Gold Hairline Accent -->
+        {subtitle && (
+          <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
+            <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
+              {subtitle}
+            </p>
+          </div>
+        )}
+
+      </div>
+    </div>
+  </div>
+
+</section>
