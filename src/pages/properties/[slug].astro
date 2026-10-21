@@ -10,7 +10,7 @@
 //        overlay navigation arrows, photo counter badge, synchronized thumbnail 
 //        filmstrip with custom visible scrollbar, original specifications grid, 
 //        full-width matching containers, taller map, clean status-only eyebrow 
-//        badge, and clean bottom pagination.
+//        badge, clean bottom pagination, and duplicate-slug safety protection.
 // ============================================================================
 
 import '../../data/properties.xlsx?raw';
@@ -50,6 +50,11 @@ export async function getStaticPaths() {
 
   const fallbackHero = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2560&q=85';
 
+  // ==========================================================================
+  // 🛡️ DUPLICATE-SLUG PROTECTION (Keeps first slug clean, appends -2, -3 to duplicates)
+  // ==========================================================================
+  const seenSlugs = new Map<string, number>();
+
   const processedItems = rawRows.map((row) => {
     const address = String(row.address || row.Address || '').trim();
     const city = String(row.city || row.City || '').trim();
@@ -60,7 +65,20 @@ export async function getStaticPaths() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+      
+    let baseSlug = String(row.slug || row.Slug || fallbackSlug).trim();
+    if (!baseSlug) baseSlug = 'property';
+
+    let finalSlug = baseSlug;
+    if (seenSlugs.has(baseSlug)) {
+      const count = seenSlugs.get(baseSlug)! + 1;
+      seenSlugs.set(baseSlug, count);
+      finalSlug = `${baseSlug}-${count}`;
+    } else {
+      seenSlugs.set(baseSlug, 1);
+    }
+
+    const slug = finalSlug;
 
     return { row, address, city, state, zip, slug };
   }).filter(item => item.address.length > 0 && item.slug.length > 0);
@@ -188,15 +206,29 @@ if (import.meta.env.DEV) {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
-    
-    const matchedRow = rawRows.find((row) => {
+   
+    const devSeenSlugs = new Map<string, number>();
+    const processedDevRows = rawRows.map((row) => {
       const addressVal = String(row.address || row.Address || '').trim();
       const fallbackSlug = addressVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const slugVal = String(row.slug || row.Slug || fallbackSlug).trim();
-      return slugVal === currentSlug;
+      let baseSlug = String(row.slug || row.Slug || fallbackSlug).trim();
+      if (!baseSlug) baseSlug = 'property';
+
+      let finalSlug = baseSlug;
+      if (devSeenSlugs.has(baseSlug)) {
+        const count = devSeenSlugs.get(baseSlug)! + 1;
+        devSeenSlugs.set(baseSlug, count);
+        finalSlug = `${baseSlug}-${count}`;
+      } else {
+        devSeenSlugs.set(baseSlug, 1);
+      }
+      return { row, slugVal: finalSlug };
     });
 
-    if (matchedRow) {
+    const matchedItem = processedDevRows.find(item => item.slugVal === currentSlug);
+
+    if (matchedItem) {
+      const matchedRow = matchedItem.row;
       const address = String(matchedRow.address || matchedRow.Address || '').trim();
       const city = String(matchedRow.city || matchedRow.City || '').trim();
       const state = String(matchedRow.state || matchedRow.State || 'California').trim();
@@ -377,7 +409,7 @@ const totalPhotos = property.gallery.length;
     <section class="w-full pb-12 md:pb-20">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
-        <!-- Back Navigation & Top Header Bar (Matching Blog format with < All Properties + < Prev / Next >) -->
+        <!-- Back Navigation & Top Header Bar -->
         <div class="flex items-center justify-between mb-8">
           <a 
             href="/properties" 
@@ -430,11 +462,11 @@ const totalPhotos = property.gallery.length;
         </header>
 
         <!-- ================================================================= -->
-        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                       -->
+        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                      -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
           
-          <!-- Main Large Stage Photo with Contain View & Luxury Stone Background Match (#ECE8E1) -->
+          <!-- Main Large Stage Photo with Contain View & Luxury Stone Background Match -->
           <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-4 border border-black/10 group flex items-center justify-center">
             <img 
               id="main-stage-img"
@@ -443,7 +475,6 @@ const totalPhotos = property.gallery.length;
               class="max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300"
             />
 
-            <!-- Photo Number Counter Badge Over Photo (Top Right) -->
             {totalPhotos > 1 && (
               <div class="absolute top-4 right-4 z-20 bg-black/70 backdrop-blur-md text-white px-3.5 py-1 font-mono text-xs tracking-[2px] border border-white/20 shadow-md select-none pointer-events-none">
                 <span id="current-photo-num">01</span> / {String(totalPhotos).padStart(2, '0')}
@@ -452,7 +483,6 @@ const totalPhotos = property.gallery.length;
 
             {property.gallery.length > 1 && (
               <>
-                <!-- Previous Arrow Button -->
                 <button 
                   type="button" 
                   id="stage-prev-btn"
@@ -462,7 +492,6 @@ const totalPhotos = property.gallery.length;
                   <span class="font-mono font-bold text-lg">&lt;</span>
                 </button>
 
-                <!-- Next Arrow Button -->
                 <button 
                   type="button" 
                   id="stage-next-btn"
@@ -505,7 +534,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- PROPERTY SPECIFICATIONS BAR                                      -->
+        <!-- PROPERTY SPECIFICATIONS BAR                                     -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-6 sm:p-10 mb-12 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center pb-6 border-b border-black/10">
@@ -544,13 +573,13 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- PROPERTY OVERVIEW NARRATIVE                                       -->
+        <!-- PROPERTY OVERVIEW NARRATIVE                                     -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-8 sm:p-12 md:p-16 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
           <h2 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">
             Property Overview
           </h2>
-          
+         
           {renderedDescription ? (
             <div class="property-content prose prose-neutral max-w-none text-[#2b2b2b]">
               <div set:html={renderedDescription} />
@@ -563,7 +592,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- MAP SECTION                                                       -->
+        <!-- MAP SECTION                                                     -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-6 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.03)] mb-16">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/10">
@@ -629,9 +658,6 @@ const totalPhotos = property.gallery.length;
   <WorkWithAlexCTA />
 </BaseLayout>
 
-<!-- ======================================================================= -->
-<!-- STYLING FOR VISIBLE CUSTOM SCROLLBAR BELOW FILMSTRIP                    -->
-<!-- ======================================================================= -->
 <style>
   .scrollbar-custom {
     overflow-x: auto;
@@ -655,9 +681,6 @@ const totalPhotos = property.gallery.length;
   }
 </style>
 
-<!-- ======================================================================= -->
-<!-- CLIENT-SIDE SCRIPT: SYNCHRONIZED GALLERY, COUNTER & SCROLLBAR           -->
-<!-- ======================================================================= -->
 <script>
   function setupPropertyGallery() {
     const mainImg = document.getElementById('main-stage-img') as HTMLImageElement;
@@ -679,19 +702,16 @@ const totalPhotos = property.gallery.length;
 
       if (!newUrl) return;
 
-      // Smooth opacity cross-fade
       mainImg.style.opacity = '0';
       setTimeout(() => {
         mainImg.src = newUrl;
         mainImg.style.opacity = '1';
       }, 150);
 
-      // Update counter badge number
       if (counterNum) {
         counterNum.textContent = String(currentIndex + 1).padStart(2, '0');
       }
 
-      // Highlight active thumbnail and scroll it into view
       thumbButtons.forEach((t) => {
         t.classList.remove('border-[#8C7149]', 'opacity-100');
         t.classList.add('border-transparent', 'opacity-60');
@@ -701,14 +721,12 @@ const totalPhotos = property.gallery.length;
       targetBtn.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
     }
 
-    // Thumbnail click listeners
     thumbButtons.forEach((btn, index) => {
       btn.addEventListener('click', () => {
         updateActiveImage(index);
       });
     });
 
-    // Arrow click listeners
     prevBtn?.addEventListener('click', () => {
       updateActiveImage(currentIndex - 1);
     });
@@ -717,7 +735,6 @@ const totalPhotos = property.gallery.length;
       updateActiveImage(currentIndex + 1);
     });
 
-    // Mouse drag scrolling support for the filmstrip
     if (filmRoll) {
       let isDown = false;
       let startX = 0;
@@ -746,7 +763,6 @@ const totalPhotos = property.gallery.length;
   document.addEventListener('astro:page-load', setupPropertyGallery);
 </script>
 
-<!-- Custom Styling for Links Inside Translated Property Descriptions -->
 <style is:global>
   .property-content a {
     color: #8C7149 !important;

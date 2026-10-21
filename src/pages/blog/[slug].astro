@@ -1,10 +1,15 @@
 ---
 // ============================================================================
 // COMPONENT: blog/[slug].astro
-// USAGE: Individual blog detail page. Reads blog post data from Excel, 
+// USAGE: Individual blog detail page. Reads blog post data via `getAllPosts()`, 
 //        translates Markdown/Excel text into styled HTML elements via 
 //        `formatPostContent`, and renders a clean reading canvas with 
 //        previous/next article pagination.
+//
+// 🛡️ DUPLICATE-SLUG SAFETY NOTE:
+// To ensure URLs never collide if two blog posts share the same slug, 
+// this file processes the array from `getAllPosts()`, tracks used slugs 
+// with a Map, and automatically appends '-2', '-3', etc. to any duplicates.
 // ============================================================================
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -16,7 +21,31 @@ import { getAllPosts, type BlogPost } from '../../utils/getBlog.ts';
 // Generates a static web page for every blog post found in the Excel spreadsheet.
 // ============================================================================
 export async function getStaticPaths() {
-  const allPosts = getAllPosts();
+  const rawPosts = getAllPosts();
+
+  // ==========================================================================
+  // 🛡️ DUPLICATE-SLUG PROTECTION LOGIC
+  // Keeps the first occurrence clean, and automatically appends -2, -3 to duplicates.
+  // ==========================================================================
+  const seenSlugs = new Map<string, number>();
+
+  const allPosts = rawPosts.map((post) => {
+    const baseSlug = post.slug || 'post';
+
+    let finalSlug = baseSlug;
+    if (seenSlugs.has(baseSlug)) {
+      const count = seenSlugs.get(baseSlug)! + 1;
+      seenSlugs.set(baseSlug, count);
+      finalSlug = `${baseSlug}-${count}`;
+    } else {
+      seenSlugs.set(baseSlug, 1);
+    }
+
+    return {
+      ...post,
+      slug: finalSlug
+    };
+  });
 
   return allPosts.map((post, index) => {
     // Determine the previous and next article in sequence for bottom navigation
@@ -35,9 +64,9 @@ export async function getStaticPaths() {
 }
 
 // ============================================================================
-// 2. PROPS HANDLING (With Dev-Mode Live Reloading)
-// Receives the current post and neighbor links. In development mode, it reads 
-// live updates directly from Excel so you can edit text and see it instantly.
+// 2. PROPS HANDLING (With Dev-Mode Live Reloading & Duplicate Protection)
+// Receives the current post and neighbor links. In development mode, it applies 
+// the same duplicate-slug safety so live previews match your production build.
 // ============================================================================
 interface Props {
   post: BlogPost;
@@ -49,7 +78,22 @@ let { post, prevPost, nextPost } = Astro.props;
 
 if (import.meta.env.DEV) {
   const currentSlug = Astro.params.slug;
-  const livePosts = getAllPosts();
+  const rawLivePosts = getAllPosts();
+
+  const seenSlugsDev = new Map<string, number>();
+  const livePosts = rawLivePosts.map((p) => {
+    const baseSlug = p.slug || 'post';
+    let finalSlug = baseSlug;
+    if (seenSlugsDev.has(baseSlug)) {
+      const count = seenSlugsDev.get(baseSlug)! + 1;
+      seenSlugsDev.set(baseSlug, count);
+      finalSlug = `${baseSlug}-${count}`;
+    } else {
+      seenSlugsDev.set(baseSlug, 1);
+    }
+    return { ...p, slug: finalSlug };
+  });
+
   const currentIndex = livePosts.findIndex((p) => p.slug === currentSlug);
 
   if (currentIndex !== -1) {

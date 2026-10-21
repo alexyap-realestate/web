@@ -4,7 +4,7 @@
 // USAGE: Individual community/neighborhood detail page. Reads community data
 //        from communities.xlsx, translates descriptions, and renders a hero
 //        photo stage with thumbnail filmstrip, narrative overview, and
-//        pagination.
+//        pagination with duplicate-slug safety.
 // ============================================================================
 
 import '../../data/communities.xlsx?raw';
@@ -23,6 +23,11 @@ export async function getStaticPaths() {
   const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
 
   const fallbackHero = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2560&q=85';
+  
+  // ==========================================================================
+  // 🛡️ DUPLICATE-SLUG PROTECTION (Keeps first slug clean, appends -2, -3 to duplicates)
+  // ==========================================================================
+  const seenSlugs = new Map<string, number>();
 
   const processedItems = rawRows.map((row) => {
     const name = String(row.name || row.Name || '').trim();
@@ -34,7 +39,20 @@ export async function getStaticPaths() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    const slug = String(row.slug || row.Slug || fallbackSlug).trim();
+      
+    let baseSlug = String(row.slug || row.Slug || fallbackSlug).trim();
+    if (!baseSlug) baseSlug = 'community';
+
+    let finalSlug = baseSlug;
+    if (seenSlugs.has(baseSlug)) {
+      const count = seenSlugs.get(baseSlug)! + 1;
+      seenSlugs.set(baseSlug, count);
+      finalSlug = `${baseSlug}-${count}`;
+    } else {
+      seenSlugs.set(baseSlug, 1);
+    }
+
+    const slug = finalSlug;
 
     return { row, name, city, state, zip, slug };
   }).filter(item => item.name.length > 0 && item.slug.length > 0);
@@ -136,14 +154,28 @@ if (import.meta.env.DEV) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawRows: any[] = XLSX.utils.sheet_to_json(sheet);
    
-    const matchedRow = rawRows.find((row) => {
+    const devSeenSlugs = new Map<string, number>();
+    const processedDevRows = rawRows.map((row) => {
       const nameVal = String(row.name || row.Name || '').trim();
       const fallbackSlug = nameVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const slugVal = String(row.slug || row.Slug || fallbackSlug).trim();
-      return slugVal === currentSlug;
+      let baseSlug = String(row.slug || row.Slug || fallbackSlug).trim();
+      if (!baseSlug) baseSlug = 'community';
+
+      let finalSlug = baseSlug;
+      if (devSeenSlugs.has(baseSlug)) {
+        const count = devSeenSlugs.get(baseSlug)! + 1;
+        devSeenSlugs.set(baseSlug, count);
+        finalSlug = `${baseSlug}-${count}`;
+      } else {
+        devSeenSlugs.set(baseSlug, 1);
+      }
+      return { row, slugVal: finalSlug };
     });
 
-    if (matchedRow) {
+    const matchedItem = processedDevRows.find(item => item.slugVal === currentSlug);
+
+    if (matchedItem) {
+      const matchedRow = matchedItem.row;
       const name = String(matchedRow.name || matchedRow.Name || '').trim();
       const city = String(matchedRow.city || matchedRow.City || '').trim();
       const state = String(matchedRow.state || matchedRow.State || 'California').trim();
@@ -275,14 +307,14 @@ const totalPhotos = community.gallery.length;
 
 <BaseLayout title={`${community.name} Neighborhood Guide | Alex Yap Real Estate`}>
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden pt-28 md:pt-36">
-   
+    
     <!-- =================================================================== -->
-    <!-- COMMUNITY GALLERY STAGE & THUMBNAIL FILMSTRIP                       -->
+    <!-- COMMUNITY GALLERY STAGE & THUMBNAIL FILMSTRIP                      -->
     <!-- =================================================================== -->
     <section class="w-full pb-12 md:pb-20">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
-       
-        <!-- Back Navigation & Top Header Bar (Matching Properties & Blog format with < All Communities + Prev / Next >) -->
+        
+        <!-- Back Navigation & Top Header Bar -->
         <div class="flex items-center justify-between mb-8">
           <a
             href="/communities"
@@ -316,12 +348,12 @@ const totalPhotos = community.gallery.length;
           </div>
         </div>
 
-        <!-- Community Name & Tagline Header (Reduced text size below status) -->
+        <!-- Community Name & Tagline Header -->
         <header class="mb-8">
           <div class="inline-flex items-center gap-2.5 mb-3 bg-white border border-black/10 px-3.5 py-1.5 shadow-sm">
             <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
             <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium leading-none">
-              Communitiy Guide
+              Community Guide
             </span>
           </div>
 
@@ -335,10 +367,10 @@ const totalPhotos = community.gallery.length;
         </header>
 
         <!-- ================================================================= -->
-        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                       -->
+        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                      -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
-         
+          
           <!-- Main Large Stage Photo -->
           <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-4 border border-black/10 group flex items-center justify-center">
             <img
@@ -348,7 +380,6 @@ const totalPhotos = community.gallery.length;
               class="max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300"
             />
 
-            <!-- Photo Number Counter Badge Over Photo (Top Right) -->
             {totalPhotos > 1 && (
               <div class="absolute top-4 right-4 z-20 bg-black/70 backdrop-blur-md text-white px-3.5 py-1 font-mono text-xs tracking-[2px] border border-white/20 shadow-md select-none pointer-events-none">
                 <span id="current-photo-num">01</span> / {String(totalPhotos).padStart(2, '0')}
@@ -408,7 +439,7 @@ const totalPhotos = community.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- COMMUNITY NARRATIVE OVERVIEW                                      -->
+        <!-- COMMUNITY NARRATIVE OVERVIEW                                     -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-8 sm:p-12 md:p-16 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-16">
           <h2 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">

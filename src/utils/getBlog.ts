@@ -1,4 +1,12 @@
 // src/utils/getBlog.ts
+// ============================================================================
+// 📝 WHY THIS FILE WAS CREATED:
+// 1. DATE CONVERSION: Excel stores dates as 5-digit serial numbers (e.g. 46000).
+//    This file translates those raw numbers into readable text (e.g. "Oct 17, 2026").
+// 2. CENTRALIZED FETCHING: Instead of repeating Excel-reading code in multiple 
+//    places, this file reads 'blogs.xlsx' once and provides clean blog posts 
+//    to both the blog listing page and individual article pages.
+// ============================================================================
 
 // ============================================================================
 // PART 1: IMPORTING EXTERNAL TOOLS (LIBRARIES)
@@ -63,7 +71,7 @@ export function getAllPosts(): BlogPost[] {
 
 
   // ==========================================================================
-  // HELPER FUNCTION: PARSING EXCEL DATES
+  // HELPER FUNCTION: PARSING EXCEL DATES (The 5-digit number fix)
   // ==========================================================================
   // Excel stores dates as serial numbers counting days since Jan 1, 1900.
   // For example, the year 2026 is stored as a number around 46000.
