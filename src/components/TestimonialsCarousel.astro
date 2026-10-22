@@ -42,21 +42,21 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
         <!-- Decorative inner accent border for active luxury styling -->
         <div class="card-inner-frame absolute inset-3 pointer-events-none transition-opacity duration-500"></div>
         
-        <!-- CARD HEADER: Role, Community, and 5-Star Rating -->
+        <!-- CARD HEADER: Role, City, and 5-Star Rating -->
         <div class="card-header shrink-0 flex items-center justify-between pb-3 mb-2 border-b transition-colors duration-300">
           <span class="card-tag font-body text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] font-medium leading-none">
-            {item.role || 'Client'} &bull; {item.community || 'Silicon Valley'}
+            {item.role || 'Client'} &bull; {item.city || 'Silicon Valley'}
           </span>
           <span class="card-stars text-xs sm:text-sm tracking-wider leading-none" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         </div>
         
-        <!-- CARD BODY: Contains the scrollable quote text and conditional scroll bar -->
+        <!-- CARD BODY: Contains the scrollable review text and conditional scroll bar -->
         <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col pt-2 pb-2">
           
           <!-- Scrollable text container -->
           <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
             <h3 class="card-headline font-heading uppercase tracking-[1px] mb-3 font-normal leading-snug">"{item.headline}"</h3>
-            <p class="card-quote font-body font-light italic">"{item.quote}"</p>
+            <p class="card-review font-body font-light italic">"{item.review}"</p>
           </div>
           
           <!-- SCROLL ACTION BAR: White circular up/down buttons and text. Automatically hides if review is short! -->
@@ -72,7 +72,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
               </button>
             </div>
 
-            <!-- Text prompt (Strictly centered in the middle column, extra arrow removed) -->
+            <!-- Text prompt (Strictly centered in the middle column) -->
             <div class="text-center">
               <span class="font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] font-medium select-none whitespace-nowrap">scroll for more</span>
             </div>
@@ -121,7 +121,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
             <h3 class="card-headline font-heading text-xl sm:text-2xl md:text-3xl uppercase tracking-[1px] font-normal leading-snug mb-4 text-[#1a1a1a]">
               See What It's Like Working With Alex
             </h3>
-            <p class="card-quote font-body text-neutral-600 text-sm sm:text-base font-light leading-relaxed">
+            <p class="card-review font-body text-neutral-600 text-sm sm:text-base font-light leading-relaxed">
               Browse reviews from buyers, sellers, and industry colleagues across all markets.
             </p>
           </div>
@@ -237,7 +237,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
     line-height: 1.35; 
   }
   
-  .card-quote { 
+  .card-review { 
     font-size: clamp(12.5px, 1.8vh, 18px); 
     line-height: clamp(1.4, 2.4vh, 1.85); 
   }
@@ -258,7 +258,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide:not(.testimonial-endcap) .card-tag { color: #8C7149; }
   .testimonial-slide:not(.testimonial-endcap) .card-stars { color: #8C7149; }
   .testimonial-slide:not(.testimonial-endcap) .card-headline { color: #1a1a1a; }
-  .testimonial-slide:not(.testimonial-endcap) .card-quote { color: #4a4a4a; }
+  .testimonial-slide:not(.testimonial-endcap) .card-review { color: #4a4a4a; }
   .testimonial-slide:not(.testimonial-endcap) .card-client { color: #1a1a1a; }
   .testimonial-slide:not(.testimonial-endcap) .card-verified { color: #8C7149; }
   .testimonial-slide:not(.testimonial-endcap) .card-quote-icon { color: #d3bc97; opacity: 0.6; }
@@ -307,7 +307,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide:not(.testimonial-endcap).is-active .card-verified { color: #d3bc97; }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-headline,
   .testimonial-slide:not(.testimonial-endcap).is-active .card-client { color: #FFFFFF; }
-  .testimonial-slide:not(.testimonial-endcap).is-active .card-quote { color: #E2DFD9; }
+  .testimonial-slide:not(.testimonial-endcap).is-active .card-review { color: #E2DFD9; }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-quote-icon { color: #d3bc97; opacity: 0.9; }
   .testimonial-slide:not(.testimonial-endcap).is-active .scroll-up-btn,
   .testimonial-slide:not(.testimonial-endcap).is-active .scroll-down-btn {
