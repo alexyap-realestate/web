@@ -1,43 +1,180 @@
 ---
-// src/pages/blog/[...page].astro
+// ============================================================================
+// FILE: src/pages/blog/[...page].astro
+// PURPOSE: Renders the main blog listing page (The Journal) with pagination.
+//          It reads 'blogs.xlsx' directly and displays 6 posts per page.
+// ============================================================================
+
+// 1. Tells Astro to watch the Excel file for changes during live development
+import '../../data/blogs.xlsx?raw';
+
+// 2. Imports Astro's built-in pagination type tool
 import type { Page } from 'astro';
+
+// 3. Imports your visual layout wrapper and reusable components
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
-import { getAllPosts } from '../../utils/getBlog.ts';
 
+// 4. Imports Node.js and community tools needed to read files from your computer
+import * as XLSX from 'xlsx';
+import path from 'node:path';
+import fs from 'node:fs';
+
+// ============================================================================
+// STEP A: GET STATIC PATHS (Builds the pages when your site compiles)
+// ============================================================================
 export async function getStaticPaths({ paginate }: any) {
-  const allPosts = getAllPosts().map((post) => ({
-    ...post,
-    href: `/blog/${post.slug}`,
-  }));
+  
+  // Finds the exact location of your Excel file on your hard drive
+  const filePath = path.resolve(process.cwd(), 'src', 'data', 'blogs.xlsx');
+  
+  // Reads the raw binary data of the Excel file
+  const fileBuffer = fs.readFileSync(filePath);
+  
+  // Parses the binary data into an Excel workbook structure
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  
+  // Selects the first tab inside your Excel spreadsheet
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  
+  // Converts spreadsheet rows into a list of JavaScript data objects
+  const rawRows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
+  // A default backup image if you leave the image column blank in Excel
+  const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+
+  // Helper function to turn Excel's raw 5-digit date numbers into clean calendar text
+  const parseDate = (dateVal: any) => {
+    if (!dateVal) return '';
+    const num = Number(dateVal);
+    if (!isNaN(num) && num > 30000) {
+      const utcDays = Math.floor(num - 25569);
+      const dateObj = new Date(utcDays * 86400 * 1000);
+      return dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+    return String(dateVal).trim();
+  };
+
+  // Loops through every row in Excel and cleans up the data
+  const allPosts = rawRows.map((row) => {
+    const normalizedRow: Record<string, any> = {};
+    for (const [key, val] of Object.entries(row)) {
+      normalizedRow[key.trim().toLowerCase()] = val;
+    }
+
+    // Checks if the row has a title. If not, skips it.
+    const title = String(normalizedRow.title || '').trim();
+    if (!title) return null;
+
+    // Automatically generates a URL slug from the title if you didn't type one
+    const fallbackSlug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const slug = String(normalizedRow.slug || fallbackSlug).trim();
+    const date = parseDate(normalizedRow.date);
+    const category = String(normalizedRow.category || normalizedRow.tag || 'Market Insights').trim();
+    const excerpt = String(normalizedRow.excerpt || normalizedRow.description || '').trim();
+    const image = String(normalizedRow.image || fallbackImage).trim();
+    const content = String(normalizedRow.content || '').trim();
+
+    return {
+      title,
+      slug,
+      date,
+      category,
+      excerpt,
+      image: image.length > 0 ? image : fallbackImage,
+      content,
+      href: `/blog/${slug}`,
+    };
+  }).filter((post): post is NonNullable<typeof post> => post !== null && post.title.length > 0);
+
+  // Splits your articles into pages of 6 items each
   return paginate(allPosts, { pageSize: 6 });
 }
 
+// Defines the data shape expected on this page template
 interface Props {
   page: Page<any>;
 }
 
+// Grabs the current page data from Astro
 let { page } = Astro.props;
 
+// ============================================================================
+// STEP B: DEV MODE LIVE RELOAD (Updates instantly when you edit Excel in local testing)
+// ============================================================================
 if (import.meta.env.DEV) {
-  const freshPosts = getAllPosts().map((post) => ({
-    ...post,
-    href: `/blog/${post.slug}`,
-  }));
+  const filePath = path.resolve(process.cwd(), 'src', 'data', 'blogs.xlsx');
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rawRows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
 
-  page = {
-    ...page,
-    data: freshPosts.slice(0, 6),
-  };
+    const parseDate = (dateVal: any) => {
+      if (!dateVal) return '';
+      const num = Number(dateVal);
+      if (!isNaN(num) && num > 30000) {
+        const utcDays = Math.floor(num - 25569);
+        const dateObj = new Date(utcDays * 86400 * 1000);
+        return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+      return String(dateVal).trim();
+    };
+
+    const freshPosts = rawRows.map((row) => {
+      const normalizedRow: Record<string, any> = {};
+      for (const [key, val] of Object.entries(row)) {
+        normalizedRow[key.trim().toLowerCase()] = val;
+      }
+      const title = String(normalizedRow.title || '').trim();
+      if (!title) return null;
+      const fallbackSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slug = String(normalizedRow.slug || fallbackSlug).trim();
+      const date = parseDate(normalizedRow.date);
+      const category = String(normalizedRow.category || normalizedRow.tag || 'Market Insights').trim();
+      const excerpt = String(normalizedRow.excerpt || normalizedRow.description || '').trim();
+      const image = String(normalizedRow.image || fallbackImage).trim();
+      const content = String(normalizedRow.content || '').trim();
+
+      return {
+        title,
+        slug,
+        date,
+        category,
+        excerpt,
+        image: image.length > 0 ? image : fallbackImage,
+        content,
+        href: `/blog/${slug}`,
+      };
+    }).filter((post): post is NonNullable<typeof post> => post !== null && post.title.length > 0);
+
+    page = {
+      ...page,
+      data: freshPosts.slice(0, 6),
+    };
+  } catch (e) {
+    // Falls back silently if read fails
+  }
 }
 ---
 
+<!-- ============================================================================ -->
+<!-- HTML VISUAL LAYOUT (What appears on your website screen)                     -->
+<!-- ============================================================================ -->
 <BaseLayout title="Journal & Market Insights | Alex Yap Real Estate Advisor">
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
     
-    <!-- ELEVATED NATURAL ARCHITECTURAL HERO -->
+    <!-- Top Hero Section Banner -->
     <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
       <img 
         src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
@@ -71,7 +208,7 @@ if (import.meta.env.DEV) {
               </div>
             </div>
 
-            <!-- Jump Cue -->
+            <!-- Scroll Down Button Cue -->
             <div class="self-start lg:self-auto flex items-center gap-4">
               <a 
                 href="#blog-feed" 
@@ -87,13 +224,13 @@ if (import.meta.env.DEV) {
       </div>
     </section>
 
-    <!-- EDITORIAL ARTICLE FEED SECTION (Option B: Elegant Wide 1-Column Stack) -->
+    <!-- Main Blog Article Feed Section -->
     <section class="w-full py-20 md:py-32">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
         <div id="blog-feed" class="scroll-mt-32"></div>
 
-        {/* Spacious Editorial Stack */}
+        <!-- Loops through blog posts and renders cards -->
         <div class="max-w-5xl mx-auto flex flex-col gap-8 md:gap-10">
           {page.data && page.data.length > 0 ? (
             page.data.map((post: any) => (
@@ -106,7 +243,7 @@ if (import.meta.env.DEV) {
           )}
         </div>
 
-        {/* Minimal Right-Aligned Pagination Controls */}
+        <!-- Pagination Page Numbers / Next & Previous Controls -->
         {page.lastPage > 1 && (
           <div class="max-w-5xl mx-auto mt-16 flex items-center justify-end">
             <nav aria-label="Blog pagination" class="flex items-center gap-2">

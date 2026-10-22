@@ -3,6 +3,19 @@
 // FILE: src/pages/testimonials/[...page].astro
 // PURPOSE: Dedicated Testimonials Page with 3D Overlapping Carousel & Pagination
 //          Optimized for smooth mobile touch gestures and zero-flicker rendering.
+//
+// 📝 PERFORMANCE & SMOOTHNESS NOTES (Why this version does not flicker on mobile):
+// 1. GPU HARDWARE ACCELERATION: 
+//    Using `transform: translateZ(0)` and `backface-visibility: hidden` on 
+//    `.testimonial-slide` forces the mobile device's GPU (not the CPU) to handle 
+//    rendering and transitions, ensuring buttery 60fps movement without screen repaints.
+// 2. DEBOUNCED RESIZE EVENTS: 
+//    The window resize listener is wrapped in a `setTimeout` debouncer. This 
+//    prevents mobile browser address bars (which show/hide on scroll) from 
+//    triggering rapid-fire layout recalibrations and text-overflow checks mid-scroll.
+// 3. SNAPPY GPU TIMINGS: 
+//    CSS transition durations are optimized to `0.4s` with high-performance 
+//    cubic-bezier curves for instant responsiveness on touch swipes.
 // ============================================================================
 
 import '../../data/testimonials.xlsx?raw';
@@ -446,6 +459,8 @@ const marqueeItems = [
       }
     });
 
+    // Debounced resize listener prevents mobile browser address bars 
+    // from triggering continuous layout thrashing during scroll gestures.
     let resizeTimer: number;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
