@@ -15,11 +15,13 @@
 // MOBILE SCROLL BEHAVIOR:
 //         - Smart hide on scroll down (translate-y-full), reveal on scroll up.
 // ============================================================================
+
+import GoogleTranslate from './GoogleTranslate.astro';
 ---
 
 <!-- ======================================================================= -->
 <!-- MAIN FIXED HEADER BAR                                                   -->
-<!-- Starts transparent by default; classes are dynamically swapped in JS.    -->
+<!-- Starts transparent by default; classes are dynamically swapped in JS.   -->
 <!-- Height: h-20 (80px), pinned at top (fixed top-0 left-0 right-0, z-50).  -->
 <!-- ======================================================================= -->
 <header 
@@ -148,6 +150,9 @@
         </a>
       </div>
     </div>
+
+    <!-- Custom Google Translate Component Integration -->
+    <GoogleTranslate />
     
     <!-- Primary CTA: Triggers the Global Contact Modal -->
     <button 
@@ -162,7 +167,7 @@
 
   <!-- ===================================================================== -->
   <!-- 3. MOBILE & TABLET HAMBURGER BUTTON (Visible < 1024px)                 -->
-  <!-- Three stacked horizontal lines (bars) that invert color on scroll.   -->
+  <!-- Three stacked horizontal lines (bars) that invert color on scroll.    -->
   <!-- ===================================================================== -->
   <button 
     type="button" 
@@ -181,7 +186,7 @@
 <!-- ======================================================================= -->
 <!-- MOBILE & TABLET FULL-SCREEN MENU OVERLAY                                -->
 <!-- Background: Warm luxury off-white (#FBF8F4) with smooth vertical scroll.-->
-<!-- Hidden by default via class "hidden"; toggled on hamburger click.       -->
+<!-- Hidden by default via class "hidden"; toggled on hamburger click.        -->
 <!-- ======================================================================= -->
 <div 
   id="mobile-menu" 
@@ -253,6 +258,11 @@
         <a href="/about" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">About Alex</a>
         <a href="/testimonials" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Testimonials</a>
       </div>
+    </div>
+
+    <!-- Mobile Google Translate Integration -->
+    <div class="py-2 border-b border-black/10 w-full">
+      <GoogleTranslate />
     </div>
     
     <!-- Mobile Contact Button (Full Width, Triggers Contact Modal) -->

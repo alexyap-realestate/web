@@ -1,0 +1,124 @@
+---
+// ============================================================================
+// COMPONENT: src/components/GoogleTranslate.astro
+// PURPOSE: A sleek, custom language selector that communicates with Google's
+//          hidden background translation engine without showing any ugly 
+//          Google toolbars, banners, or clunky icons.
+// ============================================================================
+---
+
+<!-- Language Selector Wrapper -->
+<div class="relative group inline-block z-50">
+  
+  <!-- Trigger Button (Styled to match your navigation typography) -->
+  <button 
+    type="button"
+    class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 py-2"
+    aria-label="Select Language"
+  >
+    <svg class="w-4 h-4 text-[#8C7149]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.25m-0.001-4.5h-.001" />
+    </svg>
+    <span>Language</span>
+  </button>
+
+  <!-- Dropdown Menu Options -->
+  <div class="dropdown-menu absolute right-0 lg:left-0 top-[100%] w-44 py-2 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
+    
+    <!-- Option: Reset to English -->
+    <button 
+      type="button" 
+      onclick="setLanguage('en')" 
+      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+    >
+      English
+    </button>
+
+    <!-- Option: Traditional Chinese -->
+    <button 
+      type="button" 
+      onclick="setLanguage('zh-TW')" 
+      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+    >
+      繁體中文
+    </button>
+
+    <!-- Option: Simplified Chinese -->
+    <button 
+      type="button" 
+      onclick="setLanguage('zh-CN')" 
+      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+    >
+      简体中文
+    </button>
+
+    <!-- Option: Spanish -->
+    <button 
+      type="button" 
+      onclick="setLanguage('es')" 
+      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+    >
+      Español
+    </button>
+
+    <!-- Option: Japanese -->
+    <button 
+      type="button" 
+      onclick="setLanguage('ja')" 
+      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+    >
+      日本語
+    </button>
+  </div>
+</div>
+
+<!-- HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER REQUIRED BY GOOGLE -->
+<div id="google_translate_element" class="hidden"></div>
+
+<!-- STYLES TO HIDE ALL UGLY GOOGLE BAR ELEMENTS AND LOCK BODY POSITION -->
+<style is:global>
+  /* Forcefully prevents Google Translate from pushing the body or navbar up */
+  body, html {
+    top: 0px !important;
+    position: static !important;
+  }
+  
+  .goog-te-banner-frame { display: none !important; }
+  .goog-tooltip { display: none !important; }
+  .goog-tooltip:hover { display: none !important; }
+  .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+  #goog-gt-tt { display: none !important; }
+  .goog-te-balloon-frame { display: none !important; }
+  
+  /* Hides the awkward Google translate iframe frame if it tries to spawn */
+  .skiptranslate { display: none !important; }
+  body > .skiptranslate { display: none !important; }
+</style>
+
+<!-- SCRIPT TO LOAD GOOGLE ENGINE AND HANDLE LANGUAGE SWITCHING -->
+<script is:inline>
+  // 1. Callback function required by Google's initialization script
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,zh-CN,zh-TW,es,ja',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+
+  // 2. Function triggered when clicking a language option in our custom menu
+  function setLanguage(langCode) {
+    const selectField = document.querySelector('.goog-te-combo');
+    if (selectField) {
+      selectField.value = langCode;
+      selectField.dispatchEvent(new Event('change'));
+    } else {
+      // Fallback: sets the Google translation cookie directly if combo isn't loaded yet
+      document.cookie = `googtrans=/en/${langCode}`;
+      window.location.reload();
+    }
+  }
+</script>
+
+<!-- 3. Loads official asynchronous Google Translate script safely -->
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
