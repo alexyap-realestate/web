@@ -260,9 +260,27 @@ import GoogleTranslate from './GoogleTranslate.astro';
       </div>
     </div>
 
-    <!-- Mobile Google Translate Integration -->
-    <div class="py-2 border-b border-black/10 w-full">
-      <GoogleTranslate />
+    <!-- Mobile Accordion: Language (With Arrow and Submenu Options) -->
+    <div class="w-full flex flex-col items-start border-b border-black/10 pb-4">
+      <button 
+        type="button" 
+        id="mobile-lang-toggle" 
+        class="w-full flex items-center justify-between font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] cursor-pointer text-left py-2 touch-manipulation"
+      >
+        <span>Language</span>
+        <svg id="lang-arrow" class="w-4 h-4 transition-transform duration-300 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+
+      <!-- Sub-links for Language -->
+      <div id="mobile-lang-sub" class="hidden flex-col items-start gap-3 pt-3 pl-4 w-full font-body text-xs uppercase tracking-wider text-[#555555] font-light">
+        <button type="button" onclick="setLanguage('en')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">English</button>
+        <button type="button" onclick="setLanguage('zh-TW')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">繁體中文</button>
+        <button type="button" onclick="setLanguage('zh-CN')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">简体中文</button>
+        <button type="button" onclick="setLanguage('es')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">Español</button>
+        <button type="button" onclick="setLanguage('ja')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">日本語</button>
+      </div>
     </div>
     
     <!-- Mobile Contact Button (Full Width, Triggers Contact Modal) -->
@@ -508,6 +526,21 @@ import GoogleTranslate from './GoogleTranslate.astro';
       e.preventDefault();
       const sub = document.getElementById('mobile-about-sub');
       const arrow = document.getElementById('about-arrow');
+      const hidden = sub?.classList.toggle('hidden');
+      if (hidden) {
+        sub?.classList.remove('flex');
+        arrow?.classList.remove('rotate-180');
+      } else {
+        sub?.classList.add('flex');
+        arrow?.classList.add('rotate-180');
+      }
+    });
+
+    // Mobile Language Submenu Accordion Toggle
+    document.getElementById('mobile-lang-toggle')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const sub = document.getElementById('mobile-lang-sub');
+      const arrow = document.getElementById('lang-arrow');
       const hidden = sub?.classList.toggle('hidden');
       if (hidden) {
         sub?.classList.remove('flex');

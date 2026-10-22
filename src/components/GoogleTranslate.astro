@@ -1,21 +1,28 @@
 ---
 // ============================================================================
 // COMPONENT: src/components/GoogleTranslate.astro
-// PURPOSE: A sleek, custom language selector that communicates with Google's
-//          hidden background translation engine without showing any ugly 
-//          Google toolbars, banners, or clunky icons.
+// PURPOSE: A custom, high-end language selector that communicates with 
+//          Google's background translation engine without showing any ugly 
+//          Google banners, toolbars, or floating widgets.
+// 
+// KEY FEATURES DOCUMENTED HERE:
+// 1. Desktop Dropdown UI: Styled to match the site's luxury typography & theme.
+// 2. Cookie Persistence: Remembers user language choice domain-wide.
+// 3. Dynamic Route Handling ([slug] & [...page]): Uses MutationObserver to 
+//    catch dynamically rendered content (like blog posts) as they load.
 // ============================================================================
 ---
 
-<!-- Language Selector Wrapper (Uses 'group' so hover triggers the dropdown) -->
+<!-- ======================================================================= -->
+<!-- SECTION 1: DESKTOP LANGUAGE DROPDOWN UI                                 -->
+<!-- Uses Tailwind 'group-hover' to reveal the dropdown options on hover.    -->
+<!-- ======================================================================= -->
 <div class="relative group inline-block z-50">
   
-  <!-- Trigger Button (Matched with Advisory/About styling & added rotation arrow) -->
+  <!-- Trigger Button: Globe icon, label, and downward chevron arrow -->
   <button 
     type="button"
     class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 py-2"
-    aria-haspopup="true"
-    aria-expanded="false"
     aria-label="Select Language"
   >
     <!-- Globe Icon -->
@@ -23,112 +30,78 @@
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.25m-0.001-4.5h-.001" />
     </svg>
     <span>Language</span>
-    <!-- Rotating Chevron Indicator (Matches Advisory & About) -->
+    <!-- Rotating Chevron Arrow (Points down by default, flips on hover) -->
     <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
     </svg>
   </button>
 
-  <!-- Dropdown Menu (Using .dropdown-menu and .dropdown-item so Navbar.astro dynamically themes it) -->
+  <!-- Dropdown Panel: Adapts to navbar theme using .dropdown-menu class -->
   <div class="dropdown-menu absolute right-0 lg:left-0 top-[80%] w-56 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
-    
-    <!-- Option: Reset to English -->
-    <button 
-      type="button" 
-      onclick="setLanguage('en')" 
-      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
-    >
-      English
-    </button>
-
-    <!-- Option: Traditional Chinese -->
-    <button 
-      type="button" 
-      onclick="setLanguage('zh-TW')" 
-      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
-    >
-      繁體中文
-    </button>
-
-    <!-- Option: Simplified Chinese -->
-    <button 
-      type="button" 
-      onclick="setLanguage('zh-CN')" 
-      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
-    >
-      简体中文
-    </button>
-
-    <!-- Option: Spanish -->
-    <button 
-      type="button" 
-      onclick="setLanguage('es')" 
-      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
-    >
-      Español
-    </button>
-
-    <!-- Option: Japanese -->
-    <button 
-      type="button" 
-      onclick="setLanguage('ja')" 
-      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
-    >
-      日本語
-    </button>
+    <!-- Language Options: Trigger setLanguage() javascript function on click -->
+    <button type="button" onclick="setLanguage('en')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">English</button>
+    <button type="button" onclick="setLanguage('zh-TW')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">繁體中文</button>
+    <button type="button" onclick="setLanguage('zh-CN')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">简体中文</button>
+    <button type="button" onclick="setLanguage('es')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">Español</button>
+    <button type="button" onclick="setLanguage('ja')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">日本語</button>
   </div>
 </div>
 
-<!-- HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER -->
+<!-- ======================================================================= -->
+<!-- SECTION 2: HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER                     -->
+<!-- Google's official script requires this hidden element to initialize.    -->
+<!-- ======================================================================= -->
 <div id="google_translate_element" class="hidden"></div>
 
-<!-- STYLES TO HIDE UGLY GOOGLE UI & LOCK BODY POSITION -->
+<!-- ======================================================================= -->
+<!-- SECTION 3: GLOBAL CSS OVERRIDES FOR GOOGLE UI                           -->
+<!-- Hides Google's intrusive top banner, tooltips, and highlight boxes.     -->
+<!-- ======================================================================= -->
 <style is:global>
-  body, html {
-    top: 0px !important;
-    position: static !important;
-  }
-  
-  .goog-te-banner-frame { display: none !important; }
-  .goog-tooltip { display: none !important; }
-  .goog-tooltip:hover { display: none !important; }
+  body, html { top: 0px !important; position: static !important; }
+  .goog-te-banner-frame, .goog-tooltip, #goog-gt-tt, .goog-te-balloon-frame, .skiptranslate, body > .skiptranslate { display: none !important; }
   .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-  #goog-gt-tt { display: none !important; }
-  .goog-te-balloon-frame { display: none !important; }
-  .skiptranslate { display: none !important; }
-  body > .skiptranslate { display: none !important; }
 </style>
 
-<!-- SCRIPT TO LOAD GOOGLE ENGINE & PERSIST ACROSS ALL SUBPAGES -->
+<!-- ======================================================================= -->
+<!-- SECTION 4: CLIENT-SIDE JAVASCRIPT LOGIC                                 -->
+<!-- Handles translation initialization, cookie writing, and DOM observation.-->
+<!-- ======================================================================= -->
 <script is:inline>
+  // 1. Initialize Google Translate Engine in the background
   function googleTranslateElementInit() {
     if (!document.getElementById('google_translate_element').hasChildNodes()) {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,zh-CN,zh-TW,es,ja',
-        autoDisplay: false
+      new google.translate.TranslateElement({ 
+        pageLanguage: 'en', 
+        includedLanguages: 'en,zh-CN,zh-TW,es,ja', 
+        autoDisplay: false 
       }, 'google_translate_element');
     }
   }
 
+  // 2. Set language cookie domain-wide and reload page to apply translation
   function setLanguage(langCode) {
     if (langCode === 'en') {
+      // Clear translation cookies completely to revert to original English
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + document.domain;
       window.location.reload();
       return;
     }
-
+    // Write target language cookie across the domain path so subpages inherit it
+    document.cookie = `googtrans=/en/${langCode}; path=/; domain=` + document.domain;
     document.cookie = `googtrans=/en/${langCode}; path=/`;
     window.location.reload();
   }
 
-  // Staggered checks on page load to ensure heavy subpages (/seller, /buyer) catch the translation
+  // 3. Page load & Dynamic Route Observer ([slug], [...page])
   document.addEventListener('astro:page-load', () => {
+    // Check if a language preference cookie exists
     const match = document.cookie.match(new RegExp('(^| )googtrans=([^;]+)'));
     if (match) {
       const currentLang = match[2].split('/')[2];
       
+      // Helper function to talk to Google's background select element
       const applyTranslation = () => {
         const selectField = document.querySelector('.goog-te-combo');
         if (selectField && selectField.value !== currentLang) {
@@ -137,11 +110,35 @@
         }
       };
 
-      // Check multiple times as complex subpage sections (like marquees) finish rendering
+      // Staggered timers to catch static pages as they render
       setTimeout(applyTranslation, 300);
-      setTimeout(applyTranslation, 800);
+      setTimeout(applyTranslation, 1000);
+      setTimeout(applyTranslation, 2000);
+
+      // MutationObserver: A built-in browser API that watches the DOM in real-time.
+      // Essential for dynamic routes ([slug].astro and [...page].astro) where content 
+      // loads a fraction of a second after page load. It spots newly injected text 
+      // and immediately commands Google Translate to process it.
+      const observer = new MutationObserver((mutations, obs) => {
+        const selectField = document.querySelector('.goog-te-combo');
+        if (selectField) {
+          if (selectField.value !== currentLang) {
+            selectField.value = currentLang;
+            selectField.dispatchEvent(new Event('change'));
+          }
+          obs.disconnect(); // Disconnect once successfully triggered
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
     }
   });
 </script>
 
+<!-- ======================================================================= -->
+<!-- SECTION 5: OFFICIAL ASYNCHRONOUS GOOGLE TRANSLATE SCRIPT SINK           -->
+<!-- ======================================================================= -->
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
