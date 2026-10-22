@@ -1,8 +1,8 @@
 ---
 // ============================================================================
 // COMPONENT: src/components/GoogleTranslate.astro
-// PURPOSE: Bulletproof Google Translate wrapper with Cookie Shield to prevent 
-//          F5 refreshes and double-click link resets from reverting to English.
+// PURPOSE: Final translation controller. F5 works via Cookie Shield, and link 
+//          clicks trigger clean hard reloads to match F5 and prevent resets.
 // ============================================================================
 ---
 
@@ -44,7 +44,7 @@
 <script is:inline>
   const DEFAULT_LANGUAGES = 'en,es,zh-CN,zh-TW,ja';
 
-  // 1. COOKIE SHIELD: Runs immediately on script parse to protect state from F5 races
+  // 1. COOKIE SHIELD: Restores state instantly on page load/refresh
   (function protectTranslationCookie() {
     const savedLang = localStorage.getItem('preferred_lang');
     if (savedLang && savedLang !== 'en') {
@@ -77,15 +77,26 @@
       return;
     }
     
-    // Save preference to localStorage as a permanent backup shield
     localStorage.setItem('preferred_lang', langCode);
-    
     document.cookie = `googtrans=/en/${langCode}; path=/; domain=` + document.domain;
     document.cookie = `googtrans=/en/${langCode}; path=/`;
     window.location.reload();
   }
 
-  // 2. Sync Watchdog: Forces Google combo box to match state on F5 or route changes
+  // 2. LINK INTERCEPTOR: Forces a clean hard navigation when translated,
+  // preventing Astro's ClientRouter from killing Google Translate state on link clicks.
+  document.addEventListener('click', (e) => {
+    const savedLang = localStorage.getItem('preferred_lang');
+    if (!savedLang || savedLang === 'en') return;
+
+    const link = e.target.closest('a');
+    if (link && link.href && link.href.startsWith(window.location.origin) && !link.getAttribute('target') && !link.getAttribute('href').startsWith('#')) {
+      e.preventDefault();
+      window.location.href = link.href;
+    }
+  }, true);
+
+  // 3. Sync Watchdog: Forces Google translate dropdown to match saved language
   function syncTranslationState() {
     const savedLang = localStorage.getItem('preferred_lang');
     if (savedLang) {
