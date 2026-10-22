@@ -8,9 +8,11 @@
 // KEY FEATURES INCLUDED:
 // 1. Desktop Dropdown UI: Styled to match the site's luxury typography & theme.
 // 2. Global Cookie Persistence: Locks language choice domain-wide so clicking 
-//    between pages like / and /properties never reverts back to English.
+//    between pages never reverts back to English.
 // 3. Dynamic Route Handling ([slug] & [...page]): Uses MutationObserver to 
 //    catch dynamically rendered content as it loads.
+// 4. URL Protection: Prevents Google Translate from rewriting link destinations 
+//    which fixes the double-click routing/reset bug.
 // ============================================================================
 ---
 
@@ -55,13 +57,16 @@
 <div id="google_translate_element" class="hidden"></div>
 
 <!-- ======================================================================= -->
-<!-- SECTION 3: GLOBAL CSS OVERRIDES FOR GOOGLE UI                           -->
-<!-- Hides Google's intrusive top banner, tooltips, and highlight boxes.     -->
+<!-- SECTION 3: GLOBAL CSS OVERRIDES FOR GOOGLE UI & URL PROTECTION          -->
+<!-- Hides Google's intrusive banner and stops Google from rewriting URLs.   -->
 <!-- ======================================================================= -->
 <style is:global>
   body, html { top: 0px !important; position: static !important; }
   .goog-te-banner-frame, .goog-tooltip, #goog-gt-tt, .goog-te-balloon-frame, .skiptranslate, body > .skiptranslate { display: none !important; }
   .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+  
+  /* Prevents Google Translate from mutating anchor href URLs on click */
+  a[href] { -webkit-user-modify: read-only; }
 </style>
 
 <!-- ======================================================================= -->
