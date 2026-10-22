@@ -5,11 +5,12 @@
 //          Google's background translation engine without showing any ugly 
 //          Google banners, toolbars, or floating widgets.
 // 
-// KEY FEATURES DOCUMENTED HERE:
+// KEY FEATURES INCLUDED:
 // 1. Desktop Dropdown UI: Styled to match the site's luxury typography & theme.
-// 2. Cookie Persistence: Remembers user language choice domain-wide.
+// 2. Global Cookie Persistence: Locks language choice domain-wide so clicking 
+//    between pages like / and /properties never reverts back to English.
 // 3. Dynamic Route Handling ([slug] & [...page]): Uses MutationObserver to 
-//    catch dynamically rendered content (like blog posts) as they load.
+//    catch dynamically rendered content as it loads.
 // ============================================================================
 ---
 
@@ -65,7 +66,7 @@
 
 <!-- ======================================================================= -->
 <!-- SECTION 4: CLIENT-SIDE JAVASCRIPT LOGIC                                 -->
-<!-- Handles translation initialization, cookie writing, and DOM observation.-->
+<!-- Handles translation initialization, global cookie writing, and DOM sync.-->
 <!-- ======================================================================= -->
 <script is:inline>
   // 1. Initialize Google Translate Engine in the background
@@ -79,7 +80,7 @@
     }
   }
 
-  // 2. Set language cookie domain-wide and reload page to apply translation
+  // 2. Set language cookie domain-wide across all paths (fixes route reversion)
   function setLanguage(langCode) {
     if (langCode === 'en') {
       // Clear translation cookies completely to revert to original English
@@ -88,13 +89,14 @@
       window.location.reload();
       return;
     }
-    // Write target language cookie across the domain path so subpages inherit it
+    
+    // Explicitly write target language cookie domain-wide so subpages inherit it instantly
     document.cookie = `googtrans=/en/${langCode}; path=/; domain=` + document.domain;
     document.cookie = `googtrans=/en/${langCode}; path=/`;
     window.location.reload();
   }
 
-  // 3. Page load & Dynamic Route Observer ([slug], [...page])
+  // 3. Page load & Dynamic Route Observer ([slug], [...page], /properties)
   document.addEventListener('astro:page-load', () => {
     // Check if a language preference cookie exists
     const match = document.cookie.match(new RegExp('(^| )googtrans=([^;]+)'));
@@ -110,15 +112,12 @@
         }
       };
 
-      // Staggered timers to catch static pages as they render
+      // Staggered timers to account for cloud network latency and page rendering
       setTimeout(applyTranslation, 300);
       setTimeout(applyTranslation, 1000);
       setTimeout(applyTranslation, 2000);
 
-      // MutationObserver: A built-in browser API that watches the DOM in real-time.
-      // Essential for dynamic routes ([slug].astro and [...page].astro) where content 
-      // loads a fraction of a second after page load. It spots newly injected text 
-      // and immediately commands Google Translate to process it.
+      // MutationObserver: Watches DOM in real-time for dynamic content injection
       const observer = new MutationObserver((mutations, obs) => {
         const selectField = document.querySelector('.goog-te-combo');
         if (selectField) {
