@@ -1,47 +1,29 @@
 ---
 // ============================================================================
 // COMPONENT: src/components/GoogleTranslate.astro
-// PURPOSE: A custom, high-end language selector that communicates with 
-//          Google's background translation engine without showing any ugly 
-//          Google banners, toolbars, or floating widgets.
-// 
-// KEY FEATURES INCLUDED:
-// 1. Desktop Dropdown UI: Styled to match the site's luxury typography & theme.
-// 2. Global Cookie Persistence: Locks language choice domain-wide so clicking 
-//    between pages never reverts back to English.
-// 3. Dynamic Route Handling ([slug] & [...page]): Uses MutationObserver to 
-//    catch dynamically rendered content as it loads.
-// 4. URL Protection: Prevents Google Translate from rewriting link destinations 
-//    which fixes the double-click routing/reset bug.
+// PURPOSE: Bulletproof Google Translate wrapper with Cookie Shield to prevent 
+//          F5 refreshes and double-click link resets from reverting to English.
 // ============================================================================
 ---
 
-<!-- ======================================================================= -->
-<!-- SECTION 1: DESKTOP LANGUAGE DROPDOWN UI                                 -->
-<!-- Uses Tailwind 'group-hover' to reveal the dropdown options on hover.    -->
-<!-- ======================================================================= -->
+<!-- Desktop Language Trigger & Target Container -->
 <div class="relative group inline-block z-50">
-  
-  <!-- Trigger Button: Globe icon, label, and downward chevron arrow -->
   <button 
     type="button"
     class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 py-2"
     aria-label="Select Language"
   >
-    <!-- Globe Icon -->
     <svg class="w-4 h-4 text-[#8C7149]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.25m-0.001-4.5h-.001" />
     </svg>
     <span>Language</span>
-    <!-- Rotating Chevron Arrow (Points down by default, flips on hover) -->
     <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
     </svg>
   </button>
 
-  <!-- Dropdown Panel: Adapts to navbar theme using .dropdown-menu class -->
+  <!-- Dropdown Menu -->
   <div class="dropdown-menu absolute right-0 lg:left-0 top-[80%] w-56 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
-    <!-- Language Options: Trigger setLanguage() javascript function on click -->
     <button type="button" onclick="setLanguage('en')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">English</button>
     <button type="button" onclick="setLanguage('zh-TW')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">繁體中文</button>
     <button type="button" onclick="setLanguage('zh-CN')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">简体中文</button>
@@ -50,99 +32,78 @@
   </div>
 </div>
 
-<!-- ======================================================================= -->
-<!-- SECTION 2: HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER                     -->
-<!-- Google's official script requires this hidden element to initialize.    -->
-<!-- ======================================================================= -->
-<div id="google_translate_element" class="hidden"></div>
+<!-- Hidden Google Translate Mount Point -->
+<div id="google_translate_element" style="display: none;"></div>
 
-<!-- ======================================================================= -->
-<!-- SECTION 3: GLOBAL CSS OVERRIDES FOR GOOGLE UI & URL PROTECTION          -->
-<!-- Hides Google's intrusive banner and stops Google from rewriting URLs.   -->
-<!-- ======================================================================= -->
 <style is:global>
   body, html { top: 0px !important; position: static !important; }
   .goog-te-banner-frame, .goog-tooltip, #goog-gt-tt, .goog-te-balloon-frame, .skiptranslate, body > .skiptranslate { display: none !important; }
   .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-  
-  /* Prevents Google Translate from mutating anchor href URLs on click */
-  a[href] { -webkit-user-modify: read-only; }
 </style>
 
-<!-- ======================================================================= -->
-<!-- SECTION 4: CLIENT-SIDE JAVASCRIPT LOGIC                                 -->
-<!-- Handles translation initialization, global cookie writing, and DOM sync.-->
-<!-- ======================================================================= -->
 <script is:inline>
-  // 1. Initialize Google Translate Engine in the background
+  const DEFAULT_LANGUAGES = 'en,es,zh-CN,zh-TW,ja';
+
+  // 1. COOKIE SHIELD: Runs immediately on script parse to protect state from F5 races
+  (function protectTranslationCookie() {
+    const savedLang = localStorage.getItem('preferred_lang');
+    if (savedLang && savedLang !== 'en') {
+      const cookieVal = `/en/${savedLang}`;
+      if (!document.cookie.includes(`googtrans=${cookieVal}`)) {
+        document.cookie = `googtrans=${cookieVal}; path=/; domain=` + document.domain;
+        document.cookie = `googtrans=${cookieVal}; path=/`;
+      }
+    }
+  })();
+
   function googleTranslateElementInit() {
-    if (!document.getElementById('google_translate_element').hasChildNodes()) {
-      new google.translate.TranslateElement({ 
-        pageLanguage: 'en', 
-        includedLanguages: 'en,zh-CN,zh-TW,es,ja', 
-        autoDisplay: false 
+    const el = document.getElementById('google_translate_element');
+    if (el && !el.hasChildNodes()) {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        includedLanguages: DEFAULT_LANGUAGES,
+        autoDisplay: false
       }, 'google_translate_element');
     }
   }
 
-  // 2. Set language cookie domain-wide across all paths (fixes route reversion)
   function setLanguage(langCode) {
     if (langCode === 'en') {
-      // Clear translation cookies completely to revert to original English
+      localStorage.removeItem('preferred_lang');
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + document.domain;
       window.location.reload();
       return;
     }
     
-    // Explicitly write target language cookie domain-wide so subpages inherit it instantly
+    // Save preference to localStorage as a permanent backup shield
+    localStorage.setItem('preferred_lang', langCode);
+    
     document.cookie = `googtrans=/en/${langCode}; path=/; domain=` + document.domain;
     document.cookie = `googtrans=/en/${langCode}; path=/`;
     window.location.reload();
   }
 
-  // 3. Page load & Dynamic Route Observer ([slug], [...page], /properties)
-  document.addEventListener('astro:page-load', () => {
-    // Check if a language preference cookie exists
-    const match = document.cookie.match(new RegExp('(^| )googtrans=([^;]+)'));
-    if (match) {
-      const currentLang = match[2].split('/')[2];
-      
-      // Helper function to talk to Google's background select element
-      const applyTranslation = () => {
-        const selectField = document.querySelector('.goog-te-combo');
-        if (selectField && selectField.value !== currentLang) {
-          selectField.value = currentLang;
-          selectField.dispatchEvent(new Event('change'));
-        }
-      };
-
-      // Staggered timers to account for cloud network latency and page rendering
-      setTimeout(applyTranslation, 300);
-      setTimeout(applyTranslation, 1000);
-      setTimeout(applyTranslation, 2000);
-
-      // MutationObserver: Watches DOM in real-time for dynamic content injection
-      const observer = new MutationObserver((mutations, obs) => {
+  // 2. Sync Watchdog: Forces Google combo box to match state on F5 or route changes
+  function syncTranslationState() {
+    const savedLang = localStorage.getItem('preferred_lang');
+    if (savedLang) {
+      const checkDropdown = setInterval(() => {
         const selectField = document.querySelector('.goog-te-combo');
         if (selectField) {
-          if (selectField.value !== currentLang) {
-            selectField.value = currentLang;
+          if (selectField.value !== savedLang) {
+            selectField.value = savedLang;
             selectField.dispatchEvent(new Event('change'));
           }
-          obs.disconnect(); // Disconnect once successfully triggered
+          clearInterval(checkDropdown);
         }
-      });
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
+      }, 100);
     }
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', syncTranslationState);
+  document.addEventListener('astro:page-load', syncTranslationState);
 </script>
 
-<!-- ======================================================================= -->
-<!-- SECTION 5: OFFICIAL ASYNCHRONOUS GOOGLE TRANSLATE SCRIPT SINK           -->
-<!-- ======================================================================= -->
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script defer src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
