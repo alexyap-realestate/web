@@ -17,7 +17,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 
 <div class="relative w-full max-w-5xl mx-auto py-4 testimonials-carousel-wrapper" data-variant={variant}>
   
-  <!-- CAROUSEL STAGE (Side arrows removed entirely so text is never blocked) -->
+  <!-- CAROUSEL STAGE -->
   <div 
     id="testimonial-stage" 
     class={`relative w-full flex items-center justify-center px-2 sm:px-4 ${
@@ -49,8 +49,9 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
             <h3 class="card-headline font-heading uppercase tracking-[1px] mb-3 font-normal leading-snug">"{item.headline}"</h3>
             <p class="card-quote font-body font-light italic">"{item.quote}"</p>
           </div>
-          <div class="scroll-prompt shrink-0 text-center py-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-80 pointer-events-none select-none">
-            Scroll for more &darr;
+          <div class="scroll-prompt shrink-0 text-center pt-3 pb-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-90 pointer-events-none select-none flex flex-col items-center leading-none">
+            <span>scroll for more</span>
+            <span class="text-sm font-bold mt-1 rotate-90">&gt;</span>
           </div>
         </div>
         
@@ -86,8 +87,9 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
               Browse reviews from buyers, sellers, and industry colleagues across all markets.
             </p>
           </div>
-          <div class="scroll-prompt shrink-0 text-center py-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-80 pointer-events-none select-none">
-            Scroll for more &darr;
+          <div class="scroll-prompt shrink-0 text-center pt-3 pb-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-90 pointer-events-none select-none flex flex-col items-center leading-none">
+            <span>scroll for more</span>
+            <span class="text-sm font-bold mt-1 rotate-90">&gt;</span>
           </div>
         </div>
 
@@ -222,7 +224,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .card-body-scroll.has-overflow::-webkit-scrollbar { width: 6px; display: block !important; }
   .card-body-scroll.has-overflow::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.08); border-radius: 3px; }
   .card-body-scroll.has-overflow::-webkit-scrollbar-thumb { background: #8C7149; border-radius: 3px; }
-  .card-body-wrapper.has-overflow .scroll-prompt { display: block; color: #8C7149; }
+  .card-body-wrapper.has-overflow .scroll-prompt { display: flex; color: #8C7149; }
 
   .testimonial-slide:not(.testimonial-endcap).is-active {
     opacity: 1;
