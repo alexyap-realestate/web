@@ -8,7 +8,7 @@
 
 // Defines the props (custom settings) you can pass into this component from any page
 interface Props {
-  reviews: any[];                  // The list of review data from Excel
+  reviews: any[];                    // The list of review data from Excel
   variant?: 'dots' | 'numbers';    // Choose between dot pagination or number pagination
   showEndCap?: boolean;            // Whether to show the "View All Reviews" end-card
 }
@@ -379,19 +379,19 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 <script>
   // Runs whenever the page loads or changes
   function setupTestimonialsCarousel() {
-    const wrappers = document.querySelectorAll('.testimonials-carousel-wrapper');
+    const wrappers = document.querySelectorAll<HTMLElement>('.testimonials-carousel-wrapper');
     
     wrappers.forEach((wrapper) => {
       if (wrapper.dataset.initialized === 'true') return;
       wrapper.dataset.initialized = 'true';
 
-      const stage = wrapper.querySelector('#testimonial-stage');
+      const stage = wrapper.querySelector<HTMLElement>('#testimonial-stage');
       const slides = Array.from(wrapper.querySelectorAll<HTMLElement>('.testimonial-slide'));
-      const prevBtn = wrapper.querySelector('#testimonial-prev');
-      const nextBtn = wrapper.querySelector('#testimonial-next');
-      const paginationPrevBtn = wrapper.querySelector('#pagination-prev') as HTMLButtonElement | null;
-      const paginationNextBtn = wrapper.querySelector('#pagination-next') as HTMLButtonElement | null;
-      const paginationContainer = wrapper.querySelector('#testimonial-pagination') as HTMLElement | null;
+      const prevBtn = wrapper.querySelector<HTMLElement>('#testimonial-prev');
+      const nextBtn = wrapper.querySelector<HTMLElement>('#testimonial-next');
+      const paginationPrevBtn = wrapper.querySelector<HTMLButtonElement>('#pagination-prev');
+      const paginationNextBtn = wrapper.querySelector<HTMLButtonElement>('#pagination-next');
+      const paginationContainer = wrapper.querySelector<HTMLElement>('#testimonial-pagination');
       const dots = Array.from(wrapper.querySelectorAll<HTMLElement>('.carousel-dot'));
       const variant = wrapper.getAttribute('data-variant');
 
@@ -402,10 +402,10 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 
       // Smart function: Checks if review text overflows. If yes, shows scroll bar and up/down buttons. If no, hides them completely!
       function updateScrollButtons(slide: HTMLElement) {
-        const scrollContainer = slide.querySelector('.card-body-scroll') as HTMLElement;
-        const actionBar = slide.querySelector('.scroll-action-bar') as HTMLElement;
-        const upBtn = slide.querySelector('.scroll-up-btn') as HTMLElement;
-        const downBtn = slide.querySelector('.scroll-down-btn') as HTMLElement;
+        const scrollContainer = slide.querySelector<HTMLElement>('.card-body-scroll');
+        const actionBar = slide.querySelector<HTMLElement>('.scroll-action-bar');
+        const upBtn = slide.querySelector<HTMLElement>('.scroll-up-btn');
+        const downBtn = slide.querySelector<HTMLElement>('.scroll-down-btn');
         
         if (!scrollContainer || !actionBar || !upBtn || !downBtn) return;
 
@@ -453,9 +453,9 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 
       // Makes the circular up and down buttons actually scroll the text box smoothly when clicked
       slides.forEach((slide) => {
-        const scrollContainer = slide.querySelector('.card-body-scroll') as HTMLElement;
-        const upBtn = slide.querySelector('.scroll-up-btn');
-        const downBtn = slide.querySelector('.scroll-down-btn');
+        const scrollContainer = slide.querySelector<HTMLElement>('.card-body-scroll');
+        const upBtn = slide.querySelector<HTMLElement>('.scroll-up-btn');
+        const downBtn = slide.querySelector<HTMLElement>('.scroll-down-btn');
 
         upBtn?.addEventListener('click', (e) => {
           e.stopPropagation();

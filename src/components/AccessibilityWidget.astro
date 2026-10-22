@@ -22,7 +22,7 @@
   <!-- Expanded Accessibility Toolbar Panel -->
   <div 
     id="a11y-panel" 
-    class="hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex flex-col gap-4 max-h-[85vh] overflow-y-auto"
+    class="hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex-col gap-4 max-h-[85vh] overflow-y-auto"
   >
     <div class="flex items-center justify-between border-b border-black/10 pb-3">
       <span class="text-xs uppercase tracking-[1px] font-semibold text-[#8C7149]">Accessibility Tools</span>
@@ -120,27 +120,27 @@
 
 <script>
   function initAccessibility() {
-    const container = document.getElementById('a11y-container');
-    const trigger = document.getElementById('a11y-trigger');
-    const panel = document.getElementById('a11y-panel');
-    const closeBtn = document.getElementById('a11y-close');
+    const container = document.getElementById('a11y-container') as HTMLElement | null;
+    const trigger = document.getElementById('a11y-trigger') as HTMLElement | null;
+    const panel = document.getElementById('a11y-panel') as HTMLElement | null;
+    const closeBtn = document.getElementById('a11y-close') as HTMLElement | null;
     
     const posButtons = document.querySelectorAll('.pos-btn');
-    const btnInvert = document.getElementById('btn-invert');
-    const btnGrayscale = document.getElementById('btn-grayscale');
-    const btnHighContrast = document.getElementById('btn-highcontrast');
-    const btnHighlightLinks = document.getElementById('btn-highlightlinks');
+    const btnInvert = document.getElementById('btn-invert') as HTMLElement | null;
+    const btnGrayscale = document.getElementById('btn-grayscale') as HTMLElement | null;
+    const btnHighContrast = document.getElementById('btn-highcontrast') as HTMLElement | null;
+    const btnHighlightLinks = document.getElementById('btn-highlightlinks') as HTMLElement | null;
     
-    const btnFont = document.getElementById('btn-font');
-    const btnSpacing = document.getElementById('btn-spacing');
-    const btnDyslexia = document.getElementById('btn-dyslexia');
+    const btnFont = document.getElementById('btn-font') as HTMLElement | null;
+    const btnSpacing = document.getElementById('btn-spacing') as HTMLElement | null;
+    const btnDyslexia = document.getElementById('btn-dyslexia') as HTMLElement | null;
 
-    const btnCursor = document.getElementById('btn-cursor');
-    const btnKeyboard = document.getElementById('btn-keyboard');
-    const btnAnimation = document.getElementById('btn-animation');
-    const btnRead = document.getElementById('btn-read');
-    const readStatus = document.getElementById('read-status');
-    const btnReset = document.getElementById('btn-reset');
+    const btnCursor = document.getElementById('btn-cursor') as HTMLElement | null;
+    const btnKeyboard = document.getElementById('btn-keyboard') as HTMLElement | null;
+    const btnAnimation = document.getElementById('btn-animation') as HTMLElement | null;
+    const btnRead = document.getElementById('btn-read') as HTMLElement | null;
+    const readStatus = document.getElementById('read-status') as HTMLElement | null;
+    const btnReset = document.getElementById('btn-reset') as HTMLElement | null;
 
     if (!trigger || !panel || !container) return;
 
@@ -169,8 +169,10 @@
     applyPosition(savedPos);
 
     function applyPosition(pos: string) {
+      if (!container || !panel) return;
+      
       container.className = 'fixed z-[99999] font-sans select-none transition-all duration-300';
-      panel.className = 'hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex flex-col gap-4 max-h-[85vh] overflow-y-auto';
+      panel.className = 'hidden absolute w-80 bg-white text-[#1a1a1a] border border-black/10 p-5 rounded-2xl shadow-xl flex-col gap-4 max-h-[85vh] overflow-y-auto';
 
       const config = positionMap[pos] || positionMap['bottom-right'];
       container.classList.add(...config.container);
@@ -183,7 +185,7 @@
     }
 
     posButtons.forEach(btn => {
-      btn.onclick = () => {
+      (btn as HTMLElement).onclick = () => {
         const pos = btn.getAttribute('data-pos');
         if (pos) {
           localStorage.setItem('a11y_pos', pos);
@@ -236,18 +238,6 @@
     let fontStep = 0; 
     if (btnFont) {
       const dots = btnFont.querySelectorAll('.font-dot');
-      
-      function updateFontDots() {
-        dots.forEach((dot, idx) => {
-          if (idx < fontStep) {
-            dot.classList.remove('bg-neutral-400');
-            dot.classList.add('bg-white');
-          } else {
-            dot.classList.remove('bg-white');
-            dot.classList.add('bg-neutral-400');
-          }
-        });
-      }
 
       btnFont.onclick = () => {
         fontStep = (fontStep + 1) % 4;
@@ -265,7 +255,18 @@
           document.body.classList.add('a11y-text-largest');
           setActiveState(btnFont, true);
         }
-        updateFontDots();
+        
+        dots.forEach((dot) => {
+          const d = dot as HTMLElement;
+          const idx = Array.from(dots).indexOf(dot);
+          if (idx < fontStep) {
+            d.classList.remove('bg-neutral-400');
+            d.classList.add('bg-white');
+          } else {
+            d.classList.remove('bg-white');
+            d.classList.add('bg-neutral-400');
+          }
+        });
       };
     }
 
@@ -319,29 +320,20 @@
       };
     }
 
-    // 11. Click-to-Read Reader with Male Voice Selector
+    // 11. Click-to-Read Reader with Dynamic Language Voice Selector
     let synth = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis : null;
     let isClickToReadActive = false;
 
-    function getMaleVoice() {
+    function getVoiceForText(text: string) {
       if (!synth) return null;
       const voices = synth.getVoices();
-      const maleVoice = voices.find(v => 
-        v.lang.startsWith('en') && (
-          v.name.toLowerCase().includes('male') || 
-          v.name.toLowerCase().includes('david') || 
-          v.name.toLowerCase().includes('george') || 
-          v.name.toLowerCase().includes('mark') || 
-          v.name.toLowerCase().includes('daniel') ||
-          v.name.toLowerCase().includes('oliver') ||
-          v.name.toLowerCase().includes('aaron')
-        )
-      );
-      return maleVoice || voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
-    }
+      
+      const hasChinese = /[\u4e00-\u9fa5]/.test(text);
+      const targetLangPrefix = hasChinese ? 'zh' : 'en';
 
-    if (synth && synth.onvoiceschanged !== undefined) {
-      synth.onvoiceschanged = getMaleVoice;
+      let voice = voices.find(v => v.lang.toLowerCase().startsWith(targetLangPrefix));
+      
+      return voice || voices[0] || null;
     }
 
     if (btnRead) {
@@ -362,8 +354,7 @@
           document.body.classList.add('a11y-reading-mode');
 
           const enableUtter = new SpeechSynthesisUtterance("Page read enabled. Click text to read.");
-          const voice = getMaleVoice();
-          if (voice) enableUtter.voice = voice;
+          enableUtter.voice = getVoiceForText(enableUtter.text);
           synth.speak(enableUtter);
         } else {
           stopReadingMode(true);
@@ -377,8 +368,7 @@
         synth.cancel();
         if (speakDisable) {
           const disableUtter = new SpeechSynthesisUtterance("Page read disabled.");
-          const voice = getMaleVoice();
-          if (voice) disableUtter.voice = voice;
+          disableUtter.voice = getVoiceForText(disableUtter.text);
           synth.speak(disableUtter);
         }
       }
@@ -403,8 +393,7 @@
         const textToSpeak = target.innerText?.trim();
         if (textToSpeak) {
           const utterance = new SpeechSynthesisUtterance(textToSpeak);
-          const voice = getMaleVoice();
-          if (voice) utterance.voice = voice;
+          utterance.voice = getVoiceForText(textToSpeak);
           synth.speak(utterance);
         }
       }
