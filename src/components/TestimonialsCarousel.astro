@@ -17,20 +17,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 
 <div class="relative w-full max-w-5xl mx-auto py-4 testimonials-carousel-wrapper" data-variant={variant}>
   
-  <!-- Side Flanking Arrows ONLY for the 'numbers' variant (Testimonials page) -->
-  {variant === 'numbers' && (
-    <>
-      <button type="button" id="testimonial-prev" aria-label="Previous testimonial" class="absolute -left-2 sm:-left-5 lg:id-left-12 top-[45%] -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95">
-        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
-      </button>
-      
-      <button type="button" id="testimonial-next" aria-label="Next testimonial" class="absolute -right-2 sm:-right-5 lg:id-right-12 top-[45%] -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 bg-white text-[#2b2b2b] border border-black/15 shadow-lg hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95">
-        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-      </button>
-    </>
-  )}
-
-  <!-- CAROUSEL STAGE -->
+  <!-- CAROUSEL STAGE (Side arrows removed entirely so text is never blocked) -->
   <div 
     id="testimonial-stage" 
     class={`relative w-full flex items-center justify-center px-2 sm:px-4 ${
