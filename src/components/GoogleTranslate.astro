@@ -77,7 +77,6 @@
 
 <!-- STYLES TO HIDE ALL UGLY GOOGLE BAR ELEMENTS AND LOCK BODY POSITION -->
 <style is:global>
-  /* Forcefully prevents Google Translate from pushing the body or navbar up */
   body, html {
     top: 0px !important;
     position: static !important;
@@ -89,15 +88,12 @@
   .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
   #goog-gt-tt { display: none !important; }
   .goog-te-balloon-frame { display: none !important; }
-  
-  /* Hides the awkward Google translate iframe frame if it tries to spawn */
   .skiptranslate { display: none !important; }
   body > .skiptranslate { display: none !important; }
 </style>
 
-<!-- SCRIPT TO LOAD GOOGLE ENGINE AND HANDLE LANGUAGE SWITCHING -->
+<!-- SCRIPT TO LOAD GOOGLE ENGINE AND PERSIST LANGUAGE ACROSS PAGES -->
 <script is:inline>
-  // 1. Callback function required by Google's initialization script
   function googleTranslateElementInit() {
     new google.translate.TranslateElement({
       pageLanguage: 'en',
@@ -106,19 +102,43 @@
     }, 'google_translate_element');
   }
 
-  // 2. Function triggered when clicking a language option in our custom menu
   function setLanguage(langCode) {
+    if (langCode === 'en') {
+      // Clear translation cookie to reset back to original English
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + document.domain;
+      window.location.reload();
+      return;
+    }
+
     const selectField = document.querySelector('.goog-te-combo');
     if (selectField) {
       selectField.value = langCode;
       selectField.dispatchEvent(new Event('change'));
     } else {
-      // Fallback: sets the Google translation cookie directly if combo isn't loaded yet
       document.cookie = `googtrans=/en/${langCode}`;
       window.location.reload();
     }
   }
+
+  // Ensures translation preference persists when navigating between pages via Astro view transitions
+  document.addEventListener('astro:page-load', () => {
+    // Re-initialize or check cookies if needed on page change
+    const match = document.cookie.match(new RegExp('(^| )googtrans=([^;]+)'));
+    if (match) {
+      const currentLang = match[2].split('/')[2];
+      if (currentLang && currentLang !== 'en') {
+        setTimeout(() => {
+          const selectField = document.querySelector('.goog-te-combo');
+          if (selectField && selectField.value !== currentLang) {
+            selectField.value = currentLang;
+            selectField.dispatchEvent(new Event('change'));
+          }
+        }, 300);
+      }
+    }
+  });
 </script>
 
-<!-- 3. Loads official asynchronous Google Translate script safely -->
+<!-- Loads official asynchronous Google Translate script safely -->
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
