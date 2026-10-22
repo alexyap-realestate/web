@@ -10,7 +10,7 @@
 <!-- Language Selector Wrapper -->
 <div class="relative group inline-block z-50">
   
-  <!-- Trigger Button (Styled to match your navigation typography) -->
+  <!-- Trigger Button -->
   <button 
     type="button"
     class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 py-2"
@@ -22,14 +22,14 @@
     <span>Language</span>
   </button>
 
-  <!-- Dropdown Menu Options -->
-  <div class="dropdown-menu absolute right-0 lg:left-0 top-[100%] w-44 py-2 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
+  <!-- Dropdown Menu (Using .dropdown-menu and .dropdown-item so Navbar.astro dynamically themes it) -->
+  <div class="dropdown-menu absolute right-0 lg:left-0 top-[100%] w-56 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
     
     <!-- Option: Reset to English -->
     <button 
       type="button" 
       onclick="setLanguage('en')" 
-      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
     >
       English
     </button>
@@ -38,7 +38,7 @@
     <button 
       type="button" 
       onclick="setLanguage('zh-TW')" 
-      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
     >
       繁體中文
     </button>
@@ -47,7 +47,7 @@
     <button 
       type="button" 
       onclick="setLanguage('zh-CN')" 
-      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
     >
       简体中文
     </button>
@@ -56,7 +56,7 @@
     <button 
       type="button" 
       onclick="setLanguage('es')" 
-      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
     >
       Español
     </button>
@@ -65,17 +65,17 @@
     <button 
       type="button" 
       onclick="setLanguage('ja')" 
-      class="w-full text-left block px-4 py-2 font-body text-[11px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
+      class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none"
     >
       日本語
     </button>
   </div>
 </div>
 
-<!-- HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER REQUIRED BY GOOGLE -->
+<!-- HIDDEN GOOGLE TRANSLATE ENGINE CONTAINER -->
 <div id="google_translate_element" class="hidden"></div>
 
-<!-- STYLES TO HIDE ALL UGLY GOOGLE BAR ELEMENTS AND LOCK BODY POSITION -->
+<!-- STYLES TO HIDE UGLY GOOGLE UI -->
 <style is:global>
   body, html {
     top: 0px !important;
@@ -92,53 +92,49 @@
   body > .skiptranslate { display: none !important; }
 </style>
 
-<!-- SCRIPT TO LOAD GOOGLE ENGINE AND PERSIST LANGUAGE ACROSS PAGES -->
+<!-- SCRIPT TO LOAD GOOGLE ENGINE & PERSIST ACROSS ALL SUBPAGES -->
 <script is:inline>
   function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'en',
-      includedLanguages: 'en,zh-CN,zh-TW,es,ja',
-      autoDisplay: false
-    }, 'google_translate_element');
+    if (!document.getElementById('google_translate_element').hasChildNodes()) {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,zh-CN,zh-TW,es,ja',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
   }
 
   function setLanguage(langCode) {
     if (langCode === 'en') {
-      // Clear translation cookie to reset back to original English
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + document.domain;
       window.location.reload();
       return;
     }
 
-    const selectField = document.querySelector('.goog-te-combo');
-    if (selectField) {
-      selectField.value = langCode;
-      selectField.dispatchEvent(new Event('change'));
-    } else {
-      document.cookie = `googtrans=/en/${langCode}`;
-      window.location.reload();
-    }
+    document.cookie = `googtrans=/en/${langCode}; path=/`;
+    window.location.reload();
   }
 
-  // Ensures translation preference persists when navigating between pages via Astro view transitions
+  // Staggered checks on page load to ensure heavy subpages (/seller, /buyer) catch the translation
   document.addEventListener('astro:page-load', () => {
-    // Re-initialize or check cookies if needed on page change
     const match = document.cookie.match(new RegExp('(^| )googtrans=([^;]+)'));
     if (match) {
       const currentLang = match[2].split('/')[2];
-      if (currentLang && currentLang !== 'en') {
-        setTimeout(() => {
-          const selectField = document.querySelector('.goog-te-combo');
-          if (selectField && selectField.value !== currentLang) {
-            selectField.value = currentLang;
-            selectField.dispatchEvent(new Event('change'));
-          }
-        }, 300);
-      }
+      
+      const applyTranslation = () => {
+        const selectField = document.querySelector('.goog-te-combo');
+        if (selectField && selectField.value !== currentLang) {
+          selectField.value = currentLang;
+          selectField.dispatchEvent(new Event('change'));
+        }
+      };
+
+      // Check multiple times as complex subpage sections (like marquees) finish rendering
+      setTimeout(applyTranslation, 300);
+      setTimeout(applyTranslation, 800);
     }
   });
 </script>
 
-<!-- Loads official asynchronous Google Translate script safely -->
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
