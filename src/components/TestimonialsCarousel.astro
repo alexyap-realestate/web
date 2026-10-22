@@ -6,18 +6,21 @@
 //          2. 'numbers' (used on Testimonials page with number pagination bar)
 // ============================================================================
 
+// Defines the props (custom settings) you can pass into this component from any page
 interface Props {
-  reviews: any[];
-  variant?: 'dots' | 'numbers';
-  showEndCap?: boolean;
+  reviews: any[];                  // The list of review data from Excel
+  variant?: 'dots' | 'numbers';    // Choose between dot pagination or number pagination
+  showEndCap?: boolean;            // Whether to show the "View All Reviews" end-card
 }
 
+// Grabs the custom settings passed from the page, with safe default values
 const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 ---
 
+<!-- Outer wrapper container that holds the entire carousel stage and bottom controls -->
 <div class="relative w-full max-w-5xl mx-auto py-4 testimonials-carousel-wrapper" data-variant={variant}>
   
-  <!-- CAROUSEL STAGE -->
+  <!-- CAROUSEL STAGE: The area where review cards slide and animate -->
   <div 
     id="testimonial-stage" 
     class={`relative w-full flex items-center justify-center px-2 sm:px-4 ${
@@ -29,14 +32,17 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
     role="region" 
     aria-label="Client Testimonials Carousel"
   >
+    <!-- Loops through every review item in your Excel spreadsheet -->
     {reviews.map((item, index) => (
       <article 
         class="testimonial-slide absolute top-0 w-[94%] sm:w-[78%] md:w-[68%] lg:w-[60%] h-full p-6 sm:p-8 md:p-10 flex flex-col justify-between select-none border transition-all duration-500 overflow-hidden shadow-sm bg-white" 
         data-index={index} 
         aria-roledescription="slide"
       >
+        <!-- Decorative inner accent border for active luxury styling -->
         <div class="card-inner-frame absolute inset-3 pointer-events-none transition-opacity duration-500"></div>
         
+        <!-- CARD HEADER: Role, Community, and 5-Star Rating -->
         <div class="card-header shrink-0 flex items-center justify-between pb-3 mb-2 border-b transition-colors duration-300">
           <span class="card-tag font-body text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] font-medium leading-none">
             {item.role || 'Client'} &bull; {item.community || 'Silicon Valley'}
@@ -44,17 +50,48 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
           <span class="card-stars text-xs sm:text-sm tracking-wider leading-none" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         </div>
         
-        <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col">
+        <!-- CARD BODY: Contains the scrollable quote text and conditional scroll bar -->
+        <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col pt-2 pb-2">
+          
+          <!-- Scrollable text container -->
           <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
             <h3 class="card-headline font-heading uppercase tracking-[1px] mb-3 font-normal leading-snug">"{item.headline}"</h3>
             <p class="card-quote font-body font-light italic">"{item.quote}"</p>
           </div>
-          <div class="scroll-prompt shrink-0 text-center pt-3 pb-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-90 pointer-events-none select-none flex flex-col items-center leading-none">
-            <span>scroll for more</span>
-            <span class="text-sm font-bold mt-1 rotate-90">&gt;</span>
+          
+          <!-- SCROLL ACTION BAR: White circular up/down buttons and text. Automatically hides if review is short! -->
+          <div class="scroll-action-bar shrink-0 pt-3 pb-1 grid grid-cols-3 items-center px-2 pointer-events-auto opacity-0 transition-opacity duration-300">
+            <!-- Up Arrow Button (Aligned left) -->
+            <div class="flex justify-start">
+              <button 
+                type="button" 
+                aria-label="Scroll up" 
+                class="scroll-up-btn w-9 h-9 rounded-full bg-white border border-black/15 shadow-md flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                <span class="font-bold text-sm -rotate-90">&gt;</span>
+              </button>
+            </div>
+
+            <!-- Text prompt (Strictly centered in the middle column, extra arrow removed) -->
+            <div class="text-center">
+              <span class="font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] font-medium select-none whitespace-nowrap">scroll for more</span>
+            </div>
+
+            <!-- Down Arrow Button (Aligned right) -->
+            <div class="flex justify-end">
+              <button 
+                type="button" 
+                aria-label="Scroll down" 
+                class="scroll-down-btn w-9 h-9 rounded-full bg-white border border-black/15 shadow-md flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                <span class="font-bold text-sm rotate-90">&gt;</span>
+              </button>
+            </div>
           </div>
+
         </div>
         
+        <!-- CARD FOOTER: Client Name & Verified Review Badge -->
         <div class="card-footer shrink-0 relative z-10 pt-4 mt-2 border-t flex items-center justify-between transition-colors duration-300">
           <div>
             <p class="card-client font-heading text-xs sm:text-sm md:text-base uppercase tracking-[1px] font-medium leading-tight">{item.client}</p>
@@ -69,13 +106,14 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
       </article>
     ))}
 
+    <!-- END-CAP CARD: Optional promotional card at the end of the carousel (used on Home page) -->
     {showEndCap && (
       <article 
         class="testimonial-slide testimonial-endcap absolute top-0 w-[94%] sm:w-[78%] md:w-[68%] lg:w-[60%] h-full p-6 sm:p-8 md:p-10 flex flex-col justify-between shadow-2xl select-none border transition-all duration-500 overflow-hidden" 
         data-index={reviews.length}
         aria-roledescription="slide"
       >
-        <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col">
+        <div class="card-body-wrapper relative flex-1 min-h-0 flex flex-col pt-2 pb-2">
           <div class="card-body-scroll relative z-10 flex-1 min-h-0 py-2 pr-2">
             <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium block mb-3">
               Guidance You Can Rely On &bull; 20+ Years
@@ -87,9 +125,29 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
               Browse reviews from buyers, sellers, and industry colleagues across all markets.
             </p>
           </div>
-          <div class="scroll-prompt shrink-0 text-center pt-3 pb-1 font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] opacity-90 pointer-events-none select-none flex flex-col items-center leading-none">
-            <span>scroll for more</span>
-            <span class="text-sm font-bold mt-1 rotate-90">&gt;</span>
+          
+          <div class="scroll-action-bar shrink-0 pt-3 pb-1 grid grid-cols-3 items-center px-2 pointer-events-auto opacity-0 transition-opacity duration-300">
+            <div class="flex justify-start">
+              <button 
+                type="button" 
+                aria-label="Scroll up" 
+                class="scroll-up-btn w-9 h-9 rounded-full bg-white border border-black/15 shadow-md flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                <span class="font-bold text-sm -rotate-90">&gt;</span>
+              </button>
+            </div>
+            <div class="text-center">
+              <span class="font-body text-[10px] uppercase tracking-[2px] text-[#8C7149] font-medium select-none whitespace-nowrap">scroll for more</span>
+            </div>
+            <div class="flex justify-end">
+              <button 
+                type="button" 
+                aria-label="Scroll down" 
+                class="scroll-down-btn w-9 h-9 rounded-full bg-white border border-black/15 shadow-md flex items-center justify-center text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                <span class="font-bold text-sm rotate-90">&gt;</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -105,7 +163,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
     )}
   </div>
 
-  <!-- BOTTOM CONTROLS BASED ON VARIANT -->
+  <!-- BOTTOM CONTROLS: Automatically switches based on whether you chose 'dots' or 'numbers' -->
   {variant === 'dots' ? (
     <div class="flex items-center justify-center gap-4 mt-8 select-none">
       <button 
@@ -162,6 +220,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 </div>
 
 <style>
+  /* Smooth hardware-accelerated card transitions */
   .testimonial-slide {
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
                 opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1),
@@ -183,6 +242,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
     line-height: clamp(1.4, 2.4vh, 1.85); 
   }
 
+  /* Default light styling for side/inactive review cards */
   .testimonial-slide:not(.testimonial-endcap) {
     background-color: #FFFFFF;
     border-color: rgba(0, 0, 0, 0.12);
@@ -203,6 +263,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide:not(.testimonial-endcap) .card-verified { color: #8C7149; }
   .testimonial-slide:not(.testimonial-endcap) .card-quote-icon { color: #d3bc97; opacity: 0.6; }
 
+  /* End-cap card dark styling */
   .testimonial-slide.testimonial-endcap {
     background: linear-gradient(145deg, #181716 0%, #100f0e 100%);
     border-color: rgba(211, 188, 151, 0.35);
@@ -214,8 +275,8 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide.testimonial-endcap .border-t { border-color: rgba(255, 255, 255, 0.15); }
 
   .card-body-scroll { overflow-y: hidden; }
-  .scroll-prompt { display: none; }
 
+  /* Custom scrollbar styling when review text overflows */
   .card-body-scroll.has-overflow {
     overflow-y: scroll !important;
     scrollbar-width: thin;
@@ -224,8 +285,8 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .card-body-scroll.has-overflow::-webkit-scrollbar { width: 6px; display: block !important; }
   .card-body-scroll.has-overflow::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.08); border-radius: 3px; }
   .card-body-scroll.has-overflow::-webkit-scrollbar-thumb { background: #8C7149; border-radius: 3px; }
-  .card-body-wrapper.has-overflow .scroll-prompt { display: flex; color: #8C7149; }
 
+  /* Active (Center) Card Styling (Inverted Dark Theme) */
   .testimonial-slide:not(.testimonial-endcap).is-active {
     opacity: 1;
     transform: translateX(0) scale(1) translateZ(0);
@@ -238,7 +299,6 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow { scrollbar-color: #d3bc97 rgba(255, 255, 255, 0.15); }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-body-scroll.has-overflow::-webkit-scrollbar-thumb { background: #d3bc97; }
-  .testimonial-slide:not(.testimonial-endcap).is-active .card-body-wrapper.has-overflow .scroll-prompt { color: #d3bc97; }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-inner-frame { opacity: 1; border: 1px solid rgba(211, 188, 151, 0.18); }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-header,
   .testimonial-slide:not(.testimonial-endcap).is-active .card-footer { border-color: rgba(255, 255, 255, 0.12); }
@@ -249,6 +309,15 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide:not(.testimonial-endcap).is-active .card-client { color: #FFFFFF; }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-quote { color: #E2DFD9; }
   .testimonial-slide:not(.testimonial-endcap).is-active .card-quote-icon { color: #d3bc97; opacity: 0.9; }
+  .testimonial-slide:not(.testimonial-endcap).is-active .scroll-up-btn,
+  .testimonial-slide:not(.testimonial-endcap).is-active .scroll-down-btn {
+    background-color: #2b2b2b;
+    border-color: rgba(211, 188, 151, 0.35);
+    color: #d3bc97;
+  }
+  .testimonial-slide:not(.testimonial-endcap).is-active .scroll-action-bar span {
+    color: #d3bc97;
+  }
 
   .testimonial-slide.testimonial-endcap.is-active {
     opacity: 1;
@@ -264,6 +333,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
   .testimonial-slide.testimonial-endcap.is-active span { color: #8C7149; }
   .testimonial-slide.testimonial-endcap.is-active .border-t { border-color: rgba(0, 0, 0, 0.08); }
 
+  /* Side flanking preview cards in the 3D stage */
   .testimonial-slide.is-prev {
     opacity: 0.45;
     transform: translateX(-40%) scale(0.92) translateZ(0);
@@ -296,6 +366,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
     }
   }
 
+  /* Dot pagination styling */
   .carousel-dot.active {
     width: 2rem;
     background-color: #8C7149;
@@ -306,6 +377,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
 </style>
 
 <script>
+  // Runs whenever the page loads or changes
   function setupTestimonialsCarousel() {
     const wrappers = document.querySelectorAll('.testimonials-carousel-wrapper');
     
@@ -328,23 +400,83 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
       let currentIndex = 0;
       const total = slides.length;
 
+      // Smart function: Checks if review text overflows. If yes, shows scroll bar and up/down buttons. If no, hides them completely!
+      function updateScrollButtons(slide: HTMLElement) {
+        const scrollContainer = slide.querySelector('.card-body-scroll') as HTMLElement;
+        const actionBar = slide.querySelector('.scroll-action-bar') as HTMLElement;
+        const upBtn = slide.querySelector('.scroll-up-btn') as HTMLElement;
+        const downBtn = slide.querySelector('.scroll-down-btn') as HTMLElement;
+        
+        if (!scrollContainer || !actionBar || !upBtn || !downBtn) return;
+
+        const hasOverflow = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+        
+        if (!hasOverflow) {
+          scrollContainer.classList.remove('has-overflow');
+          actionBar.style.opacity = '0';
+          actionBar.style.pointerEvents = 'none';
+          return;
+        }
+
+        // If it overflows, reveal the scroll action bar
+        scrollContainer.classList.add('has-overflow');
+        actionBar.style.opacity = '1';
+        actionBar.style.pointerEvents = 'auto';
+
+        const atTop = scrollContainer.scrollTop <= 5;
+        const atBottom = scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 5;
+
+        // Dim or disable up button if at the very top
+        if (atTop) {
+          upBtn.style.opacity = '0.3';
+          upBtn.style.pointerEvents = 'none';
+        } else {
+          upBtn.style.opacity = '1';
+          upBtn.style.pointerEvents = 'auto';
+        }
+
+        // Dim or disable down button if at the very bottom
+        if (atBottom) {
+          downBtn.style.opacity = '0.3';
+          downBtn.style.pointerEvents = 'none';
+        } else {
+          downBtn.style.opacity = '1';
+          downBtn.style.pointerEvents = 'auto';
+        }
+      }
+
       function checkOverflowStates() {
         slides.forEach((slide) => {
-          const scrollContainer = slide.querySelector('.card-body-scroll');
-          const wrapperEl = slide.querySelector('.card-body-wrapper');
-          if (scrollContainer && wrapperEl) {
-            scrollContainer.classList.add('has-overflow');
-            wrapperEl.classList.add('has-overflow');
-            
-            const hasOverflow = scrollContainer.scrollHeight > scrollContainer.clientHeight;
-            if (!hasOverflow) {
-              scrollContainer.classList.remove('has-overflow');
-              wrapperEl.classList.remove('has-overflow');
-            }
-          }
+          updateScrollButtons(slide);
         });
       }
 
+      // Makes the circular up and down buttons actually scroll the text box smoothly when clicked
+      slides.forEach((slide) => {
+        const scrollContainer = slide.querySelector('.card-body-scroll') as HTMLElement;
+        const upBtn = slide.querySelector('.scroll-up-btn');
+        const downBtn = slide.querySelector('.scroll-down-btn');
+
+        upBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (scrollContainer) {
+            scrollContainer.scrollBy({ top: -120, behavior: 'smooth' });
+          }
+        });
+
+        downBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (scrollContainer) {
+            scrollContainer.scrollBy({ top: 120, behavior: 'smooth' });
+          }
+        });
+
+        scrollContainer?.addEventListener('scroll', () => {
+          updateScrollButtons(slide);
+        });
+      });
+
+      // Renders number pagination bar for the Testimonials page variant
       function renderPagination() {
         if (variant !== 'numbers' || !paginationContainer) return;
         paginationContainer.innerHTML = '';
@@ -381,6 +513,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
         });
       }
 
+      // Updates which slide is active in the carousel stage
       function updateCarousel() {
         const isMobile = window.innerWidth < 768;
 
@@ -424,7 +557,10 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
       paginationNextBtn?.addEventListener('click', goNext);
 
       slides.forEach((slide) => {
-        slide.addEventListener('click', () => {
+        slide.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('.card-body-scroll') || target.closest('.scroll-action-bar')) return;
+
           if (slide.classList.contains('is-prev')) goPrev();
           if (slide.classList.contains('is-next')) goNext();
         });
@@ -442,6 +578,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
         if (e.key === 'ArrowRight') goNext();
       });
 
+      // Mobile touch swipe gestures support
       let touchStartX = 0;
       stage?.addEventListener('touchstart', (e: TouchEvent) => {
         touchStartX = e.touches[0].clientX;
@@ -456,6 +593,7 @@ const { reviews, variant = 'dots', showEndCap = false } = Astro.props;
         }
       });
 
+      // Window resize listener
       let resizeTimer: number;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
