@@ -1,7 +1,7 @@
 ---
 // ============================================================================
 // FILE: src/pages/blog/[...page].astro
-// PURPOSE: Renders the main blog listing page (The Journal) with pagination.
+// PURPOSE: Renders the main blog listing page (Blog Posts) with pagination.
 //          It reads 'blogs.xlsx' directly and displays 6 posts per page.
 // ============================================================================
 
@@ -171,7 +171,7 @@ if (import.meta.env.DEV) {
 <!-- ============================================================================ -->
 <!-- HTML VISUAL LAYOUT (What appears on your website screen)                     -->
 <!-- ============================================================================ -->
-<BaseLayout title="Journal & Market Insights | Alex Yap Real Estate Advisor">
+<BaseLayout title="Blog Posts | Alex Yap Real Estate Advisor">
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
     
     <!-- Top Hero Section Banner -->
@@ -198,7 +198,7 @@ if (import.meta.env.DEV) {
               </div>
 
               <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
-                The Journal
+                Blog Posts
               </h1>
 
               <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">

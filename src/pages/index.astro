@@ -164,7 +164,7 @@ if (fs.existsSync(blogFilePath)) {
 
 const fallbackBlogImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
 
-const journalPosts = blogRawRows
+const blogPosts = blogRawRows
   .filter((row) => {
     const feat = String(row.featured || row.Featured || '').trim().toUpperCase();
     return feat === 'YES' || feat === 'TRUE' || feat === '';
@@ -552,7 +552,7 @@ const marqueeItems = [
       <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Selling", "Blueprint"]} />
     </section>
 
-    <!-- SECTION D: REAL ESTATE JOURNAL (Stone BG) -->
+    <!-- SECTION D: REAL ESTATE BLOG POSTS -->
     <section id="blog" class="scroll-mt-0 lg:scroll-mt-[80px] w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)] overflow-hidden">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
@@ -562,7 +562,7 @@ const marqueeItems = [
               Expertise &amp; Perspectives
             </p>
             <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
-              The Journal
+              Blog Posts
             </h2>
           </div>
           <a 
@@ -575,7 +575,7 @@ const marqueeItems = [
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {journalPosts.map((post) => (
+          {blogPosts.map((post) => (
             <BlogCardIndex 
               title={post.title}
               slug={post.slug}
