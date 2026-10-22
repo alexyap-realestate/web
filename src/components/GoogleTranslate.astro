@@ -1,8 +1,7 @@
 ---
 // ============================================================================
 // COMPONENT: src/components/GoogleTranslate.astro
-// PURPOSE: Final translation controller. F5 works via Cookie Shield, and link 
-//          clicks trigger clean hard reloads to match F5 and prevent resets.
+// PURPOSE: Final translation controller with path-normalized hard reloads.
 // ============================================================================
 ---
 
@@ -35,12 +34,14 @@
 <!-- Hidden Google Translate Mount Point -->
 <div id="google_translate_element" style="display: none;"></div>
 
+<!-- Global CSS Overrides -->
 <style is:global>
   body, html { top: 0px !important; position: static !important; }
   .goog-te-banner-frame, .goog-tooltip, #goog-gt-tt, .goog-te-balloon-frame, .skiptranslate, body > .skiptranslate { display: none !important; }
   .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
 </style>
 
+<!-- Client-Side JavaScript Logic -->
 <script is:inline>
   const DEFAULT_LANGUAGES = 'en,es,zh-CN,zh-TW,ja';
 
@@ -83,36 +84,72 @@
     window.location.reload();
   }
 
-  // 2. LINK INTERCEPTOR: Forces a clean hard navigation when translated,
-  // preventing Astro's ClientRouter from killing Google Translate state on link clicks.
-  document.addEventListener('click', (e) => {
+  // 2. PATH-NORMALIZED HARD RELOAD INTERCEPTOR
+  function initHardReloadInterceptor() {
+    if (window._hasInterceptorInitialized) return;
+    window._hasInterceptorInitialized = true;
+
+    document.addEventListener('click', (e) => {
+      const savedLang = localStorage.getItem('preferred_lang');
+      if (!savedLang || savedLang === 'en') return;
+
+      const link = e.target.closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('tel:') || href.startsWith('mailto:')) return;
+      
+      if (link.href && link.href.startsWith(window.location.origin) && !link.getAttribute('target')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        // Normalize paths by removing trailing slashes so 1st and 2nd clicks match identically
+        const currentPath = window.location.pathname.replace(/\/$/, '');
+        const targetPath = link.pathname.replace(/\/$/, '');
+
+        if (currentPath === targetPath) {
+          window.location.reload();
+        } else {
+          window.location.assign(link.href);
+        }
+      }
+    }, true);
+  }
+
+  // 3. SYNC WATCHDOG & MUTATION OBSERVER
+  function syncTranslationState() {
     const savedLang = localStorage.getItem('preferred_lang');
     if (!savedLang || savedLang === 'en') return;
 
-    const link = e.target.closest('a');
-    if (link && link.href && link.href.startsWith(window.location.origin) && !link.getAttribute('target') && !link.getAttribute('href').startsWith('#')) {
-      e.preventDefault();
-      window.location.href = link.href;
-    }
-  }, true);
-
-  // 3. Sync Watchdog: Forces Google translate dropdown to match saved language
-  function syncTranslationState() {
-    const savedLang = localStorage.getItem('preferred_lang');
-    if (savedLang) {
-      const checkDropdown = setInterval(() => {
-        const selectField = document.querySelector('.goog-te-combo');
-        if (selectField) {
-          if (selectField.value !== savedLang) {
-            selectField.value = savedLang;
-            selectField.dispatchEvent(new Event('change'));
-          }
-          clearInterval(checkDropdown);
+    const applyTranslation = () => {
+      const selectField = document.querySelector('.goog-te-combo');
+      if (selectField) {
+        if (selectField.value !== savedLang) {
+          selectField.value = savedLang;
+          selectField.dispatchEvent(new Event('change'));
         }
-      }, 100);
-    }
+        return true;
+      }
+      return false;
+    };
+
+    setTimeout(applyTranslation, 200);
+    setTimeout(applyTranslation, 800);
+    setTimeout(applyTranslation, 1500);
+
+    const observer = new MutationObserver((mutations, obs) => {
+      if (applyTranslation()) {
+        obs.disconnect();
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   }
 
+  initHardReloadInterceptor();
   document.addEventListener('DOMContentLoaded', syncTranslationState);
   document.addEventListener('astro:page-load', syncTranslationState);
 </script>
