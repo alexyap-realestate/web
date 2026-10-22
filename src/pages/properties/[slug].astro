@@ -404,7 +404,7 @@ const totalPhotos = property.gallery.length;
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden pt-28 md:pt-36">
     
     <!-- =================================================================== -->
-    <!-- PROPERTY GALLERY STAGE & THUMBNAIL FILMSTRIP                      -->
+    <!-- PROPERTY GALLERY STAGE & THUMBNAIL FILMSTRIP                        -->
     <!-- =================================================================== -->
     <section class="w-full pb-12 md:pb-20">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
@@ -462,12 +462,18 @@ const totalPhotos = property.gallery.length;
         </header>
 
         <!-- ================================================================= -->
-        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                      -->
+        <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                       -->
         <!-- ================================================================= -->
-        <div class="bg-white border border-black/10 p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
+        <!-- NOTE: Changed padding from p-4 sm:p-6 md:p-8 to p-0. -->
+        <!-- WHY: This removes all outer blank margin/padding around the gallery card container, -->
+        <!-- allowing the photo stage and filmstrip to stretch edge-to-edge. -->
+        <div class="bg-white border border-black/10 p-0 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12 overflow-hidden">
           
           <!-- Main Large Stage Photo with Contain View & Luxury Stone Background Match -->
-          <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-4 border border-black/10 group flex items-center justify-center">
+          <!-- NOTE: Changed margin-bottom from mb-4 to mb-0 and added a bottom border (border-b). -->
+          <!-- WHY: This removes the vertical white gap between the photo stage and the filmstrip below it, -->
+          <!-- making them sit together seamlessly. -->
+          <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-0 border-b border-black/10 group flex items-center justify-center">
             <img 
               id="main-stage-img"
               src={property.gallery[0]} 
@@ -505,11 +511,13 @@ const totalPhotos = property.gallery.length;
           </div>
 
           <!-- Thumbnail Filmstrip Below with Visible Custom Scrollbar -->
+          <!-- NOTE: Wrapped the filmroll inside a clean white padded strip (p-3 bg-white). -->
+          <!-- WHY: This gives the thumbnail buttons a tidy container directly beneath the photo stage. -->
           {property.gallery.length > 1 && (
-            <div class="relative w-full">
+            <div class="relative w-full p-3 bg-white">
               <div 
                 id="film-roll"
-                class="flex items-center gap-3 overflow-x-auto pb-4 pt-2 px-1 scrollbar-custom cursor-grab active:cursor-grabbing"
+                class="flex items-center gap-3 overflow-x-auto pb-2 pt-1 px-1 scrollbar-custom cursor-grab active:cursor-grabbing"
                 tabindex="0"
                 aria-label="Thumbnail strip"
               >
@@ -534,7 +542,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- PROPERTY SPECIFICATIONS BAR                                     -->
+        <!-- PROPERTY SPECIFICATIONS BAR                                      -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-6 sm:p-10 mb-12 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center pb-6 border-b border-black/10">
@@ -573,7 +581,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- PROPERTY OVERVIEW NARRATIVE                                     -->
+        <!-- PROPERTY OVERVIEW NARRATIVE                                       -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-8 sm:p-12 md:p-16 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12">
           <h2 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">
@@ -592,7 +600,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- MAP SECTION                                                     -->
+        <!-- MAP SECTION                                                       -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-6 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.03)] mb-16">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/10">
