@@ -1,7 +1,7 @@
 ---
 // ============================================================================
 // COMPONENT: AccessibilityWidget.astro
-// USAGE: Production-ready ADA/WCAG helper toolbar for Astro & Tailwind CSS.
+// PURPOSE: Production-ready ADA/WCAG helper toolbar for Astro & Tailwind CSS.
 // ============================================================================
 ---
 
@@ -13,7 +13,6 @@
     aria-label="Open Accessibility Menu"
     class="w-12 h-12 bg-[#1a1a1a] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#8C7149] transition-all cursor-pointer border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#8C7149]"
   >
-    <!-- Universal Accessibility Icon -->
     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
@@ -33,18 +32,10 @@
     <div class="space-y-1.5">
       <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Icon Position</p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-left">
-          ↖️ Top Left
-        </button>
-        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-right">
-          ↗️ Top Right
-        </button>
-        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-left">
-          ↙️ Bottom Left
-        </button>
-        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-right">
-          ↘️ Bottom Right
-        </button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-left">↖️ Top Left</button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="top-right">↗️ Top Right</button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-left">↙️ Bottom Left</button>
+        <button type="button" class="pos-btn p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer" data-pos="bottom-right">↘️ Bottom Right</button>
       </div>
     </div>
 
@@ -52,18 +43,10 @@
     <div class="space-y-1.5 border-t border-black/10 pt-3">
       <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Contrast &amp; Colors</p>
       <div class="grid grid-cols-2 gap-2">
-        <button id="btn-invert" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          🌗 Invert Colors
-        </button>
-        <button id="btn-grayscale" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          🔘 Grayscale
-        </button>
-        <button id="btn-highcontrast" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          ⬛ High Contrast
-        </button>
-        <button id="btn-highlightlinks" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          🔗 Highlight Links
-        </button>
+        <button id="btn-invert" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">🌗 Invert Colors</button>
+        <button id="btn-grayscale" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">🔘 Grayscale</button>
+        <button id="btn-highcontrast" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">⬛ High Contrast</button>
+        <button id="btn-highlightlinks" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">🔗 Highlight Links</button>
       </div>
     </div>
 
@@ -79,12 +62,8 @@
             <span class="font-dot w-1.5 h-1.5 rounded-full bg-neutral-400 transition-all"></span>
           </span>
         </button>
-        <button id="btn-spacing" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer">
-          <span>↔️ Spacing</span>
-        </button>
-        <button id="btn-dyslexia" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer">
-          <span>👁️ Readable</span>
-        </button>
+        <button id="btn-spacing" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer"><span>↔️ Spacing</span></button>
+        <button id="btn-dyslexia" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium flex flex-col items-center justify-center gap-1.5 cursor-pointer"><span>👁️ Readable</span></button>
       </div>
     </div>
 
@@ -92,15 +71,9 @@
     <div class="space-y-1.5 border-t border-black/10 pt-3">
       <p class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Navigation &amp; Motion</p>
       <div class="grid grid-cols-2 gap-2">
-        <button id="btn-cursor" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          👆 Big Cursor
-        </button>
-        <button id="btn-keyboard" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          ⌨️ Keyboard Nav
-        </button>
-        <button id="btn-animation" type="button" class="col-span-2 p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">
-          ⏸️ Stop Animations
-        </button>
+        <button id="btn-cursor" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">👆 Big Cursor</button>
+        <button id="btn-keyboard" type="button" class="p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">⌨️ Keyboard Nav</button>
+        <button id="btn-animation" type="button" class="col-span-2 p-2 rounded-lg bg-[#F8F8F8] hover:bg-[#8C7149]/15 transition text-xs font-medium text-left cursor-pointer">⏸️ Stop Animations</button>
       </div>
     </div>
 
@@ -234,11 +207,10 @@
       };
     }
 
-    // 5. Larger Text (4-stage cycle)
+    // 5. Larger Text
     let fontStep = 0; 
     if (btnFont) {
       const dots = btnFont.querySelectorAll('.font-dot');
-
       btnFont.onclick = () => {
         fontStep = (fontStep + 1) % 4;
         document.body.classList.remove('a11y-text-large', 'a11y-text-larger', 'a11y-text-largest');
@@ -320,21 +292,9 @@
       };
     }
 
-    // 11. Click-to-Read Reader with Dynamic Language Voice Selector
+    // 11. Clean Click-to-Read Reader
     let synth = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis : null;
     let isClickToReadActive = false;
-
-    function getVoiceForText(text: string) {
-      if (!synth) return null;
-      const voices = synth.getVoices();
-      
-      const hasChinese = /[\u4e00-\u9fa5]/.test(text);
-      const targetLangPrefix = hasChinese ? 'zh' : 'en';
-
-      let voice = voices.find(v => v.lang.toLowerCase().startsWith(targetLangPrefix));
-      
-      return voice || voices[0] || null;
-    }
 
     if (btnRead) {
       btnRead.onclick = () => {
@@ -353,9 +313,7 @@
           readStatus?.classList.remove('hidden');
           document.body.classList.add('a11y-reading-mode');
 
-          const enableUtter = new SpeechSynthesisUtterance("Page read enabled. Click text to read.");
-          enableUtter.voice = getVoiceForText(enableUtter.text);
-          synth.speak(enableUtter);
+          synth.speak(new SpeechSynthesisUtterance("Page read enabled. Click text to read."));
         } else {
           stopReadingMode(true);
         }
@@ -367,9 +325,7 @@
       if (synth) {
         synth.cancel();
         if (speakDisable) {
-          const disableUtter = new SpeechSynthesisUtterance("Page read disabled.");
-          disableUtter.voice = getVoiceForText(disableUtter.text);
-          synth.speak(disableUtter);
+          synth.speak(new SpeechSynthesisUtterance("Page read disabled."));
         }
       }
       if (btnRead) {
@@ -392,9 +348,7 @@
         const target = e.target as HTMLElement;
         const textToSpeak = target.innerText?.trim();
         if (textToSpeak) {
-          const utterance = new SpeechSynthesisUtterance(textToSpeak);
-          utterance.voice = getVoiceForText(textToSpeak);
-          synth.speak(utterance);
+          synth.speak(new SpeechSynthesisUtterance(textToSpeak));
         }
       }
     };
@@ -432,7 +386,6 @@
 </script>
 
 <style is:global>
-  /* 1. Typography Scaling */
   body.a11y-text-large :not(#a11y-container, #a11y-container *) > p, 
   body.a11y-text-large :not(#a11y-container, #a11y-container *) > span, 
   body.a11y-text-large :not(#a11y-container, #a11y-container *) > a, 
@@ -460,14 +413,12 @@
     font-size: 1.4em !important;
   }
 
-  /* 2. Spacing & Reflow */
   body.a11y-spacing :not(#a11y-container, #a11y-container *) * {
     letter-spacing: 0.12em !important;
     word-spacing: 0.16em !important;
     line-height: 1.8 !important;
   }
 
-  /* 3. Contrast & Vision Filters */
   .a11y-invert {
     filter: invert(100%) hue-rotate(180deg) !important;
     background: #111 !important;
@@ -489,13 +440,11 @@
     padding: 1px 4px !important;
   }
 
-  /* 4. Cognitive & Dyslexia Support */
   .a11y-dyslexia *, .a11y-dyslexia p, .a11y-dyslexia span, .a11y-dyslexia a, .a11y-dyslexia h1, .a11y-dyslexia h2, .a11y-dyslexia h3 {
     font-family: Arial, Helvetica, sans-serif !important;
     letter-spacing: 0.03em !important;
   }
 
-  /* 5. Navigation, Cursor & Focus Enforcements */
   .a11y-big-cursor *, .a11y-big-cursor {
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><polygon points="0,0 0,20 6,14 12,24 16,22 10,12 18,12"/></svg>'), auto !important;
   }

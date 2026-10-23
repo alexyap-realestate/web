@@ -23,6 +23,13 @@
 
   <!-- Dropdown Menu -->
   <div class="dropdown-menu absolute right-0 lg:left-0 top-[80%] w-56 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0 rounded-sm">
+    
+    <!-- Reset Button (Forced to stay in English via notranslate & translate="no") -->
+    <button type="button" onclick="setLanguage('en')" class="notranslate dropdown-item w-full text-left block px-5 py-2.5 font-body text-[11px] uppercase tracking-[2px] font-medium text-[#C5A880] hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none border-b border-white/10 mb-1" translate="no">
+      Reset to Original
+    </button>
+
+    <!-- Language Options -->
     <button type="button" onclick="setLanguage('en')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">English</button>
     <button type="button" onclick="setLanguage('zh-TW')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">繁體中文</button>
     <button type="button" onclick="setLanguage('zh-CN')" class="dropdown-item w-full text-left block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition cursor-pointer bg-transparent border-none">简体中文</button>
