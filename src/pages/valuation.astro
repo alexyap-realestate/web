@@ -59,7 +59,7 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
       </div>
     </section>
 
-    <!-- CONTENT FORM SECTION (Stone BG) -->
+    <!-- CONTENT FORM SECTION (Stone BG with Luxury Dark Form Card) -->
     <section id="valuation-form-container" class="w-full py-20 md:py-32 scroll-mt-24 bg-[var(--color-luxury-stone,#ECE8E1)]">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
@@ -73,8 +73,9 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
         </div>
 
         <div class="max-w-3xl mx-auto">
-          <div class="relative bg-white border border-black/10 shadow-sm p-8 sm:p-12 md:p-16">
-            <div class="absolute top-0 left-12 right-12 h-[1px] bg-[#8C7149]/30"></div>
+          <!-- Luxury Dark Mode Form Card -->
+          <div class="relative bg-[#161514] text-white border border-white/10 shadow-2xl p-8 sm:p-12 md:p-16">
+            <div class="absolute top-0 left-12 right-12 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent"></div>
 
             <form id="valuation-form" class="space-y-6">
               <input type="hidden" name="access_key" value="6b57a488-ac7a-4fe7-b840-5d18ca3cdebc" />
@@ -85,36 +86,36 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label for="v-name" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Full Name *</label>
-                  <input required id="v-name" name="name" type="text" autocomplete="name" placeholder="John Doe" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                  <label for="v-name" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-300 mb-2">Full Name *</label>
+                  <input required id="v-name" name="name" type="text" autocomplete="name" placeholder="John Doe" class="w-full bg-[#222222] border border-white/15 p-3.5 text-sm text-white outline-none focus:border-[#8C7149] transition font-light placeholder:text-neutral-500" />
                 </div>
 
                 <div>
-                  <label for="v-phone" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Phone Number *</label>
-                  <input required id="v-phone" name="phone" type="tel" autocomplete="tel" placeholder="(408) 000-0000" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                  <label for="v-phone" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-300 mb-2">Phone Number *</label>
+                  <input required id="v-phone" name="phone" type="tel" autocomplete="tel" placeholder="(408) 000-0000" class="w-full bg-[#222222] border border-white/15 p-3.5 text-sm text-white outline-none focus:border-[#8C7149] transition font-light placeholder:text-neutral-500" />
                 </div>
               </div>
 
               <div>
-                <label for="v-email" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Email Address *</label>
-                <input required id="v-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                <label for="v-email" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-300 mb-2">Email Address *</label>
+                <input required id="v-email" name="email" type="email" autocomplete="email" placeholder="john@example.com" class="w-full bg-[#222222] border border-white/15 p-3.5 text-sm text-white outline-none focus:border-[#8C7149] transition font-light placeholder:text-neutral-500" />
               </div>
 
               <div>
-                <label for="v-address" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Property Address to Evaluate *</label>
-                <input required id="v-address" name="address" type="text" placeholder="Street Address, City, State, Zip Code" class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition font-light" />
+                <label for="v-address" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-300 mb-2">Property Address to Evaluate *</label>
+                <input required id="v-address" name="address" type="text" placeholder="Street Address, City, State, Zip Code" class="w-full bg-[#222222] border border-white/15 p-3.5 text-sm text-white outline-none focus:border-[#8C7149] transition font-light placeholder:text-neutral-500" />
               </div>
 
               <div>
-                <label for="v-message" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-700 mb-2">Recent Upgrades or Additional Notes</label>
-                <textarea id="v-message" name="message" rows="4" placeholder="Tell us about recent remodels, square footage adjustments, or your timeline..." class="w-full bg-[#fcfbf9] border border-black/15 p-3.5 text-sm text-[#1a1a1a] outline-none focus:border-[#8C7149] transition resize-none font-light"></textarea>
+                <label for="v-message" class="block text-[11px] uppercase tracking-[2px] font-medium text-neutral-300 mb-2">Recent Upgrades or Additional Notes</label>
+                <textarea id="v-message" name="message" rows="4" placeholder="Tell us about recent remodels, square footage adjustments, or your timeline..." class="w-full bg-[#222222] border border-white/15 p-3.5 text-sm text-white outline-none focus:border-[#8C7149] transition resize-none font-light placeholder:text-neutral-500"></textarea>
               </div>
 
               <div class="pt-4 flex items-center justify-between flex-col sm:flex-row gap-4">
-                <button type="submit" id="val-submit-btn" class="w-full sm:w-auto bg-[#1a1a1a] text-white px-10 py-4 hover:bg-[#8C7149] transition duration-300 cursor-pointer font-heading text-[12px] uppercase tracking-[2.5px] shadow-sm">
+                <button type="submit" id="val-submit-btn" class="w-full sm:w-auto bg-white text-[#1a1a1a] px-10 py-4 hover:bg-[#8C7149] hover:text-white transition duration-300 cursor-pointer font-heading text-[12px] uppercase tracking-[2.5px] shadow-sm">
                   Request Valuation
                 </button>
-                <span class="font-body text-xs text-neutral-500 font-light tracking-wide">
+                <span class="font-body text-xs text-neutral-400 font-light tracking-wide">
                   &bull; 100% Confidential &amp; Obligation-Free
                 </span>
               </div>
@@ -125,34 +126,34 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
                 href="/" 
                 id="val-close-btn"
                 aria-label="Close and return to home page" 
-                class="absolute -top-2 right-0 sm:top-2 sm:right-2 w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-black hover:bg-neutral-100 rounded-full transition-all cursor-pointer"
+                class="absolute -top-2 right-0 sm:top-2 sm:right-2 w-10 h-10 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-all cursor-pointer"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </a>
 
-              <span class="block font-body text-xs uppercase tracking-[2px] text-[#8C7149] font-medium mb-2">
+              <span class="block font-body text-xs uppercase tracking-[2px] text-[#d6be96] font-medium mb-2">
                 Analysis Requested
               </span>
-              <h2 class="font-heading text-2xl sm:text-3xl font-normal uppercase tracking-wider mb-3 text-[#1a1a1a]">
+              <h2 class="font-heading text-2xl sm:text-3xl font-normal uppercase tracking-wider mb-3 text-white">
                 Thank You
               </h2>
-              <p class="font-body text-neutral-600 text-sm sm:text-base max-w-md mx-auto font-light leading-relaxed mb-8">
+              <p class="font-body text-neutral-300 text-sm sm:text-base max-w-md mx-auto font-light leading-relaxed mb-8">
                 Alex will review recent comparable sales and micro-market inventory shifts for your property and follow up with you shortly.
               </p>
 
               <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a 
                   href="/" 
-                  class="w-full sm:w-auto bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] transition duration-300 font-heading text-xs uppercase tracking-[2px] shadow-sm"
+                  class="w-full sm:w-auto bg-white text-[#1a1a1a] px-8 py-3.5 hover:bg-[#8C7149] hover:text-white transition duration-300 font-heading text-xs uppercase tracking-[2px] shadow-sm"
                 >
                   Return to Home Page
                 </a>
                 <button 
                   type="button" 
                   id="val-reset-btn"
-                  class="w-full sm:w-auto border border-black/20 text-[#1a1a1a] px-8 py-3.5 hover:bg-neutral-100 transition duration-300 font-heading text-xs uppercase tracking-[2px]"
+                  class="w-full sm:w-auto border border-white/25 text-white px-8 py-3.5 hover:bg-white/10 transition duration-300 font-heading text-xs uppercase tracking-[2px]"
                 >
                   Submit Another Property
                 </button>
