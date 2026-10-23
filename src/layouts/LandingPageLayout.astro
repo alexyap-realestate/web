@@ -64,11 +64,9 @@ const {
       --font-body: 'Libre Franklin', system-ui, -apple-system, sans-serif;
       --font-heading: 'Tenor Sans', Didot, 'Bodoni MT', Georgia, serif;
 
-      /* ======================================================== */
-      /* CENTRALIZED LANDING PAGE BACKGROUND TOKEN                */
-      /* Slightly darker luxury stone shade (#EBE8E0)             */
-      /* ======================================================== */
       --bg-color-1: #EBE8E0;
+      
+      --bg-grid: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M64 32H0M32 64V0' fill='none' stroke='%238C7149' stroke-width='1' stroke-opacity='0.18'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23EBE8E0' stroke='%238C7149' stroke-width='1' stroke-opacity='0.18'/%3E%3C/svg%3E");
     }
 
     html, body {
@@ -87,16 +85,20 @@ const {
       font-family: var(--font-heading);
     }
 
-    /* Utility class linked directly to the token */
     .bg-color-1 {
       background-color: var(--bg-color-1) !important;
+    }
+
+    .bg-architectural-grid {
+      background-image: var(--bg-grid);
+      background-size: 4rem 4rem;
+      background-position: 0 0;
     }
   </style>
 </head>
 
 <body class="text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">
   
-  <!-- NO NAVBAR. NO FOOTER. Pure conversion slot. -->
   <slot />
 
   <ContactModal />
