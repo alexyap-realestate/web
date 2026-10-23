@@ -8,7 +8,7 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
   title="Property Valuation | Alex Yap Real Estate Advisor"
   description="Request a discreet, custom comparative market valuation for your South Bay or Silicon Valley property."
 >
-  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
+  <main class="w-full overflow-x-hidden">
 
     <!-- ELEVATED NATURAL ARCHITECTURAL HERO -->
     <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
@@ -59,11 +59,11 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
       </div>
     </section>
 
-    <!-- CONTENT FORM SECTION -->
-    <section id="valuation-form-container" class="w-full py-20 md:py-32 scroll-mt-24">
+    <!-- CONTENT FORM SECTION (Stone BG) -->
+    <section id="valuation-form-container" class="w-full py-20 md:py-32 scroll-mt-24 bg-[var(--color-luxury-stone,#ECE8E1)]">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         
-        <!-- Form Introduction Header (Placed Outside Above the White Card Box) -->
+        <!-- Form Introduction Header -->
         <div class="mb-14 text-center max-w-3xl mx-auto">
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Confidential Assessment</span>
           <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">Discover Your Property’s True Market Standing</h2>
@@ -164,6 +164,133 @@ import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
 
       </div>
     </section>
+
+    <!-- WHAT'S YOUR PROPERTY WORTH? (Chalk BG) -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div class="relative overflow-hidden shadow-xl aspect-[4/3]">
+            <img 
+              src="https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=scale-down,width=1280/https://media-production.lp-cdn.com/media/secrbhhc3npcv6pjifew" 
+              alt="South Bay Residence" 
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div>
+            <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Market Insight</span>
+            <h2 class="font-heading text-3xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">What's Your Property Worth?</h2>
+            <div class="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed space-y-4">
+              <p>Home valuations give you valuable knowledge that can help you plan for the future and make smart decisions. It’s good practice to stay informed about how much equity you have in your home and how much you may be able to borrow against it or sell it for.</p>
+              <p>Our tailored assessment provides a more robust, accurate evaluation than automated online portals. For the most precise valuation, reach out to discuss a customized Comparative Market Analysis with Alex Yap.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-COLUMN INFORMATIONAL GRID (Stone BG) -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)] border-t border-b border-black/10">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <article class="bg-white p-8 sm:p-10 border border-black/10 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-heading text-xl uppercase tracking-[1px] text-[#1a1a1a] mb-4">What is a Home Valuation?</h3>
+              <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">
+                A home valuation determines the current market value of a residential property. It is crucial for real estate transactions, preventing excessive borrowing and financial losses, and safeguarding lending terms.
+              </p>
+            </div>
+          </article>
+
+          <article class="bg-white p-8 sm:p-10 border border-black/10 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-heading text-xl uppercase tracking-[1px] text-[#1a1a1a] mb-4">How is it Calculated?</h3>
+              <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">
+                Calculated using location, age, size, condition, recent comparable sales, inventory trends, and local buyer sentiment in the South Bay market.
+              </p>
+            </div>
+          </article>
+
+          <article class="bg-white p-8 sm:p-10 border border-black/10 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-heading text-xl uppercase tracking-[1px] text-[#1a1a1a] mb-4">How Accurate Is It?</h3>
+              <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">
+                Online automated valuations provide a strong starting baseline. However, unique renovations and subjective buyer appeal require a customized in-person CMA for peak accuracy.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TWO WAYS TO PERFORM VALUATION (Chalk BG) -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-chalk,#F4F2EE)]">
+      <div class="max-w-5xl mx-auto px-6 lg:px-12">
+        <div class="text-center mb-16">
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Professional Methodology</span>
+          <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] mb-3">How Is a Valuation Performed?</h2>
+          <p class="font-body text-neutral-600 text-sm uppercase tracking-[2px]">Two Accurate Ways to Perform Home Valuations</p>
+        </div>
+
+        <div class="space-y-12">
+          <div class="bg-white border border-black/10 p-8 sm:p-10 shadow-sm">
+            <span class="inline-block bg-black text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-4">Market Analysis</span>
+            <h3 class="font-heading text-2xl uppercase tracking-[1px] text-[#1a1a1a] mb-4">Comparative Market Analysis (CMA)</h3>
+            <p class="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
+              A Comparative Market Analysis is a specialized tool used by professional real estate advisors to evaluate similar homes that have recently sold in your micro-market. Adjustments are made for square footage, upgrades, and specific neighborhood demand to determine exact target pricing.
+            </p>
+          </div>
+
+          <div class="bg-white border border-black/10 p-8 sm:p-10 shadow-sm">
+            <span class="inline-block bg-black text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-4">Appraisals</span>
+            <h3 class="font-heading text-2xl uppercase tracking-[1px] text-[#1a1a1a] mb-4">Based on a Professional Appraiser's Opinion</h3>
+            <p class="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
+              An appraisal is an unbiased valuation conducted by a licensed professional, typically required by mortgage lenders. It features an exhaustive interior and exterior inspection, official building sketches, and certified comparable sales reports.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY VALUATION MATTERS (Stone BG) -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)] border-t border-black/10">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+        <div class="text-center mb-16">
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Financial Strategy</span>
+          <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] mb-3">Why Is a Valuation Important?</h2>
+          <p class="font-body text-neutral-600 text-sm uppercase tracking-[2px]">Key Situations When a Home Valuation Is Necessary</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-8 border border-black/10 shadow-sm">
+            <span class="inline-block bg-[#1a1a1a] text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-3">Refinancing</span>
+            <h3 class="font-heading text-lg uppercase text-[#1a1a1a] mb-2">Maximize Equity Terms</h3>
+            <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">Lenders evaluate your home value to determine maximum borrowing limits. Accurate valuations ensure you receive the most favorable interest rates and terms during a refinance.</p>
+          </div>
+
+          <div class="bg-white p-8 border border-black/10 shadow-sm">
+            <span class="inline-block bg-[#1a1a1a] text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-3">Home Improvements</span>
+            <h3 class="font-heading text-lg uppercase text-[#1a1a1a] mb-2">Protect Resale Ceiling</h3>
+            <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">Ensure pre-sale renovation projects align with neighborhood comps so you don't over-improve or price your property out of realistic buyer demand.</p>
+          </div>
+
+          <div class="bg-white p-8 border border-black/10 shadow-sm">
+            <span class="inline-block bg-[#1a1a1a] text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-3">Qualifying for Credit</span>
+            <h3 class="font-heading text-lg uppercase text-[#1a1a1a] mb-2">Unlock HELOC Lines</h3>
+            <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">Qualify for a Home Equity Line of Credit (HELOC) by proving you maintain the required 20%+ equity buffer demanded by local financial institutions.</p>
+          </div>
+
+          <div class="bg-white p-8 border border-black/10 shadow-sm">
+            <span class="inline-block bg-[#1a1a1a] text-white text-[10px] font-mono tracking-[2px] uppercase px-3 py-1 mb-3">Strategic Planning</span>
+            <h3 class="font-heading text-lg uppercase text-[#1a1a1a] mb-2">Future Preparedness</h3>
+            <p class="font-body text-neutral-600 text-sm font-light leading-relaxed">Maintain constant awareness of your personal net worth and equity reserves to easily adapt to future relocation timelines or financial goals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <WorkWithAlexCTA />
