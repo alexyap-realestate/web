@@ -2,13 +2,11 @@
 // src/pages/about.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
-import MarqueeTicker from '../components/MarqueeTicker.astro';
 import TestimonialsCarousel from '../components/TestimonialsCarousel.astro';
 import * as XLSX from 'xlsx';
 import path from 'node:path';
 import fs from 'node:fs';
 
-// Read testimonials.xlsx directly from src/data/
 const testimonialFilePath = path.resolve(process.cwd(), 'src', 'data', 'testimonials.xlsx');
 let allReviews: any[] = [];
 if (fs.existsSync(testimonialFilePath)) {
@@ -22,66 +20,29 @@ const testimonials = allReviews.filter((item) => {
   const val = String(item.featured || '').trim().toUpperCase();
   return val === 'YES' || val === 'TRUE';
 });
-
-const marqueeItems = [
-  { title: "20+ Years Real Estate Experience", subtitle: "Silicon Valley & South Bay Advisor" },
-  { title: "Client-First Advocacy", subtitle: "Direct Representation & Guidance" },
-  { title: "Strategic Market Analysis", subtitle: "Data-Driven Property Positioning" },
-  { title: "Uncompromising Contract Defense", subtitle: "Protecting Client Equity at Every Stage" },
-  { title: "Exceptional Negotiation Record", subtitle: "Maximizing Value for Buyers & Sellers" },
-  { title: "Direct Guidance With Alex", subtitle: "End-to-End Personal Execution" }
-];
 ---
 
 <BaseLayout title="About Alex Yap | Real Estate Advisor & South Bay Specialist">
-  <main class="w-full bg-[var(--color-luxury-chalk,#F4F2EE)] overflow-x-hidden">
+  <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-    <!-- HERO SECTION -->
-    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
-      <img 
-        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
-        alt="About Alex Yap" 
-        class="absolute inset-0 w-full h-full object-cover object-center"
-        loading="eager"
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
-      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
-        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
-          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
-            <div class="max-w-3xl">
-              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
-                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
-                  Advisory Background &bull; 20+ Years Excellence
-                </span>
-              </div>
-              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
-                About Alex Yap
-              </h1>
-              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
-                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
-                  Dedicated real estate advisor providing high-conviction representation, rigorous market insight, and uncompromising client advocacy across the South Bay.
-                </p>
-              </div>
-            </div>
-            <div class="self-start lg:self-auto flex items-center gap-4">
-              <a 
-                href="#advisor-profile" 
-                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
-              >
-                <span>Read Profile</span>
-                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
-              </a>
-            </div>
-          </div>
+    <!-- Classic Left-Aligned Tailwind Editorial Header with Bottom Border -->
+    <section class="w-full pt-32 pb-16 px-6 lg:px-12 bg-[var(--color-luxury-stone,#ECE8E1)] border-b border-black/15">
+      <div class="max-w-5xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">
+            Advisory Background &bull; 20+ Years Excellence
+          </span>
+          <h1 class="font-heading text-4xl sm:text-5xl font-normal uppercase tracking-[1.5px] text-[#1a1a1a]">
+            About Alex Yap
+          </h1>
         </div>
+        <p class="font-body text-neutral-700 text-sm sm:text-base font-light max-w-md leading-relaxed">
+          Dedicated real estate advisor providing high-conviction representation, rigorous market insight, and uncompromising client advocacy across the South Bay.
+        </p>
       </div>
     </section>
 
-    <!-- TICKER -->
-    <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Alex", "Yap"]} />
-
-    <!-- ADVISOR PROFILE SECTION (Chalk BG) -->
+    <!-- ADVISOR PROFILE SECTION (Same Stone BG so it flows together) -->
     <section id="advisor-profile" class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)]">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -116,8 +77,8 @@ const marqueeItems = [
       </div>
     </section>
 
-    <!-- CORE PRINCIPLES SECTION (Stone BG) -->
-    <section class="w-full py-20 md:py-28 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/15">
+    <!-- CORE PRINCIPLES SECTION (Alternating Chalk BG) -->
+    <section class="w-full py-20 md:py-28 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         <div class="text-center max-w-3xl mx-auto mb-16">
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Core Principles</span>
@@ -197,21 +158,17 @@ const marqueeItems = [
       </div>
     </section>
 
-    <!-- TESTIMONIALS SECTION -->
-    <section id="testimonials" class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] pt-16 md:pt-24 pb-20 md:pb-28 px-[5vw] scroll-mt-28 border-t border-black/15">
+    <!-- TESTIMONIALS SECTION (Alternating Stone BG) -->
+    <section id="testimonials" class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] pt-16 md:pt-24 pb-20 md:pb-28 px-[5vw] scroll-mt-28 border-t border-black/10">
       <div class="max-w-7xl mx-auto">
-        
         <div class="text-center max-w-3xl mx-auto mb-16">
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Client Experiences</span>
           <h2 class="font-heading text-2xl sm:text-4xl uppercase tracking-[1px] text-[#1a1a1a] leading-tight mb-4">Testimonials</h2>
         </div>
-
         <TestimonialsCarousel reviews={testimonials} variant="dots" showEndCap={false} />
-
       </div>
     </section>
 
-    <!-- WORK WITH ALEX CTA -->
     <WorkWithAlexCTA />
 
   </main>

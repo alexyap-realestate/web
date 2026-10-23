@@ -1,7 +1,6 @@
 ---
 // src/pages/seller.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MarqueeTicker from '../components/MarqueeTicker.astro';
 import WorkWithAlexCTA from '../components/WorkWithAlexCTA.astro';
 import ClientWizardForm from '../components/ClientWizardForm.astro';
 
@@ -63,62 +62,27 @@ const steps = [
     image: "https://media-production.lp-cdn.com/media/025a6760-939a-4572-9ebe-b1877cb11a84"
   }
 ];
-
-const marqueeItems = [
-  { title: "Strategic Preparation", subtitle: "High-ROI Improvements" },
-  { title: "Precision Market Valuation", subtitle: "Neighborhood Market Analysis" },
-  { title: "Buyer Cross-Qualification", subtitle: "Protecting Closing Certainty Before Acceptance" },
-  { title: "Aggressive Offer Negotiation", subtitle: "Dictating Price & Contract Terms" },
-  { title: "Uncompromising Contract Defense", subtitle: "Escrow & Contingency Control" },
-  { title: "Direct Guidance With Alex", subtitle: "End-to-End Representation" }
-];
 ---
 
 <BaseLayout title="Seller's Guide | Alex Yap Real Estate Advisor">
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
 
-    <section class="relative w-full h-[62vh] sm:h-[68vh] md:h-[75vh] max-h-[760px] min-h-[460px] bg-black overflow-hidden select-none">
-      <img 
-        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2560&q=85" 
-        alt="Seller's Guide" 
-        class="absolute inset-0 w-full h-full object-cover object-center"
-        loading="eager"
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
-      <div class="relative z-10 w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
-        <div class="max-w-[96rem] mx-auto px-6 lg:px-12 w-full">
-          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-white">
-            <div class="max-w-3xl">
-              <div class="inline-flex items-center gap-2.5 mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 border border-white/20 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149]"></span>
-                <span class="font-body text-[10px] sm:text-[11px] uppercase tracking-[3px] text-[#d6be96] font-medium leading-none">
-                  Advisory Playbook &bull; 8-Step Roadmap
-                </span>
-              </div>
-              <h1 class="font-heading text-3xl sm:text-5xl md:text-6xl font-normal uppercase tracking-[1.5px] sm:tracking-[2px] leading-[1.1] mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
-                Seller's Guide
-              </h1>
-              <div class="flex items-start gap-3.5 border-l-2 border-[#8C7149] pl-4 max-w-2xl">
-                <p class="font-body text-white/95 text-sm sm:text-base font-light leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]">
-                  A structured, transparent roadmap designed to protect your net equity and maximize final proceeds.
-                </p>
-              </div>
-            </div>
-            <div class="self-start lg:self-auto flex items-center gap-4">
-              <a 
-                href="#seller-form-section" 
-                class="inline-flex items-center gap-3 bg-black/60 hover:bg-[#1a1a1a] text-white hover:text-white backdrop-blur-md border border-white/25 hover:border-[#8C7149] px-5 sm:px-6 py-3.5 transition-all duration-300 font-heading text-[11px] sm:text-xs uppercase tracking-[2px] shadow-lg group cursor-pointer"
-              >
-                <span>Get Seller Assessment</span>
-                <span class="font-mono font-bold text-sm text-[#d6be96] transition-transform group-hover:translate-y-0.5">&darr;</span>
-              </a>
-            </div>
-          </div>
+    <!-- Classic Left-Aligned Tailwind Editorial Header with Bottom Border -->
+    <section class="w-full pt-32 pb-16 px-6 lg:px-12 bg-[var(--color-luxury-stone,#ECE8E1)] border-b border-black/10">
+      <div class="max-w-5xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">
+            Advisory Playbook &bull; 8-Step Roadmap
+          </span>
+          <h1 class="font-heading text-4xl sm:text-5xl font-normal uppercase tracking-[1.5px] text-[#1a1a1a]">
+            Seller's Guide
+          </h1>
         </div>
+        <p class="font-body text-neutral-700 text-sm sm:text-base font-light max-w-md leading-relaxed">
+          A structured, transparent roadmap designed to protect your net equity and maximize final proceeds.
+        </p>
       </div>
     </section>
-
-    <MarqueeTicker items={marqueeItems} speed="85s" badgeText={["Seller's", "Guide"]} />
 
     <!-- 8-STEP ROADMAP SECTION -->
     <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)]">
