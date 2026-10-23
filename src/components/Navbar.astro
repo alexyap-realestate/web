@@ -10,7 +10,7 @@
 //         - Hero Theme (Homepage only, over video hero):
 //           Transparent background, white text, white borders, dark dropdowns.
 //         - Scrolled / Subpage Theme:
-//           White smoke background (#F5F5F5), dark charcoal text (#1a1a1a),
+//           Pure white background (#FFFFFF), dark charcoal text (#1a1a1a),
 //           black borders, and matching light dropdown menus with soft shadow.
 // MOBILE SCROLL BEHAVIOR:
 //         - Smart hide on scroll down (translate-y-full), reveal on scroll up.
@@ -185,12 +185,12 @@ import GoogleTranslate from './GoogleTranslate.astro';
 
 <!-- ======================================================================= -->
 <!-- MOBILE & TABLET FULL-SCREEN MENU OVERLAY                                -->
-<!-- Background: White Smoke (#F5F5F5) with smooth vertical scroll.          -->
+<!-- Background: Pure White (#FFFFFF) with smooth vertical scroll.           -->
 <!-- Hidden by default via class "hidden"; toggled on hamburger click.       -->
 <!-- ======================================================================= -->
 <div 
   id="mobile-menu" 
-  class="fixed inset-0 bg-[#F5F5F5] z-40 hidden flex-col items-start justify-start overflow-y-auto text-left px-8 pt-28 pb-12 transition-all duration-300 lg:hidden" 
+  class="fixed inset-0 bg-[#FFFFFF] z-40 hidden flex-col items-start justify-start overflow-y-auto text-left px-8 pt-28 pb-12 transition-all duration-300 lg:hidden" 
   aria-hidden="true"
 >
   <nav class="flex flex-col items-start gap-5 w-full max-w-md mx-auto" aria-label="Mobile Navigation">
@@ -332,7 +332,7 @@ import GoogleTranslate from './GoogleTranslate.astro';
     // Transparent background, pure white typography, dark dropdown panels.
     // ------------------------------------------------------------------------
     function applyHeroTheme() {
-      siteHeader?.classList.remove('bg-[#F5F5F5]', 'border-black/10', 'shadow-sm');
+      siteHeader?.classList.remove('bg-white', 'border-black/10', 'shadow-sm');
       siteHeader?.classList.add('bg-transparent', 'border-transparent');
       
       if (brandName) brandName.className = "font-heading text-[1.15rem] md:text-[1.25rem] tracking-[0.2em] -mr-[0.2em] uppercase font-normal text-white leading-tight text-center transition-colors duration-200 whitespace-nowrap";
@@ -363,12 +363,12 @@ import GoogleTranslate from './GoogleTranslate.astro';
 
     // ------------------------------------------------------------------------
     // THEME 2: SCROLLED THEME (Subpages & Scrolled Homepage)
-    // White smoke background (#F5F5F5), dark charcoal text (#1a1a1a),
+    // Pure white background (#FFFFFF), dark charcoal text (#1a1a1a),
     // subtle border, and matching light dropdown panels.
     // ------------------------------------------------------------------------
     function applyScrolledTheme() {
       siteHeader?.classList.remove('bg-transparent', 'border-transparent');
-      siteHeader?.classList.add('bg-[#F5F5F5]', 'border-black/10', 'shadow-sm');
+      siteHeader?.classList.add('bg-white', 'border-black/10', 'shadow-sm');
       
       if (brandName) brandName.className = "font-heading text-[1.15rem] md:text-[1.25rem] tracking-[0.2em] -mr-[0.2em] uppercase font-normal text-[#1a1a1a] leading-tight text-center transition-colors duration-200 whitespace-nowrap";
       if (brandLine) brandLine.className = "w-full h-[1px] bg-[#1a1a1a] mt-0.5 mb-1.5 opacity-80 transition-colors duration-200";
@@ -388,7 +388,7 @@ import GoogleTranslate from './GoogleTranslate.astro';
       });
 
       dropdownMenus.forEach(menu => {
-        menu.className = "dropdown-menu absolute top-[80%] left-0 w-64 py-3 bg-[#F5F5F5] shadow-2xl border border-black/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0";
+        menu.className = "dropdown-menu absolute top-[80%] left-0 w-64 py-3 bg-white shadow-2xl border border-black/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0";
       });
       dropdownItems.forEach(item => {
         item.className = "dropdown-item block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-[#4d4d4d] hover:text-black hover:bg-black/5 transition";
