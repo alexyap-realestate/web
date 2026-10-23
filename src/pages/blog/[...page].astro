@@ -2,49 +2,26 @@
 // ============================================================================
 // FILE: src/pages/blog/[...page].astro
 // PURPOSE: Renders the main blog listing page (Blog Posts) with pagination.
-//          It reads 'blogs.xlsx' directly and displays 6 posts per page.
 // ============================================================================
 
-// 1. Tells Astro to watch the Excel file for changes during live development
 import '../../data/blogs.xlsx?raw';
-
-// 2. Imports Astro's built-in pagination type tool
 import type { Page } from 'astro';
-
-// 3. Imports your visual layout wrapper and reusable components
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import WorkWithAlexCTA from '../../components/WorkWithAlexCTA.astro';
-
-// 4. Imports Node.js and community tools needed to read files from your computer
 import * as XLSX from 'xlsx';
 import path from 'node:path';
 import fs from 'node:fs';
 
-// ============================================================================
-// STEP A: GET STATIC PATHS (Builds the pages when your site compiles)
-// ============================================================================
 export async function getStaticPaths({ paginate }: any) {
-  
-  // Finds the exact location of your Excel file on your hard drive
   const filePath = path.resolve(process.cwd(), 'src', 'data', 'blogs.xlsx');
-  
-  // Reads the raw binary data of the Excel file
   const fileBuffer = fs.readFileSync(filePath);
-  
-  // Parses the binary data into an Excel workbook structure
   const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-  
-  // Selects the first tab inside your Excel spreadsheet
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  
-  // Converts spreadsheet rows into a list of JavaScript data objects
   const rawRows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
-  // A default backup image if you leave the image column blank in Excel
   const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
 
-  // Helper function to turn Excel's raw 5-digit date numbers into clean calendar text
   const parseDate = (dateVal: any) => {
     if (!dateVal) return '';
     const num = Number(dateVal);
@@ -60,18 +37,15 @@ export async function getStaticPaths({ paginate }: any) {
     return String(dateVal).trim();
   };
 
-  // Loops through every row in Excel and cleans up the data
   const allPosts = rawRows.map((row) => {
     const normalizedRow: Record<string, any> = {};
     for (const [key, val] of Object.entries(row)) {
       normalizedRow[key.trim().toLowerCase()] = val;
     }
 
-    // Checks if the row has a title. If not, skips it.
     const title = String(normalizedRow.title || '').trim();
     if (!title) return null;
 
-    // Automatically generates a URL slug from the title if you didn't type one
     const fallbackSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -96,21 +70,15 @@ export async function getStaticPaths({ paginate }: any) {
     };
   }).filter((post): post is NonNullable<typeof post> => post !== null && post.title.length > 0);
 
-  // Splits your articles into pages of 6 items each
   return paginate(allPosts, { pageSize: 6 });
 }
 
-// Defines the data shape expected on this page template
 interface Props {
   page: Page<any>;
 }
 
-// Grabs the current page data from Astro
 let { page } = Astro.props;
 
-// ============================================================================
-// STEP B: DEV MODE LIVE RELOAD (Updates instantly when you edit Excel in local testing)
-// ============================================================================
 if (import.meta.env.DEV) {
   const filePath = path.resolve(process.cwd(), 'src', 'data', 'blogs.xlsx');
   try {
@@ -162,20 +130,15 @@ if (import.meta.env.DEV) {
       ...page,
       data: freshPosts.slice(0, 6),
     };
-  } catch (e) {
-    // Falls back silently if read fails
-  }
+  } catch (e) {}
 }
 ---
 
-<!-- ============================================================================ -->
-<!-- HTML VISUAL LAYOUT (What appears on your website screen)                     -->
-<!-- ============================================================================ -->
 <BaseLayout title="Blog Posts | Alex Yap Real Estate Advisor">
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden">
     
-    <!-- Classic Left-Aligned Tailwind Editorial Header -->
-    <section class="w-full pt-32 pb-16 px-6 lg:px-12 bg-[var(--color-luxury-stone,#ECE8E1)] border-b border-black/10">
+    <!-- Classic Left-Aligned Editorial Header with Sweet Spot Padding & Bottom Border -->
+    <section class="w-full pt-44 pb-24 px-6 lg:px-12 bg-[var(--color-luxury-stone,#ECE8E1)] border-b border-black/15">
       <div class="max-w-5xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">
@@ -197,7 +160,6 @@ if (import.meta.env.DEV) {
         
         <div id="blog-feed" class="scroll-mt-32"></div>
 
-        <!-- Loops through blog posts and renders cards -->
         <div class="max-w-5xl mx-auto flex flex-col gap-8 md:gap-10">
           {page.data && page.data.length > 0 ? (
             page.data.map((post: any) => (
@@ -210,7 +172,6 @@ if (import.meta.env.DEV) {
           )}
         </div>
 
-        <!-- Pagination Page Numbers / Next & Previous Controls -->
         {page.lastPage > 1 && (
           <div class="max-w-5xl mx-auto mt-16 flex items-center justify-end">
             <nav aria-label="Blog pagination" class="flex items-center gap-2">
