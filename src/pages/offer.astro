@@ -29,20 +29,21 @@ import LandingPageLayout from '../layouts/LandingPageLayout.astro';
 
     {/* ============================================================ */}
 
-    <div class="relative z-10 w-full max-w-md bg-[#141312]/90 backdrop-blur-xl border border-[#d3bc97]/30 p-8 sm:p-10 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-center space-y-6 overflow-hidden">
+    {/* Modernized Luxury Gateway Card with Soft Ambient Shadow */}
+    <div class="relative z-10 w-full max-w-md bg-[#141312]/85 backdrop-blur-2xl border border-[#d3bc97]/25 p-8 sm:p-10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.4),0_0_30px_rgba(140,113,73,0.12)] text-center space-y-6 overflow-hidden">
       
       <!-- Top Accent Line -->
       <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent"></div>
 
       <div class="space-y-2">
-        <span class="inline-flex items-center gap-2 bg-black/60 text-[#d3bc97] px-3.5 py-1 rounded-full font-mono text-[10px] uppercase tracking-[2px] border border-[#d3bc97]/30">
+        <span class="inline-flex items-center gap-2 bg-black/60 text-[#d3bc97] px-3.5 py-1 rounded-full font-mono text-[10px] uppercase tracking-[2px] border border-[#d3bc97]/30 shadow-sm">
           <span class="w-1.5 h-1.5 rounded-full bg-[#F6C91D] animate-pulse"></span>
           Secure Verification
         </span>
-        <h1 class="text-2xl uppercase tracking-[1.5px] text-white font-normal">
+        <h1 class="font-heading text-2xl uppercase tracking-[1.5px] text-white font-normal">
           Enter Your Offer Code
         </h1>
-        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+        <p class="font-body text-xs text-neutral-400 font-light leading-relaxed">
           Please input the unique verification code found on your exclusive mailer to access your property's customized offer.
         </p>
       </div>
@@ -55,20 +56,20 @@ import LandingPageLayout from '../layouts/LandingPageLayout.astro';
             id="code-input" 
             placeholder="e.g. A12-23-606" 
             required
-            class="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-4 text-center text-xl text-white tracking-[0.25em] font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#8C7149]/50 focus:border-[#8C7149] transition-all shadow-inner uppercase"
+            class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-4 text-center text-xl text-white tracking-[0.25em] font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#8C7149]/50 focus:border-[#8C7149] transition-all shadow-inner uppercase"
           />
         </div>
 
         <button 
           type="submit"
-          class="w-full text-xs uppercase tracking-[2.5px] bg-[#C5A880] text-neutral-950 font-bold py-4 px-6 rounded-xl hover:bg-[#D4B993] transition-all duration-300 shadow-[0_10px_30px_rgba(197,168,128,0.35)] cursor-pointer flex items-center justify-center gap-2.5"
+          class="w-full font-heading text-xs uppercase tracking-[2.5px] bg-[#C5A880] text-neutral-950 font-bold py-4 px-6 rounded-xl hover:bg-[#D4B993] transition-all duration-300 shadow-[0_10px_30px_rgba(197,168,128,0.25)] cursor-pointer flex items-center justify-center gap-2.5"
         >
           <span>Access My Secure Offer</span>
           <span class="font-mono font-black text-sm">&rarr;</span>
         </button>
       </form>
 
-      <p class="text-[10px] uppercase tracking-wider text-neutral-500 pt-2">
+      <p class="font-body text-[10px] uppercase tracking-wider text-neutral-500 pt-2">
         Protected &bull; Confidential Real Estate Consultation
       </p>
     </div>
