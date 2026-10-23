@@ -1,6 +1,6 @@
 ---
 // ============================================================================
-// COMPONENT: LandingLayout.astro
+// COMPONENT: LandingPageLayout.astro
 // USAGE: Dedicated layout for standalone PPC / campaign landing pages.
 // LAYOUT: ZERO navigation menu, ZERO footer. Pure conversion focus.
 // ============================================================================
@@ -23,7 +23,7 @@ const {
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth bg-black">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -63,6 +63,17 @@ const {
       --color-luxury-chalk: #F4F2EE;
       --font-body: 'Libre Franklin', system-ui, -apple-system, sans-serif;
       --font-heading: 'Tenor Sans', Didot, 'Bodoni MT', Georgia, serif;
+
+      /* ======================================================== */
+      /* CENTRALIZED LANDING PAGE BACKGROUND TOKEN                */
+      /* Slightly darker luxury stone shade (#EBE8E0)             */
+      /* ======================================================== */
+      --bg-color-1: #EBE8E0;
+    }
+
+    html, body {
+      background-color: var(--bg-color-1) !important;
+      color: #2b2b2b !important;
     }
 
     body {
@@ -75,10 +86,15 @@ const {
     .font-heading {
       font-family: var(--font-heading);
     }
+
+    /* Utility class linked directly to the token */
+    .bg-color-1 {
+      background-color: var(--bg-color-1) !important;
+    }
   </style>
 </head>
 
-<body class="bg-white text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">
+<body class="text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">
   
   <!-- NO NAVBAR. NO FOOTER. Pure conversion slot. -->
   <slot />

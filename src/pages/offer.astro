@@ -1,0 +1,94 @@
+---
+// ============================================================================
+// PAGE: src/pages/offer.astro
+// PURPOSE: Gateway entry screen to accept the secure mailer code.
+// ============================================================================
+
+import LandingPageLayout from '../layouts/LandingPageLayout.astro';
+---
+
+<LandingPageLayout title="Enter Your Offer Code">
+  <main class="relative w-full min-h-screen bg-color-1 overflow-hidden flex items-center justify-center py-4 lg:py-6 px-6">
+    
+    {/* ============================================================ */}
+    {/* ENRICHED LUXURY ARCHITECTURAL BACKGROUND                     */}
+    {/* ============================================================ */}
+    
+    {/* 1. Distinct Architectural Grid */}
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#8C714918_1px,transparent_1px),linear-gradient(to_bottom,#8C714918_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+
+    {/* 2. Vibrant Warm Gold Ambient Lighting Orbs */}
+    <div class="absolute -top-20 left-10 w-[600px] h-[600px] bg-[#8C7149]/15 blur-[150px] rounded-full pointer-events-none"></div>
+    <div class="absolute -bottom-20 right-10 w-[550px] h-[550px] bg-[#d3bc97]/20 blur-[160px] rounded-full pointer-events-none"></div>
+
+    {/* 3. Dynamic Diagonal Light Streak Accent */}
+    <div class="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-[#8C7149]/15 via-transparent to-transparent rotate-12 blur-[100px] pointer-events-none"></div>
+
+    {/* 4. Deep Vignette Border Framing */}
+    <div class="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none"></div>
+
+    {/* ============================================================ */}
+
+    <div class="relative z-10 w-full max-w-md bg-[#141312]/90 backdrop-blur-xl border border-[#d3bc97]/30 p-8 sm:p-10 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-center space-y-6 overflow-hidden">
+      
+      <!-- Top Accent Line -->
+      <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent"></div>
+
+      <div class="space-y-2">
+        <span class="inline-flex items-center gap-2 bg-black/60 text-[#d3bc97] px-3.5 py-1 rounded-full font-mono text-[10px] uppercase tracking-[2px] border border-[#d3bc97]/30">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#F6C91D] animate-pulse"></span>
+          Secure Verification
+        </span>
+        <h1 class="text-2xl uppercase tracking-[1.5px] text-white font-normal">
+          Enter Your Offer Code
+        </h1>
+        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+          Please input the unique verification code found on your exclusive mailer to access your property's customized offer.
+        </p>
+      </div>
+
+      <!-- Code Entry Form -->
+      <form id="gateway-form" class="space-y-4 pt-2">
+        <div>
+          <input 
+            type="text" 
+            id="code-input" 
+            placeholder="e.g. A12-23-606" 
+            required
+            class="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-4 text-center text-xl text-white tracking-[0.25em] font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#8C7149]/50 focus:border-[#8C7149] transition-all shadow-inner uppercase"
+          />
+        </div>
+
+        <button 
+          type="submit"
+          class="w-full text-xs uppercase tracking-[2.5px] bg-[#C5A880] text-neutral-950 font-bold py-4 px-6 rounded-xl hover:bg-[#D4B993] transition-all duration-300 shadow-[0_10px_30px_rgba(197,168,128,0.35)] cursor-pointer flex items-center justify-center gap-2.5"
+        >
+          <span>Access My Secure Offer</span>
+          <span class="font-mono font-black text-sm">&rarr;</span>
+        </button>
+      </form>
+
+      <p class="text-[10px] uppercase tracking-wider text-neutral-500 pt-2">
+        Protected &bull; Confidential Real Estate Consultation
+      </p>
+    </div>
+  </main>
+
+  <!-- Client-side Redirection Logic -->
+  <script>
+    const form = document.getElementById('gateway-form') as HTMLFormElement | null;
+    const input = document.getElementById('code-input') as HTMLInputElement | null;
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = input?.value.trim().toUpperCase();
+      
+      // When they enter your test code, redirect them to the personalized slug landing page
+      if (code === 'A12-23-606') {
+        window.location.href = '/offer/A12-23-606-123-main-st-san-jose-ca-95123';
+      } else {
+        alert('Invalid code. Please check your mailer and try again.');
+      }
+    });
+  </script>
+</LandingPageLayout>
