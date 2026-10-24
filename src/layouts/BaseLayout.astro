@@ -25,6 +25,16 @@ const {
   title = "Alex Yap Real Estate Advisor | South Bay Residential & Listing Specialist",
   description = "Alex Yap delivers discreet advisory and bespoke representation for luxury coastal and architectural estates throughout the South Bay, Silicon Valley, and Peninsula enclaves."
 } = Astro.props;
+
+// ============================================================================
+// 📝 DEVELOPER NOTE: SEO AMPERSAND NORMALIZATION
+// What was done: Added sanitization logic to automatically clean and normalize 
+// ampersands (&) in page titles and meta descriptions. This prevents AI search 
+// crawlers (like Google AI Overviews) from leaking raw HTML entities like '&amp;' 
+// into search result snippets.
+// ============================================================================
+const cleanTitle = title.replace(/&(?!\s*(?:amp|lt|gt|quot|#39);)/g, '&amp;');
+const cleanDescription = description.replace(/&(?!\s*(?:amp|lt|gt|quot|#39);)/g, '&amp;');
 ---
 
 <!DOCTYPE html>
@@ -34,13 +44,13 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- SEO Meta Tags -->
-  <title>{title}</title>
-  <meta name="description" content={description} />
+  <title>{cleanTitle}</title>
+  <meta name="description" content={cleanDescription} />
 
   <!-- Open Graph / Social Sharing Meta Tags -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
+  <meta property="og:title" content={cleanTitle} />
+  <meta property="og:description" content={cleanDescription} />
   <meta property="og:image" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" />
   <meta property="og:url" content="https://alexyaphomes.com" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -110,7 +120,7 @@ const {
 </head>
 
 <!-- ======================================================================= -->
-<!-- BODY SHELL                                                              -->
+<!-- BODY SHELL                                                            -->
 <!-- Base typography, text selection color, and overflow handling.           -->
 <!-- ======================================================================= -->
 <body class="bg-black text-[#2b2b2b] antialiased text-[16px] font-light leading-relaxed selection:bg-[#cbb592] selection:text-black overflow-x-hidden">

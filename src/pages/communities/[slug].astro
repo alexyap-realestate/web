@@ -309,7 +309,7 @@ const totalPhotos = community.gallery.length;
   <main class="w-full bg-[var(--color-luxury-stone,#ECE8E1)] overflow-x-hidden pt-28 md:pt-36">
     
     <!-- =================================================================== -->
-    <!-- COMMUNITY GALLERY STAGE & THUMBNAIL FILMSTRIP                        -->
+    <!-- COMMUNITY GALLERY STAGE & THUMBNAIL FILMSTRIP                       -->
     <!-- =================================================================== -->
     <section class="w-full pb-12 md:pb-20">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
@@ -357,7 +357,8 @@ const totalPhotos = community.gallery.length;
             </span>
           </div>
 
-          <h1 class="font-heading text-xl sm:text-2xl md:text-3xl font-normal uppercase tracking-[1px] text-[#1a1a1a] mb-2">
+          <!-- Reset h1 heading size to match other editorial pages (text-4xl sm:text-5xl) -->
+          <h1 class="font-heading text-4xl sm:text-5xl font-normal uppercase tracking-[1.5px] text-[#1a1a1a] mb-3">
             {community.name}
           </h1>
 
@@ -369,15 +370,9 @@ const totalPhotos = community.gallery.length;
         <!-- ================================================================= -->
         <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                       -->
         <!-- ================================================================= -->
-        <!-- NOTE: Changed padding from p-4 sm:p-6 md:p-8 to p-0. -->
-        <!-- WHY: This removes all outer blank margin/padding around the gallery card container, -->
-        <!-- allowing the photo stage and filmstrip to stretch edge-to-edge. -->
         <div class="bg-white border border-black/10 p-0 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12 overflow-hidden">
           
           <!-- Main Large Stage Photo -->
-          <!-- NOTE: Changed margin-bottom from mb-4 to mb-0 and added a bottom border (border-b). -->
-          <!-- WHY: This removes the vertical white gap between the photo stage and the filmstrip below it, -->
-          <!-- making them sit together seamlessly. -->
           <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-0 border-b border-black/10 group flex items-center justify-center">
             <img
               id="main-stage-img"
@@ -416,8 +411,6 @@ const totalPhotos = community.gallery.length;
           </div>
 
           <!-- Thumbnail Filmstrip Below -->
-          <!-- NOTE: Wrapped the filmroll inside a clean white padded strip (p-3 bg-white). -->
-          <!-- WHY: This gives the thumbnail buttons a tidy container directly beneath the photo stage. -->
           {community.gallery.length > 1 && (
             <div class="relative w-full p-3 bg-white">
               <div
@@ -447,7 +440,7 @@ const totalPhotos = community.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- COMMUNITY NARRATIVE OVERVIEW                                       -->
+        <!-- COMMUNITY NARRATIVE OVERVIEW                                      -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-8 sm:p-12 md:p-16 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-16">
           <h2 class="font-heading text-2xl sm:text-3xl uppercase tracking-[1px] text-[#1a1a1a] mb-6">

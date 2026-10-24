@@ -452,7 +452,8 @@ const totalPhotos = property.gallery.length;
             </span>
           </div>
 
-          <h1 class="font-heading text-xl sm:text-2xl md:text-3xl font-normal uppercase tracking-[1px] text-[#1a1a1a] mb-2">
+          <!-- Reset h1 heading size to match other editorial pages (text-4xl sm:text-5xl) -->
+          <h1 class="font-heading text-4xl sm:text-5xl font-normal uppercase tracking-[1.5px] text-[#1a1a1a] mb-3">
             {property.address}
           </h1>
 
@@ -464,15 +465,9 @@ const totalPhotos = property.gallery.length;
         <!-- ================================================================= -->
         <!-- PHOTO STAGE & THUMBNAIL FILMSTRIP CONTAINER                       -->
         <!-- ================================================================= -->
-        <!-- NOTE: Changed padding from p-4 sm:p-6 md:p-8 to p-0. -->
-        <!-- WHY: This removes all outer blank margin/padding around the gallery card container, -->
-        <!-- allowing the photo stage and filmstrip to stretch edge-to-edge. -->
         <div class="bg-white border border-black/10 p-0 shadow-[0_10px_30px_rgba(0,0,0,0.03)] mb-12 overflow-hidden">
           
           <!-- Main Large Stage Photo with Contain View & Luxury Stone Background Match -->
-          <!-- NOTE: Changed margin-bottom from mb-4 to mb-0 and added a bottom border (border-b). -->
-          <!-- WHY: This removes the vertical white gap between the photo stage and the filmstrip below it, -->
-          <!-- making them sit together seamlessly. -->
           <div class="relative w-full aspect-[4/3] max-h-[640px] overflow-hidden bg-[var(--color-luxury-stone,#ECE8E1)] mx-auto mb-0 border-b border-black/10 group flex items-center justify-center">
             <img 
               id="main-stage-img"
@@ -511,8 +506,6 @@ const totalPhotos = property.gallery.length;
           </div>
 
           <!-- Thumbnail Filmstrip Below with Visible Custom Scrollbar -->
-          <!-- NOTE: Wrapped the filmroll inside a clean white padded strip (p-3 bg-white). -->
-          <!-- WHY: This gives the thumbnail buttons a tidy container directly beneath the photo stage. -->
           {property.gallery.length > 1 && (
             <div class="relative w-full p-3 bg-white">
               <div 
@@ -542,7 +535,7 @@ const totalPhotos = property.gallery.length;
         </div>
 
         <!-- ================================================================= -->
-        <!-- PROPERTY SPECIFICATIONS BAR                                      -->
+        <!-- PROPERTY SPECIFICATIONS BAR                                       -->
         <!-- ================================================================= -->
         <div class="bg-white border border-black/10 p-6 sm:p-10 mb-12 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center pb-6 border-b border-black/10">
