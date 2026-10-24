@@ -12,8 +12,8 @@
 //         - Scrolled / Subpage Theme:
 //           Pure white background (#FFFFFF), dark charcoal text (#1a1a1a),
 //           black borders, and matching light dropdown menus with soft shadow.
-// MOBILE SCROLL BEHAVIOR:
-//         - Smart hide on scroll down (translate-y-full), reveal on scroll up.
+// ACTIVE ROUTE HIGHLIGHT:
+//         - Automatically underlines the active nav item on desktop and highlights in mobile.
 // ============================================================================
 
 import GoogleTranslate from './GoogleTranslate.astro';
@@ -21,23 +21,17 @@ import GoogleTranslate from './GoogleTranslate.astro';
 
 <!-- ======================================================================= -->
 <!-- MAIN FIXED HEADER BAR                                                   -->
-<!-- Starts transparent by default; classes are dynamically swapped in JS.   -->
-<!-- Height: h-20 (80px), pinned at top (fixed top-0 left-0 right-0, z-50).  -->
 <!-- ======================================================================= -->
 <header 
   id="site-header" 
   class="fixed top-0 left-0 right-0 h-20 bg-transparent flex items-center justify-between px-[5vw] z-50 border-b border-transparent transition-transform duration-300 lg:translate-y-0"
 >
-  <!-- ===================================================================== -->
-  <!-- 1. BRAND LOGO LOCKUP (Left Side)                                      -->
-  <!-- Centered stacked typography with horizontal hairline divider.         -->
-  <!-- ===================================================================== -->
+  <!-- 1. BRAND LOGO LOCKUP (Left Side) -->
   <a 
     href="/" 
     class="inline-flex flex-col items-center select-none group w-fit shrink-0 whitespace-nowrap pr-4" 
     aria-label="Alex Yap Homepage"
   >
-    <!-- Primary Agent Name (Heading Display) -->
     <span 
       id="brand-name" 
       class="font-heading text-[1.15rem] md:text-[1.25rem] tracking-[0.2em] -mr-[0.2em] uppercase font-normal text-white leading-tight text-center transition-colors duration-200 whitespace-nowrap"
@@ -45,13 +39,11 @@ import GoogleTranslate from './GoogleTranslate.astro';
       Alex Yap
     </span>
 
-    <!-- Thin Divider Hairline -->
     <span 
       id="brand-line" 
       class="w-full h-[1px] bg-white mt-0.5 mb-1.5 opacity-80 transition-colors duration-200"
     ></span>
 
-    <!-- Sub-Brand Professional Role Tag -->
     <span 
       id="brand-sub" 
       class="font-body text-[0.55rem] md:text-[0.625rem] tracking-[0.32em] -mr-[0.32em] uppercase text-neutral-300 font-light leading-none text-center transition-colors duration-200 whitespace-nowrap"
@@ -60,47 +52,41 @@ import GoogleTranslate from './GoogleTranslate.astro';
     </span>
   </a>
 
-  <!-- ===================================================================== -->
-  <!-- 2. DESKTOP NAVIGATION (Visible on screens >= 1024px / lg)             -->
-  <!-- ===================================================================== -->
+  <!-- 2. DESKTOP NAVIGATION -->
   <nav class="hidden lg:flex items-center gap-6 xl:gap-9 shrink-0" aria-label="Main Navigation">
     
-    <!-- Link: Properties Directory -->
+    <!-- Link: Properties -->
     <a 
       href="/properties" 
-      class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
+      data-nav-route="properties"
+      class="nav-link relative py-6 font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
     >
       Properties
     </a>
 
-    <!-- Link: Communities Directory -->
+    <!-- Link: Communities -->
     <a 
       href="/communities" 
-      class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
+      data-nav-route="communities"
+      class="nav-link relative py-6 font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
     >
       Communities
     </a>
 
-    <!-- =================================================================== -->
-    <!-- DROPDOWN 1: ADVISORY (Seller, Buyer, Valuation)                     -->
-    <!-- Uses CSS group-hover on the parent wrapper to reveal the menu.      -->
-    <!-- =================================================================== -->
-    <div class="relative group py-6">
-      <!-- Dropdown Trigger Button -->
+    <!-- DROPDOWN 1: ADVISORY (Seller, Buyer, Valuation) -->
+    <div class="relative group py-6" data-nav-route="advisory">
       <button 
         type="button" 
-        class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0"
+        class="nav-link relative py-0 font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0"
         aria-haspopup="true" 
         aria-expanded="false"
       >
         <span>Advisory</span>
-        <!-- Rotating Chevron Indicator -->
         <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
 
-      <!-- Dropdown Panel (Starts shifted down & invisible; fades in on hover) -->
       <div class="dropdown-menu absolute top-[80%] left-0 w-64 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0">
         <a href="/seller" class="dropdown-item block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition">
           Seller Advisory
@@ -114,33 +100,29 @@ import GoogleTranslate from './GoogleTranslate.astro';
       </div>
     </div>
 
-    <!-- Link: Blog Directory -->
+    <!-- Link: Blog -->
     <a 
       href="/blog" 
-      class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
+      data-nav-route="blog"
+      class="nav-link relative py-6 font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition whitespace-nowrap"
     >
       Blog
     </a>
 
-    <!-- =================================================================== -->
-    <!-- DROPDOWN 2: ABOUT (Bio, Testimonials)                               -->
-    <!-- =================================================================== -->
-    <div class="relative group py-6">
-      <!-- Dropdown Trigger Button -->
+    <!-- DROPDOWN 2: ABOUT (Bio, Testimonials) -->
+    <div class="relative group py-6" data-nav-route="about">
       <button 
         type="button" 
-        class="nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0"
+        class="nav-link relative py-0 font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0"
         aria-haspopup="true" 
         aria-expanded="false"
       >
         <span>About</span>
-        <!-- Rotating Chevron Indicator -->
         <svg class="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
 
-      <!-- Dropdown Panel -->
       <div class="dropdown-menu absolute top-[80%] left-0 w-64 py-3 bg-[#161514] shadow-2xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0">
         <a href="/about" class="dropdown-item block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition">
           About Alex
@@ -151,10 +133,10 @@ import GoogleTranslate from './GoogleTranslate.astro';
       </div>
     </div>
 
-    <!-- Custom Google Translate Component Integration -->
+    <!-- Google Translate Component -->
     <GoogleTranslate />
     
-    <!-- Primary CTA: Triggers the Global Contact Modal -->
+    <!-- Primary CTA: Contact Modal Trigger -->
     <button 
       type="button" 
       id="nav-contact-btn" 
@@ -165,10 +147,7 @@ import GoogleTranslate from './GoogleTranslate.astro';
     </button>
   </nav>
 
-  <!-- ===================================================================== -->
-  <!-- 3. MOBILE & TABLET HAMBURGER BUTTON (Visible < 1024px)               -->
-  <!-- Three stacked horizontal lines (bars) that invert color on scroll.    -->
-  <!-- ===================================================================== -->
+  <!-- 3. MOBILE HAMBURGER BUTTON -->
   <button 
     type="button" 
     id="mobile-menu-btn" 
@@ -184,9 +163,7 @@ import GoogleTranslate from './GoogleTranslate.astro';
 </header>
 
 <!-- ======================================================================= -->
-<!-- MOBILE & TABLET FULL-SCREEN MENU OVERLAY                                -->
-<!-- Background: Pure White (#FFFFFF) with smooth vertical scroll.           -->
-<!-- Hidden by default via class "hidden"; toggled on hamburger click.       -->
+<!-- MOBILE FULL-SCREEN MENU OVERLAY                                         -->
 <!-- ======================================================================= -->
 <div 
   id="mobile-menu" 
@@ -195,72 +172,76 @@ import GoogleTranslate from './GoogleTranslate.astro';
 >
   <nav class="flex flex-col items-start gap-5 w-full max-w-md mx-auto" aria-label="Mobile Navigation">
     
-    <!-- Mobile Link: Properties -->
     <a 
       href="/properties" 
-      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation"
+      data-mobile-route="properties"
+      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation flex items-center justify-between"
     >
-      Properties
+      <span>Properties</span>
+      <span class="mobile-active-indicator hidden w-2 h-2 rounded-full bg-[#8C7149]"></span>
     </a>
 
-    <!-- Mobile Link: Communities -->
     <a 
       href="/communities" 
-      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation"
+      data-mobile-route="communities"
+      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation flex items-center justify-between"
     >
-      Communities
+      <span>Communities</span>
+      <span class="mobile-active-indicator hidden w-2 h-2 rounded-full bg-[#8C7149]"></span>
     </a>
 
-    <!-- Mobile Accordion: Advisory -->
-    <div class="w-full flex flex-col items-start border-b border-black/10 pb-4">
+    <div class="w-full flex flex-col items-start border-b border-black/10 pb-4" data-mobile-route="advisory">
       <button 
         type="button" 
         id="mobile-adv-toggle" 
         class="w-full flex items-center justify-between font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] cursor-pointer text-left py-2 touch-manipulation"
       >
-        <span>Advisory</span>
+        <span class="flex items-center gap-3">
+          <span>Advisory</span>
+          <span class="mobile-active-indicator hidden w-2 h-2 rounded-full bg-[#8C7149]"></span>
+        </span>
         <svg id="adv-arrow" class="w-4 h-4 transition-transform duration-300 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
 
-      <!-- Sub-links for Advisory -->
       <div id="mobile-advisory-sub" class="hidden flex-col items-start gap-3 pt-3 pl-4 w-full font-body text-xs uppercase tracking-wider text-[#555555] font-light">
-        <a href="/seller" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Seller Advisory</a>
-        <a href="/buyer" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Buyer Advisory</a>
-        <a href="/valuation" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Home Valuation</a>
+        <a href="/seller" data-mobile-sub="/seller" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Seller Advisory</a>
+        <a href="/buyer" data-mobile-sub="/buyer" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Buyer Advisory</a>
+        <a href="/valuation" data-mobile-sub="/valuation" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Home Valuation</a>
       </div>
     </div>
 
-    <!-- Mobile Link: Blog -->
     <a 
       href="/blog" 
-      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation"
+      data-mobile-route="blog"
+      class="mobile-nav-link font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#8C7149] transition py-2 border-b border-black/10 w-full text-left touch-manipulation flex items-center justify-between"
     >
-      Blog
+      <span>Blog</span>
+      <span class="mobile-active-indicator hidden w-2 h-2 rounded-full bg-[#8C7149]"></span>
     </a>
 
-    <!-- Mobile Accordion: About -->
-    <div class="w-full flex flex-col items-start border-b border-black/10 pb-4">
+    <div class="w-full flex flex-col items-start border-b border-black/10 pb-4" data-mobile-route="about">
       <button 
         type="button" 
         id="mobile-about-toggle" 
         class="w-full flex items-center justify-between font-heading text-[20px] uppercase tracking-[1px] font-normal text-[#1a1a1a] cursor-pointer text-left py-2 touch-manipulation"
       >
-        <span>About</span>
+        <span class="flex items-center gap-3">
+          <span>About</span>
+          <span class="mobile-active-indicator hidden w-2 h-2 rounded-full bg-[#8C7149]"></span>
+        </span>
         <svg id="about-arrow" class="w-4 h-4 transition-transform duration-300 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
 
-      <!-- Sub-links for About -->
       <div id="mobile-about-sub" class="hidden flex-col items-start gap-3 pt-3 pl-4 w-full font-body text-xs uppercase tracking-wider text-[#555555] font-light">
-        <a href="/about" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">About Alex</a>
-        <a href="/testimonials" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Testimonials</a>
+        <a href="/about" data-mobile-sub="/about" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">About Alex</a>
+        <a href="/testimonials" data-mobile-sub="/testimonials" class="mobile-nav-link hover:text-black py-1 w-full text-left touch-manipulation">Testimonials</a>
       </div>
     </div>
 
-    <!-- Mobile Accordion: Language (With Arrow and Submenu Options) -->
     <div class="w-full flex flex-col items-start border-b border-black/10 pb-4">
       <button 
         type="button" 
@@ -273,7 +254,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
         </svg>
       </button>
 
-      <!-- Sub-links for Language -->
       <div id="mobile-lang-sub" class="hidden flex-col items-start gap-3 pt-3 pl-4 w-full font-body text-xs uppercase tracking-wider text-[#555555] font-light">
         <button type="button" onclick="setLanguage('en')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">English</button>
         <button type="button" onclick="setLanguage('zh-TW')" class="hover:text-black py-1 w-full text-left touch-manipulation bg-transparent border-none cursor-pointer">繁體中文</button>
@@ -283,7 +263,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       </div>
     </div>
     
-    <!-- Mobile Contact Button (Full Width, Triggers Contact Modal) -->
     <button 
       type="button" 
       id="mobile-contact-btn" 
@@ -296,11 +275,10 @@ import GoogleTranslate from './GoogleTranslate.astro';
 </div>
 
 <!-- ======================================================================= -->
-<!-- CLIENT-SIDE SCRIPT: ADAPTIVE THEME SWITCHING & MOBILE INTERACTION       -->
+<!-- CLIENT-SIDE SCRIPT: THEME SWITCHING & ACTIVE ROUTE HIGHLIGHT            -->
 <!-- ======================================================================= -->
 <script>
   function setupNavbar() {
-    // DOM Element References
     const siteHeader = document.getElementById('site-header');
     const brandName = document.getElementById('brand-name');
     const brandLine = document.getElementById('brand-line');
@@ -316,20 +294,85 @@ import GoogleTranslate from './GoogleTranslate.astro';
     
     if (!siteHeader || !mobileMenuBtn) return;
 
-    // Prevent duplicate event listener registration across Astro page transitions
     if (siteHeader.dataset.initialized === 'true') {
       updateNavAppearance();
+      highlightActiveRoute();
       return;
     }
     siteHeader.dataset.initialized = 'true';
 
-    // Identify current page route to apply correct starting theme
     const path = window.location.pathname.replace(/\/$/, '');
     const isHomePage = path === '' || path === '/';
 
     // ------------------------------------------------------------------------
-    // THEME 1: HERO THEME (Homepage Top State over Dark Video)
-    // Transparent background, pure white typography, dark dropdown panels.
+    // ACTIVE ROUTE HIGHLIGHT LOGIC (Desktop & Mobile Sandwich Menu)
+    // ------------------------------------------------------------------------
+    function highlightActiveRoute() {
+      // Desktop Underline Reset
+      document.querySelectorAll('[data-nav-route]').forEach(el => {
+        el.classList.remove('nav-active');
+        const existingLine = el.querySelector('.nav-active-line');
+        if (existingLine) existingLine.remove();
+      });
+
+      // Mobile Indicator Reset
+      document.querySelectorAll('[data-mobile-route]').forEach(el => {
+        const indicator = el.querySelector('.mobile-active-indicator');
+        if (indicator) indicator.classList.add('hidden');
+      });
+      document.querySelectorAll('[data-mobile-sub]').forEach(el => {
+        el.classList.remove('text-[#8C7149]', 'font-medium');
+      });
+
+      let activeRouteKey = '';
+      if (path.startsWith('/properties')) activeRouteKey = 'properties';
+      else if (path.startsWith('/communities')) activeRouteKey = 'communities';
+      else if (path.startsWith('/seller') || path.startsWith('/buyer') || path.startsWith('/valuation')) activeRouteKey = 'advisory';
+      else if (path.startsWith('/blog')) activeRouteKey = 'blog';
+      else if (path.startsWith('/about') || path.startsWith('/testimonials')) activeRouteKey = 'about';
+
+      if (!activeRouteKey) return;
+
+      // 1. Apply Desktop Underline
+      const activeEl = document.querySelector(`[data-nav-route="${activeRouteKey}"]`);
+      if (activeEl) {
+        activeEl.classList.add('nav-active');
+        const line = document.createElement('span');
+        line.className = 'nav-active-line absolute bottom-4 left-0 right-0 h-[2px] bg-[#8C7149] pointer-events-none';
+        activeEl.appendChild(line);
+      }
+
+      // 2. Apply Mobile Sandwich Menu Indicator & Auto-Expand Submenu
+      const mobileRouteEl = document.querySelector(`[data-mobile-route="${activeRouteKey}"]`);
+      if (mobileRouteEl) {
+        const indicator = mobileRouteEl.querySelector('.mobile-active-indicator');
+        if (indicator) indicator.classList.remove('hidden');
+
+        // If it's an advisory or about subpage, automatically open that accordion drawer
+        if (activeRouteKey === 'advisory') {
+          const sub = document.getElementById('mobile-advisory-sub');
+          const arrow = document.getElementById('adv-arrow');
+          sub?.classList.remove('hidden');
+          sub?.classList.add('flex');
+          arrow?.classList.add('rotate-180');
+        } else if (activeRouteKey === 'about') {
+          const sub = document.getElementById('mobile-about-sub');
+          const arrow = document.getElementById('about-arrow');
+          sub?.classList.remove('hidden');
+          sub?.classList.add('flex');
+          arrow?.classList.add('rotate-180');
+        }
+      }
+
+      // Highlight specific sublink inside mobile accordion
+      const activeSubLink = document.querySelector(`[data-mobile-sub="${path}"]`);
+      if (activeSubLink) {
+        activeSubLink.classList.add('text-[#8C7149]', 'font-medium');
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // THEME 1: HERO THEME (Homepage Top State)
     // ------------------------------------------------------------------------
     function applyHeroTheme() {
       siteHeader?.classList.remove('bg-white', 'border-black/10', 'shadow-sm');
@@ -340,7 +383,8 @@ import GoogleTranslate from './GoogleTranslate.astro';
       if (brandSub) brandSub.className = "font-body text-[0.55rem] md:text-[0.625rem] tracking-[0.32em] -mr-[0.32em] uppercase text-neutral-300 font-light leading-none text-center transition-colors duration-200 whitespace-nowrap";
       
       navLinks.forEach(link => {
-        link.className = "nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0";
+        const isParentButton = link.tagName === 'BUTTON';
+        link.className = `nav-link relative ${isParentButton ? 'py-0' : 'py-6'} font-heading text-[13px] uppercase tracking-[1px] font-normal text-white hover:opacity-60 transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0`;
       });
 
       if (navContactBtn) {
@@ -359,12 +403,12 @@ import GoogleTranslate from './GoogleTranslate.astro';
       dropdownItems.forEach(item => {
         item.className = "dropdown-item block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-neutral-300 hover:text-white hover:bg-white/5 transition";
       });
+
+      highlightActiveRoute();
     }
 
     // ------------------------------------------------------------------------
     // THEME 2: SCROLLED THEME (Subpages & Scrolled Homepage)
-    // Pure white background (#FFFFFF), dark charcoal text (#1a1a1a),
-    // subtle border, and matching light dropdown panels.
     // ------------------------------------------------------------------------
     function applyScrolledTheme() {
       siteHeader?.classList.remove('bg-transparent', 'border-transparent');
@@ -375,7 +419,8 @@ import GoogleTranslate from './GoogleTranslate.astro';
       if (brandSub) brandSub.className = "font-body text-[0.55rem] md:text-[0.625rem] tracking-[0.32em] -mr-[0.32em] uppercase text-[#555555] font-light leading-none text-center transition-colors duration-200 whitespace-nowrap";
       
       navLinks.forEach(link => {
-        link.className = "nav-link font-heading text-[13px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#555555] transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0";
+        const isParentButton = link.tagName === 'BUTTON';
+        link.className = `nav-link relative ${isParentButton ? 'py-0' : 'py-6'} font-heading text-[13px] uppercase tracking-[1px] font-normal text-[#1a1a1a] hover:text-[#555555] transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0`;
       });
 
       if (navContactBtn) {
@@ -393,27 +438,25 @@ import GoogleTranslate from './GoogleTranslate.astro';
       dropdownItems.forEach(item => {
         item.className = "dropdown-item block px-5 py-2.5 font-body text-[12px] uppercase tracking-[2px] font-light text-[#4d4d4d] hover:text-black hover:bg-black/5 transition";
       });
+
+      highlightActiveRoute();
     }
 
-    // Scroll state trackers
     let isScrolled = false;
     let ticking = false;
     let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Checks current scroll depth against the homepage curtain container
     function updateNavAppearance() {
       const currentScrollY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop);
       const curtain = document.getElementById('curtain-container');
       const hasHero = isHomePage;
 
-      // Subpages always stay in Scrolled Theme (light background)
       if (!hasHero) {
         applyScrolledTheme();
         isScrolled = true;
         return;
       }
 
-      // Homepage: Switch theme when the curtain container covers the video
       let shouldBeScrolled = false;
       if (curtain) {
         const curtainTop = curtain.getBoundingClientRect().top;
@@ -435,19 +478,15 @@ import GoogleTranslate from './GoogleTranslate.astro';
       }
     }
 
-    // Handles mobile smart hide/reveal behavior on scroll
     function handleHeaderScroll() {
       const currentScrollY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop);
       const isMobileOrTablet = window.innerWidth < 1024;
 
-      // Only hide header on mobile when menu is closed
       if (isMobileOrTablet && mobileMenu?.classList.contains('hidden')) {
         const delta = currentScrollY - lastScrollY;
         if (delta < -3) {
-          // Scrolling Up: Reveal header
           siteHeader?.classList.remove('-translate-y-full');
         } else if (delta > 3 && currentScrollY > 15) {
-          // Scrolling Down: Hide header
           siteHeader?.classList.add('-translate-y-full');
         }
       } else {
@@ -460,7 +499,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       updateNavAppearance();
     }
 
-    // RequestAnimationFrame throttle for scroll and resize events
     function onScrollRequest() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -474,23 +512,20 @@ import GoogleTranslate from './GoogleTranslate.astro';
     window.addEventListener('scroll', onScrollRequest, { passive: true });
     window.addEventListener('resize', onScrollRequest, { passive: true });
     
-    // Initial theme setup on page load
     if (isHomePage) {
       applyHeroTheme();
     } else {
       applyScrolledTheme();
     }
     handleHeaderScroll();
+    highlightActiveRoute();
 
-    // ------------------------------------------------------------------------
-    // MOBILE MENU TOGGLE HANDLER (Hamburger click)
-    // ------------------------------------------------------------------------
+    // Mobile menu toggles
     mobileMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const isHidden = mobileMenu?.classList.toggle('hidden');
       const isOpen = !isHidden;
 
-      // Lock or unlock body background scroll
       document.body.style.overflow = isOpen ? 'hidden' : '';
       mobileMenuBtn.setAttribute('aria-expanded', isOpen.toString());
       mobileMenu?.setAttribute('aria-hidden', (!isOpen).toString());
@@ -506,7 +541,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       }
     });
 
-    // Mobile Advisory Submenu Accordion Toggle
     document.getElementById('mobile-adv-toggle')?.addEventListener('click', (e) => {
       e.preventDefault();
       const sub = document.getElementById('mobile-advisory-sub');
@@ -521,7 +555,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       }
     });
 
-    // Mobile About Submenu Accordion Toggle
     document.getElementById('mobile-about-toggle')?.addEventListener('click', (e) => {
       e.preventDefault();
       const sub = document.getElementById('mobile-about-sub');
@@ -536,7 +569,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       }
     });
 
-    // Mobile Language Submenu Accordion Toggle
     document.getElementById('mobile-lang-toggle')?.addEventListener('click', (e) => {
       e.preventDefault();
       const sub = document.getElementById('mobile-lang-sub');
@@ -551,7 +583,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       }
     });
 
-    // Close mobile menu when any navigation link inside it is clicked
     document.querySelectorAll('#mobile-menu a').forEach(link => {
       link.addEventListener('click', () => {
         mobileMenu?.classList.add('hidden');
@@ -560,9 +591,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
       });
     });
 
-    // ------------------------------------------------------------------------
-    // GLOBAL CONTACT MODAL TRIGGER HANDLERS
-    // ------------------------------------------------------------------------
     const triggerContact = () => {
       if (typeof (window as any).openContactModal === 'function') {
         (window as any).openContactModal();
@@ -579,6 +607,5 @@ import GoogleTranslate from './GoogleTranslate.astro';
     });
   }
 
-  // Ensures setup runs seamlessly across Astro Client Router transitions
   document.addEventListener('astro:page-load', setupNavbar);
 </script>
