@@ -1,7 +1,7 @@
 ---
 // ============================================================================
 // PAGE: src/pages/offer.astro
-// PURPOSE: Gateway entry screen to accept the secure mailer code.
+// PURPOSE: Gateway entry screen to accept the secure mailer code and check expiration.
 // ============================================================================
 
 import LandingPageLayout from '../layouts/LandingPageLayout.astro';
@@ -16,13 +16,48 @@ const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
 const sheetName = workbook.SheetNames[0];
 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-// Create a clean lookup dictionary from Excel
-const codeMap: Record<string, string> = {};
+// Create a lookup dictionary that includes slug AND expiration date (ISO format)
+const codeMap: Record<string, { slug: string; expireDate: string; readableDate: string }> = {};
+
 rows.forEach((row: any) => {
   if (row.code && row.slug) {
     const cleanCode = String(row.code).trim().toUpperCase();
     const cleanSlug = String(row.slug).trim();
-    codeMap[cleanCode] = cleanSlug;
+    
+    // Parse expiration date safely for comparison
+    let rawDate = row['offer-expire'];
+    let isoDate = '2026-12-31';
+    let readableDate = String(rawDate || 'December 31, 2026');
+
+    if (typeof rawDate === 'number') {
+      const parsedDate = new Date((rawDate - (25567 + 2)) * 86400 * 1000);
+      isoDate = parsedDate.toISOString().split('T')[0];
+      readableDate = parsedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    } else if (typeof rawDate === 'string') {
+      const parts = rawDate.trim().split('/');
+      if (parts.length === 3) {
+        let month = parts[0].padStart(2, '0');
+        let day = parts[1].padStart(2, '0');
+        let year = parts[2];
+        if (year.length === 2) year = '20' + year;
+        isoDate = `${year}-${month}-${day}`;
+        const dObj = new Date(`${isoDate}T00:00:00Z`);
+        readableDate = dObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+      } else {
+        const parsed = Date.parse(rawDate);
+        if (!isNaN(parsed)) {
+          const dObj = new Date(parsed);
+          isoDate = dObj.toISOString().split('T')[0];
+          readableDate = dObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+        }
+      }
+    }
+
+    codeMap[cleanCode] = {
+      slug: cleanSlug,
+      expireDate: isoDate,
+      readableDate: readableDate
+    };
   }
 });
 ---
@@ -71,8 +106,9 @@ rows.forEach((row: any) => {
           <span class="font-mono font-black text-sm">&rarr;</span>
         </button>
 
-        <p id="error-msg" class="text-rose-400 text-xs font-medium hidden bg-rose-500/10 border border-rose-500/20 py-2.5 rounded-lg">
-          Invalid code. Please check your offer code and try again.
+        <!-- Dynamic Message Box for Errors / Expirations -->
+        <p id="error-msg" class="text-rose-400 text-xs font-medium hidden bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl leading-relaxed">
+          Invalid code. Please check your mailer and try again.
         </p>
       </form>
 
@@ -100,10 +136,29 @@ rows.forEach((row: any) => {
       e.preventDefault();
       const code = input?.value.trim().toUpperCase();
       
+      if (!errorMsg) return;
+
       if (code && codeMap[code]) {
-        window.location.href = `/offer/${codeMap[code]}`;
+        const entry = codeMap[code];
+        
+        // Check if offer has expired compared to user's local browser date (Midnight of expire date)
+        const expireDateTime = new Date(`${entry.expireDate}T23:59:59`).getTime();
+        const now = Date.now();
+
+        if (now > expireDateTime) {
+          // Offer is EXPIRED
+          errorMsg.className = 'text-amber-300 text-xs font-medium bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl leading-relaxed';
+          errorMsg.innerHTML = `This exclusive offer expired on <strong>${entry.readableDate}</strong>. Please contact Alex Yap at (408) 817-0383.`;
+          errorMsg.classList.remove('hidden');
+        } else {
+          // Offer is ACTIVE - Proceed to slug
+          window.location.href = `/offer/${entry.slug}`;
+        }
       } else {
-        if (errorMsg) errorMsg.classList.remove('hidden');
+        // Code doesn't exist
+        errorMsg.className = 'text-rose-400 text-xs font-medium bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl leading-relaxed';
+        errorMsg.textContent = 'Invalid code. Please check your mailer and try again.';
+        errorMsg.classList.remove('hidden');
       }
     });
   </script>
