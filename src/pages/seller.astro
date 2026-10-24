@@ -62,6 +62,45 @@ const steps = [
     image: "https://media-production.lp-cdn.com/media/025a6760-939a-4572-9ebe-b1877cb11a84"
   }
 ];
+
+const blueprintPillars = [
+  {
+    num: "Phase 01",
+    tagline: "Smart Preparation",
+    title: "Invest Only Where You Get Real Dollars Back",
+    description: "You shouldn't spend a single dollar fixing up your home unless it puts money back in your pocket at closing. We look at your property through the eyes of active local buyers, pointing out the simple repairs and staging choices that actually boost offer prices—and telling you which costly projects to skip."
+  },
+  {
+    num: "Phase 02",
+    tagline: "First Impressions",
+    title: "Every Extra Week on Market Costs You Money",
+    description: "A home gets the highest buyer attention in its first ten days. When a listing sits, buyers start asking what's wrong and look for discounts. We make sure disclosure packets and presentation are completely ready in advance to build serious interest right out of the gate."
+  },
+  {
+    num: "Phase 03",
+    tagline: "Pricing Strategy",
+    title: "Price to Spark Competition, Not to Test the Waters",
+    description: "Overpricing to 'see what happens' backfires almost every time. It chases away serious buyers and forces price cuts later. We study active neighborhood demand to price your home where buyers feel urgency, compete, and bid with conviction."
+  },
+  {
+    num: "Phase 04",
+    tagline: "Active Marketing",
+    title: "We Hunt for Real Buyers, Not Just Post to the MLS",
+    description: "Uploading a listing and sitting by the phone doesn't work. We work every inquiry directly. We follow up with every agent who unlocks the door, answer buyer questions promptly before they become objections, and keep interested parties actively engaged."
+  },
+  {
+    num: "Phase 05",
+    tagline: "Contract Defense",
+    title: "Never Let a Buyer Renegotiate After You Agree",
+    description: "Accepting an offer is only half the battle. Many buyers try to use home inspections or repair requests to chip away at your agreed price weeks later. We enforce contract timelines, push back on unreasonable demands, and make sure the agreed price is what you take home."
+  },
+  {
+    num: "Phase 06",
+    tagline: "Personal Attention",
+    title: "You Work Directly With Alex. No Hand-Offs.",
+    description: "Many teams have a senior agent sign the agreement, only to pass you off to assistants you've never met. With this practice, Alex handles your sale personally from the initial walkthrough to the day keys are handed over, giving you direct guidance at every step."
+  }
+];
 ---
 
 <BaseLayout title="Seller's Guide | Alex Yap Real Estate Advisor">
@@ -84,7 +123,7 @@ const steps = [
       </div>
     </section>
 
-    <!-- 8-STEP ROADMAP SECTION -->
+    <!-- 8-STEP ROADMAP SECTION (Stone BG) -->
     <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-stone,#ECE8E1)]">
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
         <div class="mb-16 text-center max-w-3xl mx-auto">
@@ -127,8 +166,90 @@ const steps = [
       </div>
     </section>
 
-    <!-- SELLER WIZARD FORM SECTION -->
-    <section id="seller-form-section" class="w-full py-20 md:py-28 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10 scroll-mt-24">
+    <!-- BLUEPRINT SECTION (Chalk BG for alternating pattern) -->
+    <section class="w-full py-20 md:py-32 bg-[var(--color-luxury-chalk,#F4F2EE)] border-t border-black/10 overflow-hidden">
+      <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div>
+            <p class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium mb-2">
+              Listing Advisory &amp; Strategy
+            </p>
+            <h2 class="font-heading text-3xl sm:text-5xl uppercase tracking-[1.5px] text-[#1a1a1a] font-normal leading-tight">
+              The Blueprint to Selling Your Home for Maximum Value
+            </h2>
+          </div>
+          <p class="font-body text-neutral-600 text-sm max-w-md font-light leading-relaxed">
+            A systematic, high-conviction approach dedicated to positioning your property to outperform the market, protect your equity, and maximize buyer competition at every stage.
+          </p>
+        </div>
+
+        <!-- ELEVATED 6-CARD GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+          {blueprintPillars.map((item) => (
+            <article class="group relative bg-white border border-black/10 p-8 sm:p-10 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_-15px_rgba(140,113,73,0.18)] hover:border-[#8C7149]/50 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+              
+              <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+              
+              <div class="absolute inset-3 border border-black/[0.04] group-hover:border-[#8C7149]/25 transition-colors duration-500 pointer-events-none"></div>
+
+              <span class="absolute top-4 right-6 font-heading text-6xl md:text-7xl font-light text-black/[0.04] group-hover:text-[#8C7149]/15 select-none pointer-events-none transition-all duration-500 group-hover:scale-105">
+                {item.num.replace('Phase ', '')}
+              </span>
+
+              <div class="relative z-10">
+                <div class="flex items-center justify-between mb-8 pb-5 border-b border-black/[0.08] group-hover:border-[#8C7149]/20 transition-colors">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#8C7149] group-hover:scale-125 transition-transform duration-300"></span>
+                    <span class="font-body text-[11px] uppercase tracking-[2.5px] text-[#8C7149] font-medium">
+                      {item.tagline}
+                    </span>
+                  </div>
+                  <span class="font-mono text-[10px] uppercase tracking-[2px] text-neutral-400 group-hover:text-[#8C7149] transition-colors">
+                    {item.num}
+                  </span>
+                </div>
+
+                <h3 class="font-heading text-xl uppercase tracking-[1px] font-normal text-[#1a1a1a] mb-4 leading-snug group-hover:text-[#8C7149] transition-colors duration-300">
+                  {item.title}
+                </h3>
+                <p class="font-body text-neutral-600 text-sm font-light leading-[1.8]">
+                  {item.description}
+                </p>
+              </div>
+
+              <div class="relative z-10 mt-8 pt-4 flex items-center justify-between text-xs tracking-[2px] uppercase text-neutral-400 font-mono">
+                <span class="text-[11px] text-neutral-500 group-hover:text-[#1a1a1a] transition-colors">Proven Execution</span>
+                <span class="w-8 h-[1px] bg-black/15 group-hover:w-16 group-hover:bg-[#8C7149] transition-all duration-500"></span>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <!-- Blueprint Dual Action Buttons -->
+        <div class="mb-16 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-4">
+          <a 
+            href="/seller" 
+            class="font-heading text-[13px] uppercase tracking-[2px] bg-white text-[#1a1a1a] border border-black/15 px-8 py-3.5 hover:bg-[#1a1a1a] hover:text-white hover:border-[#1a1a1a] transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm group"
+          >
+            <span>Explore Roadmap of Selling</span>
+            <span class="font-mono font-bold text-sm text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all">&gt;</span>
+          </a>
+
+          <a 
+            href="/valuation" 
+            class="font-heading text-[13px] uppercase tracking-[2px] bg-[#1a1a1a] text-white px-8 py-3.5 hover:bg-[#8C7149] hover:text-white transition-all duration-300 inline-flex items-center justify-center gap-3 shadow-sm group"
+          >
+            <span>Request for Home Valuation</span>
+            <span class="font-mono font-bold text-sm text-[#d3bc97] group-hover:text-white group-hover:translate-x-1 transition-all">&gt;</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SELLER WIZARD FORM SECTION (Stone BG for alternating pattern) -->
+    <section id="seller-form-section" class="w-full py-20 md:py-28 bg-[var(--color-luxury-stone,#ECE8E1)] border-t border-black/10 scroll-mt-24">
       <div class="max-w-4xl mx-auto px-6 lg:px-12">
         <div class="text-center max-w-2xl mx-auto mb-12">
           <span class="font-body text-[11px] uppercase tracking-[3px] text-[#8C7149] font-medium block mb-2">Exclusive Seller Consultation</span>
