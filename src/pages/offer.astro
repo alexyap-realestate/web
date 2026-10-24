@@ -5,6 +5,26 @@
 // ============================================================================
 
 import LandingPageLayout from '../layouts/LandingPageLayout.astro';
+import * as XLSX from 'xlsx';
+import fs from 'fs';
+import path from 'path';
+
+// Read offer.xlsx buffer safely at build time
+const filePath = path.resolve('./src/data/offer.xlsx');
+const fileBuffer = fs.readFileSync(filePath);
+const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+const sheetName = workbook.SheetNames[0];
+const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+// Create a clean lookup dictionary from Excel
+const codeMap: Record<string, string> = {};
+rows.forEach((row: any) => {
+  if (row.code && row.slug) {
+    const cleanCode = String(row.code).trim().toUpperCase();
+    const cleanSlug = String(row.slug).trim();
+    codeMap[cleanCode] = cleanSlug;
+  }
+});
 ---
 
 <LandingPageLayout title="Enter Your Offer Code">
@@ -50,6 +70,10 @@ import LandingPageLayout from '../layouts/LandingPageLayout.astro';
           <span>Access My Secure Offer</span>
           <span class="font-mono font-black text-sm">&rarr;</span>
         </button>
+
+        <p id="error-msg" class="text-rose-400 text-xs font-medium hidden bg-rose-500/10 border border-rose-500/20 py-2.5 rounded-lg">
+          Invalid code. Please check your offer code and try again.
+        </p>
       </form>
 
       <p class="font-body text-[10px] uppercase tracking-wider text-neutral-500 pt-2">
@@ -67,18 +91,19 @@ import LandingPageLayout from '../layouts/LandingPageLayout.astro';
     .pulse-glow-btn { animation: pulseGlow 2.5s infinite; }
   </style>
 
-  <script>
-    const form = document.getElementById('gateway-form') as HTMLFormElement | null;
-    const input = document.getElementById('code-input') as HTMLInputElement | null;
+  <script define:vars={{ codeMap }}>
+    const form = document.getElementById('gateway-form');
+    const input = document.getElementById('code-input');
+    const errorMsg = document.getElementById('error-msg');
 
     form?.addEventListener('submit', (e) => {
       e.preventDefault();
       const code = input?.value.trim().toUpperCase();
       
-      if (code === 'A12-34-567') {
-        window.location.href = '/offer/123-main-st-san-jose-ca-95123';
+      if (code && codeMap[code]) {
+        window.location.href = `/offer/${codeMap[code]}`;
       } else {
-        alert('Invalid code. Please check your mailer and try again.');
+        if (errorMsg) errorMsg.classList.remove('hidden');
       }
     });
   </script>
