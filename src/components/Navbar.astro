@@ -14,6 +14,7 @@
 //           black borders, and matching light dropdown menus with soft shadow.
 // ACTIVE ROUTE HIGHLIGHT:
 //         - Automatically underlines the active nav item on desktop and highlights in mobile.
+//         - Safely hidden on the homepage.
 // ============================================================================
 
 import GoogleTranslate from './GoogleTranslate.astro';
@@ -324,6 +325,9 @@ import GoogleTranslate from './GoogleTranslate.astro';
         el.classList.remove('text-[#8C7149]', 'font-medium');
       });
 
+      // STRICT CHECK: Do not highlight anything if we are on the homepage
+      if (isHomePage) return;
+
       let activeRouteKey = '';
       if (path.startsWith('/properties')) activeRouteKey = 'properties';
       else if (path.startsWith('/communities')) activeRouteKey = 'communities';
@@ -348,7 +352,6 @@ import GoogleTranslate from './GoogleTranslate.astro';
         const indicator = mobileRouteEl.querySelector('.mobile-active-indicator');
         if (indicator) indicator.classList.remove('hidden');
 
-        // If it's an advisory or about subpage, automatically open that accordion drawer
         if (activeRouteKey === 'advisory') {
           const sub = document.getElementById('mobile-advisory-sub');
           const arrow = document.getElementById('adv-arrow');
