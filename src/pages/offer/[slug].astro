@@ -72,7 +72,7 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
   title={`${headline1} | Alex Yap Real Estate Advisor`}
   description={`${headline3} Offer expires ${offerExpireFormatted}.`}
 >
-  <main class="relative w-full min-h-screen bg-color-1 overflow-hidden flex flex-col items-center justify-center py-4 lg:py-6 px-6">
+  <main class="relative w-full min-h-screen bg-color-1 overflow-hidden flex flex-col items-center justify-center py-6 lg:py-10 px-6">
     
     {/* Background layers */}
     <div class="absolute inset-0 bg-architectural-grid pointer-events-none"></div>
@@ -81,7 +81,8 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
     <div class="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-[#8C7149]/15 via-transparent to-transparent rotate-12 blur-[100px] pointer-events-none"></div>
     <div class="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none"></div>
 
-    <div class="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-6">
+    <!-- UPDATED TO max-w-4xl FOR A WIDER, MORE SPACIOUS LAYOUT -->
+    <div class="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-6">
 
       <!-- COUNTDOWN TIMER BANNER -->
       <div class="deadline-banner" role="region" aria-label="Offer Expiration Countdown" data-expire={isoExpireDate}>
