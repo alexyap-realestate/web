@@ -525,7 +525,7 @@ const marqueeItems = [
       <!-- Blueprint Carousel Viewport with Padded Container -->
       <div 
         id="blueprint-carousel-viewport" 
-        class="w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none mb-16"
+        class="w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none mb-16 py-3"
         tabindex="0"
         role="region"
         aria-label="Blueprint Steps Carousel"
@@ -539,9 +539,12 @@ const marqueeItems = [
             <div 
               class="blueprint-item w-[85%] sm:w-[48%] lg:w-[31%] shrink-0 flex flex-col"
             >
-              <article class="group relative h-full bg-white border border-black/10 p-8 sm:p-10 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-10px_rgba(140,113,73,0.15)] hover:border-[#8C7149]/50 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+              <article class="group relative h-full bg-white border border-black/10 p-8 sm:p-10 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-10px_rgba(140,113,73,0.15)] hover:border-[#8C7149]/50 hover:-translate-y-1.5 transition-all duration-500">
                 
-                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+                <!-- Fixed Hover Line Animation: Sits inside its own crisp absolute wrapper so it expands cleanly across the full width without clipping -->
+                <div class="absolute top-0 inset-x-0 h-[2px] overflow-hidden pointer-events-none">
+                  <div class="w-full h-full bg-gradient-to-r from-transparent via-[#8C7149] to-transparent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out"></div>
+                </div>
 
                 <span class="absolute top-4 right-6 font-heading text-6xl font-light text-black/[0.04] group-hover:text-[#8C7149]/15 select-none pointer-events-none transition-all duration-500">
                   {item.num.replace('Phase ', '')}
@@ -573,7 +576,7 @@ const marqueeItems = [
       </div>
 
       <div class="max-w-[96rem] mx-auto px-6 lg:px-12">
-        {/* Blueprint Dual Action Buttons */}
+        <!-- Blueprint Dual Action Buttons -->
         <div class="mb-16 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-4">
           <a 
             href="/seller" 
