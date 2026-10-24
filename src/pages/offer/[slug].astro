@@ -59,13 +59,15 @@ export async function getStaticPaths() {
         isoExpireDate: isoDate,
         headline1: row['offer-headline-1'],
         headline2: row['offer-headline-2'],
-        headline3: row['offer-headline-3']
+        headline3: row['offer-headline-3'],
+        // Pulling button text directly from the Excel 'submit-button' column
+        submitButtonText: String(row['submit-button'] || '')
       },
     };
   });
 }
 
-const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, headline2, headline3 } = Astro.props;
+const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, headline2, headline3, submitButtonText } = Astro.props;
 ---
 
 <LandingLayout 
@@ -81,7 +83,6 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
     <div class="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-[#8C7149]/15 via-transparent to-transparent rotate-12 blur-[100px] pointer-events-none"></div>
     <div class="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none"></div>
 
-    <!-- UPDATED TO max-w-4xl FOR A WIDER, MORE SPACIOUS LAYOUT -->
     <div class="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-6">
 
       <!-- COUNTDOWN TIMER BANNER -->
@@ -247,14 +248,14 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
             ></textarea>
           </div>
 
-          <!-- Submit CTA Button -->
+          <!-- Submit CTA Button (Driven 100% from Excel submit-button column) -->
           <div class="pt-3">
             <button 
               type="submit" 
               id="submit-btn"
               class="w-full font-heading text-xs uppercase tracking-[2.5px] bg-[#C5A880] text-neutral-950 font-bold py-4 px-6 rounded-xl hover:bg-[#D4B993] transition-all duration-300 border border-[#E2C79E] cursor-pointer flex items-center justify-center gap-2.5 group active:scale-[0.99] pulse-glow-btn"
             >
-              <span id="btn-text">Lock In 1% Listing Fee</span>
+              <span id="btn-text" data-default-text={submitButtonText}>{submitButtonText}</span>
               <span id="btn-arrow" class="font-mono font-black text-sm text-neutral-950 group-hover:translate-x-1 transition-transform duration-300">&gt;</span>
             </button>
           </div>
@@ -364,6 +365,7 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
   const btnText = document.getElementById('btn-text');
   const btnArrow = document.getElementById('btn-arrow');
   const resultDiv = document.getElementById('form-result');
+  const defaultButtonText = btnText?.getAttribute('data-default-text') || 'Submit Offer';
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -411,7 +413,7 @@ const { code, propertyAddress, offerExpireFormatted, isoExpireDate, headline1, h
       }
     } finally {
       if (submitBtn) submitBtn.disabled = false;
-      if (btnText) btnText.textContent = 'Lock In 1% Listing Fee';
+      if (btnText) btnText.textContent = defaultButtonText;
       if (btnArrow) btnArrow.style.display = 'inline';
     }
   });

@@ -63,7 +63,7 @@ rows.forEach((row: any) => {
 ---
 
 <LandingPageLayout title="Enter Your Offer Code">
-  <main class="relative w-full min-h-screen bg-color-1 overflow-hidden flex items-center justify-center py-4 lg:py-6 px-6">
+  <main class="relative w-full min-h-screen bg-color-1 overflow-hidden flex items-center justify-center py-10 lg:py-14 px-6">
     
     <div class="absolute inset-0 bg-architectural-grid pointer-events-none"></div>
     <div class="absolute -top-20 left-10 w-[600px] h-[600px] bg-[#8C7149]/15 blur-[150px] rounded-full pointer-events-none"></div>
@@ -71,48 +71,49 @@ rows.forEach((row: any) => {
     <div class="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-[#8C7149]/15 via-transparent to-transparent rotate-12 blur-[100px] pointer-events-none"></div>
     <div class="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none"></div>
 
-    <div class="relative z-10 w-full max-w-md bg-[#141312]/85 backdrop-blur-2xl border border-[#d3bc97]/25 p-8 sm:p-10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.4),0_0_30px_rgba(140,113,73,0.12)] text-center space-y-6 overflow-hidden">
+    <!-- OPTIMIZED LANDING SIZE: max-w-2xl provides the ideal high-conversion focus -->
+    <div class="relative z-10 w-full max-w-2xl bg-[#141312]/85 backdrop-blur-2xl border border-[#d3bc97]/25 p-10 sm:p-14 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(140,113,73,0.15)] text-center space-y-8 overflow-hidden">
       
       <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#8C7149] to-transparent"></div>
 
-      <div class="space-y-2">
-        <span class="inline-flex items-center bg-black/60 text-[#d3bc97] px-3.5 py-1 rounded-full font-mono text-[10px] uppercase tracking-[2px] border border-[#d3bc97]/30 shadow-sm">
-          Secure Verification
+      <div class="space-y-3">
+        <span class="inline-flex items-center bg-black/60 text-[#d3bc97] px-4 py-1.5 rounded-full font-mono text-xs uppercase tracking-[2.5px] border border-[#d3bc97]/30 shadow-sm">
+          Secure Verification Gateway
         </span>
-        <h1 class="font-heading text-2xl uppercase tracking-[1.5px] text-white font-normal">
+        <h1 class="font-heading text-3xl sm:text-4xl uppercase tracking-[1.5px] text-white font-normal leading-tight">
           Enter Your Offer Code
         </h1>
-        <p class="font-body text-xs text-neutral-400 font-light leading-relaxed">
-          Please input the unique verification code found on your exclusive mailer to access your property's customized offer.
+        <p class="font-body text-sm sm:text-base text-neutral-400 font-light leading-relaxed max-w-lg mx-auto">
+          Please input the unique verification code found on your exclusive mailer to unlock your property's customized consultation and active offer.
         </p>
       </div>
 
-      <form id="gateway-form" class="space-y-4 pt-2">
+      <form id="gateway-form" class="space-y-6 pt-2">
         <div>
           <input 
             type="text" 
             id="code-input" 
-            placeholder="Enter your code" 
+            placeholder="ENTER CODE" 
             required
-            class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-4 text-center text-xl text-white tracking-[0.25em] font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#8C7149]/50 focus:border-[#8C7149] transition-all shadow-inner uppercase"
+            class="w-full bg-black/40 border border-white/15 rounded-2xl px-6 py-5 text-center text-2xl sm:text-3xl text-white tracking-[0.3em] font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#8C7149]/50 focus:border-[#8C7149] transition-all shadow-inner uppercase"
           />
         </div>
 
         <button 
           type="submit"
-          class="w-full font-heading text-xs uppercase tracking-[2.5px] bg-[#C5A880] text-neutral-950 font-bold py-4 px-6 rounded-xl hover:bg-[#D4B993] transition-all duration-300 border border-[#E2C79E] cursor-pointer flex items-center justify-center gap-2.5 pulse-glow-btn"
+          class="w-full font-heading text-sm uppercase tracking-[3px] bg-[#C5A880] text-neutral-950 font-bold py-5 px-8 rounded-2xl hover:bg-[#D4B993] transition-all duration-300 border border-[#E2C79E] cursor-pointer flex items-center justify-center gap-3 pulse-glow-btn shadow-lg"
         >
           <span>Access My Secure Offer</span>
-          <span class="font-mono font-black text-sm">&rarr;</span>
+          <span class="font-mono font-black text-base">&rarr;</span>
         </button>
 
         <!-- Dynamic Message Box for Errors / Expirations -->
-        <p id="error-msg" class="text-rose-400 text-xs font-medium hidden bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl leading-relaxed">
+        <p id="error-msg" class="text-rose-400 text-sm font-medium hidden bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl leading-relaxed">
           Invalid code. Please check your mailer and try again.
         </p>
       </form>
 
-      <p class="font-body text-[10px] uppercase tracking-wider text-neutral-500 pt-2">
+      <p class="font-body text-xs uppercase tracking-wider text-neutral-500 pt-2">
         Protected &bull; Confidential Real Estate Consultation
       </p>
     </div>
@@ -147,7 +148,7 @@ rows.forEach((row: any) => {
 
         if (now > expireDateTime) {
           // Offer is EXPIRED
-          errorMsg.className = 'text-amber-300 text-xs font-medium bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl leading-relaxed';
+          errorMsg.className = 'text-amber-300 text-sm font-medium bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl leading-relaxed';
           errorMsg.innerHTML = `This exclusive offer expired on <strong>${entry.readableDate}</strong>. Please contact Alex Yap at (408) 817-0383.`;
           errorMsg.classList.remove('hidden');
         } else {
@@ -156,7 +157,7 @@ rows.forEach((row: any) => {
         }
       } else {
         // Code doesn't exist
-        errorMsg.className = 'text-rose-400 text-xs font-medium bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl leading-relaxed';
+        errorMsg.className = 'text-rose-400 text-sm font-medium bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl leading-relaxed';
         errorMsg.textContent = 'Invalid code. Please check your mailer and try again.';
         errorMsg.classList.remove('hidden');
       }
